@@ -29,6 +29,15 @@
         ],
         "createdAt": "2026-10-28T23:36:28.337Z",
         "reason": "Claude: texto claro tingido de azul (#d6defa) sobre a faixa azul da Folhinha, não cinza"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "design/direcoes.html"
+        ],
+        "createdAt": "2026-10-28T23:37:05.774Z",
+        "reason": "Claude: é o gesto marcante da direção Caderneta (borda de cor no topo das abas, como divisória de caderno)"
       }
     ]
   }
