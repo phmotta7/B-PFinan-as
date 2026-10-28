@@ -1,0 +1,177 @@
+<title>Briefing B&amp;P Finanças</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: uma coluna de leitura (~66ch), seções numeradas porque o briefing é uma sequência de decisões; tabelas "usar / evitar" lado a lado */
+:root{
+  --bg:#f6f7f5; --surface:#ffffff; --fg:#1d2321; --muted:#4e5955; --line:#dfe3e0;
+  --accent:#17594c; --accent-soft:#e3efeb; --no:#7a3d2e; --no-soft:#f5e9e5;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121615; --surface:#1a201e; --fg:#e8ecea; --muted:#9aa6a1; --line:#2b3330;
+  --accent:#6cc2ad; --accent-soft:#1d2e2a; --no:#e0a593; --no-soft:#2e211d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121615; --surface:#1a201e; --fg:#e8ecea; --muted:#9aa6a1; --line:#2b3330;
+  --accent:#6cc2ad; --accent-soft:#1d2e2a; --no:#e0a593; --no-soft:#2e211d; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:17px/1.6 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:48px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(34px,7vw,52px);font-weight:700;letter-spacing:-.02em}
+h2{font-size:26px;font-weight:700;letter-spacing:-.01em;display:flex;gap:12px;align-items:baseline}
+h2 .n{font-size:15px;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums;min-width:22px}
+h3{font-size:18px;font-weight:700}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:16px}
+.lede{font-size:20px;color:var(--muted);max-width:60ch}
+.kicker{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+header{display:flex;flex-direction:column;gap:14px}
+ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:8px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.trait b{font-family:var(--display);font-size:20px}
+.trait span{color:var(--muted)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.pair > div{padding:14px 16px;min-width:0}
+.pair .h{font-size:13px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;border-bottom:1px solid var(--line)}
+.pair .yes.h{color:var(--accent);background:var(--accent-soft)}
+.pair .no.h{color:var(--no);background:var(--no-soft)}
+.pair .row{border-top:1px solid var(--line)}
+.pair .row:nth-child(-n+4){border-top:0}
+.pair .no{border-left:1px solid var(--line)}
+.pair .no:not(.h){color:var(--muted)}
+.pair .no:not(.h) s{text-decoration-color:var(--no)}
+.quote{font-size:15px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.quote .lbl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.quote.no .lbl{color:var(--no)} .quote.yes .lbl{color:var(--accent)}
+.money{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ref{display:flex;flex-direction:column;gap:2px}
+.ref b{font-family:var(--display)}
+.ref span{color:var(--muted);font-size:15px}
+.q{border-left:3px solid var(--accent);padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:4px}
+.q .rec{color:var(--muted);font-size:15px}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);vertical-align:2px}
+footer{color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:520px){.pair{grid-template-columns:1fr}.pair .no{border-left:0}.pair .row,.pair .row:nth-child(-n+4){border-top:1px solid var(--line)}}
+</style>
+
+<main>
+<header>
+  <span class="kicker">Etapa 1 de 7 · Briefing de marca e produto</span>
+  <h1>B&amp;P Finanças</h1>
+  <p class="lede">O caderno de contas da casa do Pedro e da Bruna: quanto cada um gastou, quanto cada pessoa deve no cartão, e a calma de saber que os números batem.</p>
+</header>
+
+<section>
+  <h2><span class="n">1</span>Propósito</h2>
+  <p>Hoje, todo vencimento de fatura vira uma conta manual, item por item, para descobrir quanto o Pedro, a Eliete e a Lucimar devem à Bruna. Ao mesmo tempo, o casal perdeu a noção dos próprios gastos e convive com dívidas sem saber quando termina cada uma.</p>
+  <p>O B&amp;P Finanças existe para devolver o controle sem dar trabalho. Primeiro, o fechamento do cartão: importar a fatura, marcar de quem é cada linha, mandar o resumo no WhatsApp. Depois, enxergar a vida financeira do casal e de cada um, e sair do aperto aos poucos.</p>
+  <div class="card">
+    <h3>O que o app precisa provar logo de cara</h3>
+    <p>Que <b>“Lucimar: <span class="money">R$ 206,40</span>”</b> é um número em que dá para confiar, porque cada centavo tem explicação a um toque de distância: a loja, a parcela, quanto falta.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">2</span>Quem usa, e onde</h2>
+  <div class="grid2">
+    <div class="card"><h3>Pedro e Bruna</h3><p>Os únicos com login. Quase sempre no celular, com uma mão, com pressa: lançar uma compra na fila do mercado, conferir a fatura no sofá, mandar o resumo para as mães no domingo à noite.</p></div>
+    <div class="card"><h3>Eliete e Lucimar</h3><p>Nunca abrem o app. Para elas, o produto é <b>a mensagem do WhatsApp</b>: precisa ser clara, gentil e conferível, no formato combinado (§5.3).</p></div>
+  </div>
+  <p>A Bruna é quem mais usa o fechamento: é titular dos cartões, recebe os Pix e marca as linhas. O Pedro lança muito e confere a própria parte. Nenhum dos dois é da área financeira, e o app não pode exigir que sejam.</p>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Personalidade</h2>
+  <p>Calma, controle e confiança. Nunca culpa nem bronca. Se o app fosse uma pessoa, seria aquele parente que é bom com números: organizado, direto, que não faz drama quando a conta aperta e explica sem tratar ninguém como criança.</p>
+  <div class="grid2">
+    <div class="card trait"><b>Sereno</b><span>Fala baixo. Cor forte e alerta só quando algo pede ação de verdade.</span></div>
+    <div class="card trait"><b>Exato</b><span>Valores certos ao centavo, alinhados, que não “pulam” na tela. Nada é arredondado sem avisar.</span></div>
+    <div class="card trait"><b>Da casa</b><span>Feito para uma família, não para um banco. Chama as pessoas pelo nome.</span></div>
+    <div class="card trait"><b>Transparente</b><span>Nada acontece em silêncio: o app mostra antes de gravar e deixa desfazer.</span></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Tom de voz</h2>
+  <p>Frases curtas, em português do dia a dia, com o número e o nome no lugar de adjetivos. Constata o fato e mostra o próximo passo, sem julgar.</p>
+  <div class="grid2">
+    <div class="quote no"><span class="lbl">Evitar</span>Atenção! Você estourou o orçamento de Mercado.</div>
+    <div class="quote yes"><span class="lbl">Usar</span>Mercado: <span class="money">R$ 820</span> de <span class="money">R$ 800</span> este mês.</div>
+    <div class="quote no"><span class="lbl">Evitar</span>Lucimar está inadimplente há 5 dias.</div>
+    <div class="quote yes"><span class="lbl">Usar</span>Lucimar · falta <span class="money">R$ 6,40</span> · venceu dia 10</div>
+    <div class="quote no"><span class="lbl">Evitar</span>Erro ao processar arquivo.</div>
+    <div class="quote yes"><span class="lbl">Usar</span>Não reconheci as colunas deste arquivo. Mostre qual é a data, a descrição e o valor.</div>
+    <div class="quote no"><span class="lbl">Evitar</span>Parabéns!! 🎉 Você está arrasando nas finanças!</div>
+    <div class="quote yes"><span class="lbl">Usar</span>Todas as 47 linhas têm dono. Os resumos estão prontos.</div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Palavras nas telas</h2>
+  <div class="pair">
+    <div class="yes h">Usamos</div><div class="no h">Não usamos</div>
+    <div class="yes row">fatura, fechamento, parcela 3/10</div><div class="no row"><s>transação, débito/crédito</s> (termos de banco)</div>
+    <div class="yes row">sem dono</div><div class="no row"><s>não categorizado, pendente de atribuição</s></div>
+    <div class="yes row">falta pagar, a receber, pago</div><div class="no row"><s>devedor, inadimplente, em atraso!</s></div>
+    <div class="yes row">sobra do mês</div><div class="no row"><s>saldo líquido, resultado</s></div>
+    <div class="yes row">Casal, Pessoal</div><div class="no row"><s>conta conjunta, centro de custo</s></div>
+    <div class="yes row">lançar, conferir, importar</div><div class="no row"><s>registrar transação, sincronizar</s></div>
+    <div class="yes row">Pedro, Bruna, Eliete, Lucimar</div><div class="no row"><s>usuário, participante, titular</s> (só por dentro do sistema)</div>
+    <div class="yes row">“venceu dia 10”</div><div class="no row"><s>alerta, cuidado, urgente</s></div>
+    <div class="yes row">início, cartões, mais</div><div class="no row"><s>dashboard, insights, otimizar</s></div>
+  </div>
+  <p>Emojis só dentro da mensagem do WhatsApp (o 💳 e o 📄 do modelo combinado). Nas telas do app, ícones desenhados.</p>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Referências que inspiram</h2>
+  <div class="grid2">
+    <div class="card ref"><b>Carteira da Apple</b><span>Cartões como objetos físicos, com cor e peso. Clareza total sobre o que é cada coisa.</span></div>
+    <div class="card ref"><b>Things 3</b><span>Calma, espaço, poucos elementos por tela, gestos que respondem na hora.</span></div>
+    <div class="card ref"><b>Copilot Money</b><span>Finanças pessoais com acabamento de produto bom, sem cara de banco.</span></div>
+    <div class="card ref"><b>Tom do Monzo</b><span>Escrita humana e direta sobre dinheiro, sem jargão e sem susto.</span></div>
+    <div class="card ref"><b>A caderneta da casa</b><span>O caderno onde se anota quem deve o quê: simples, legível, confiável. A referência fora das telas.</span></div>
+    <div class="card ref"><b>Extrato bem diagramado</b><span>Colunas de valores alinhadas pela vírgula, datas curtas, hierarquia por peso e não por cor.</span></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">7</span>O que evitar</h2>
+  <ul>
+    <li><b>Cara de “dashboard de IA”:</b> fundo escuro com brilho neon, vidro fosco, gradiente roxo-azul, cartões arredondados todos iguais.</li>
+    <li><b>O padrão óbvio de app financeiro:</b> azul de banco, verde de “lucro”, vermelho de alerta e um gráfico de rosca na abertura. É o que todo app da categoria entrega, e é exatamente o que a busca de referências do ui-ux-pro-max sugere por padrão.</li>
+    <li><b>Gráfico demais:</b> gráfico só quando responde uma pergunta (“quando ficamos livres?”). Na maioria das telas, uma lista bem feita resolve melhor.</li>
+    <li><b>Vermelho para tudo:</b> saída de dinheiro não é erro. Vermelho fica reservado para o que exige ação.</li>
+    <li><b>Gamificação:</b> sequências, medalhas, confete, “parabéns” a cada toque.</li>
+    <li><b>Culpa e sermão:</b> nada de mensagens que façam alguém se sentir mal por gastar.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">8</span>Princípios de produto</h2>
+  <div class="grid2">
+    <div class="card"><h3>Todo número se explica</h3><p>Qualquer total se abre com um toque, mostrando o que o compõe.</p></div>
+    <div class="card"><h3>Feito para o polegar</h3><p>Lançar uma compra em poucos toques e poucos segundos. Ações principais na metade de baixo da tela.</p></div>
+    <div class="card"><h3>Nada em silêncio</h3><p>Pré-visualização antes de gravar. Confirmação ou desfazer em toda ação que apaga.</p></div>
+    <div class="card"><h3>A fatura manda</h3><p>O arquivo do banco é a palavra final; o app só ajuda a organizar e explicar.</p></div>
+    <div class="card"><h3>Cor é informação rara</h3><p>Cada pessoa tem sua cor fixa. Cores de estado aparecem pouco, sempre junto de texto ou ícone.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">9</span>Como saberemos que deu certo</h2>
+  <ul>
+    <li>A Bruna fecha a fatura do mês (importar, marcar, enviar) numa sentada curta, sem calculadora.</li>
+    <li>Os totais de Pedro, Eliete e Lucimar batem com a soma manual, sempre.</li>
+    <li>Lançar uma compra parcelada no mercado leva menos de 10 segundos.</li>
+    <li>Ninguém fica com medo de abrir o app.</li>
+  </ul>
+</section>
+
+<footer>Feito com as skills impeccable (processo e briefing) e ui-ux-pro-max (padrões da categoria, para saber o que evitar). Rascunho para aprovação do Pedro · 28/10/2026.</footer>
+</main>

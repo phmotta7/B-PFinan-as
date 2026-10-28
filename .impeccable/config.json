@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "design/briefing.html"
+        ],
+        "createdAt": "2026-10-28T21:28:55.124Z",
+        "reason": "Claude: falso positivo; o detector cruza as cores do tema escuro (#6cc2ad, #9aa6a1) com o fundo branco do tema claro; cada tema foi conferido em separado"
+      }
+    ]
+  }
+}
