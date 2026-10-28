@@ -608,3 +608,14 @@ Os arquivos reais de fatura/extrato (com valores e nomes alterados) virarão **c
 | R1 | Pausa do Supabase gratuito após 7 dias sem uso | App indisponível até reativar | Uso semanal natural; reativação em um clique. |
 | R2 | Mudança de layout de arquivo pelo banco | Importação quebra | Pré-visualização impede gravação errada; testes com arquivos reais; CSV genérico como fallback. |
 | R3 | Esforço de marcação manual todo mês (sem regra automática) | Adoção | Seleção em massa, lançamento manual prévio e parcelas já atribuídas reduzem a marcação a poucas linhas. |
+
+### 19.1 Decisões tomadas no início do desenvolvimento (28/10/2026)
+| # | Decisão | Afeta |
+|---|---|---|
+| D1 | **Fatura de destino na importação**: o usuário confirma qual fatura o arquivo representa (o app sugere pelas datas) e **todas** as linhas do arquivo entram nela. A regra de corte por data (RN-CA-02) vale só para lançamentos manuais. | §4.4, RN-CO-01 |
+| D2 | **Encargos na mensagem**: IOF, anuidade, juros, multa e ajustes aparecem como linha simples no formato à vista, com o nome do encargo (ex.: `• IOF Amazon – R$ 3,21 (12/10)`, `• Anuidade – R$ 25,00 (03/11)`); o IOF vem logo abaixo da compra a que se liga. | §5.3 |
+| D3 | **Resumo com linhas sem dono**: pode ser gerado e enviado, com aviso visível ("3 linhas desta fatura ainda sem dono, o total pode mudar"). | §5.4 |
+| D4 | **Categoria**: obrigatória só quando o pagador é Pedro ou Bruna; opcional para Eliete e Lucimar. Uma linha é "sem dono" apenas quando falta o pagador. | §4.6 |
+| D5 | **Data de parcela sem série conhecida**: a mensagem usa a data que vier no arquivo. Revisar quando houver fatura real do Nubank (V1). | RN-WA-02, V1 |
+| D6 | **Escopo padrão**: ao escolher Pedro ou Bruna, vem "Pessoal" na primeira vez; depois, repete o último escopo usado por aquela pessoa. | §4.3, T7 |
+| D7 | **Data de fechamento da fatura**: é o dia de fechamento mais recente antes do vencimento, mesmo que caia no mês anterior (ex.: fecha 28, vence 5 → Fatura Nov/26 fecha 28/10). | RN-CA-01 |
