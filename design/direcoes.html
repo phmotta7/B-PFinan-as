@@ -1,0 +1,453 @@
+<title>Direções visuais B&amp;P</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=Figtree:wght@400;500;600;700;800&family=Spectral:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: página de comparação; cada direção é uma faixa com tese à esquerda e dois celulares (Início, Fatura) lado a lado, empilhando no celular */
+:root{
+  --bg:#eef0ee; --fg:#191d1b; --muted:#4d5753; --line:#d5dad7; --panel:#ffffff;
+  --p:#0b6fb0; --b:#b4447f; --e:#0b8a66; --l:#b86e00;
+  --ui:"Public Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#131615;--fg:#e7ebe9;--muted:#a2ada8;--line:#2c3431;--panel:#1b201e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#131615;--fg:#e7ebe9;--muted:#a2ada8;--line:#2c3431;--panel:#1b201e;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--ui);margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:64px}
+h1,h2{margin:0;text-wrap:balance;line-height:1.15}
+h1{font-size:clamp(30px,5vw,44px);letter-spacing:-.02em}
+.intro{display:flex;flex-direction:column;gap:12px;max-width:68ch}
+.intro p{margin:0;color:var(--muted)}
+.dir{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:32px;align-items:start;border-top:1px solid var(--line);padding-top:32px}
+.about{display:flex;flex-direction:column;gap:14px;position:sticky;top:max(16px,env(safe-area-inset-top,0px))}
+.about h2{font-size:30px;letter-spacing:-.015em}
+.about .thesis{font-size:18px;margin:0}
+.about dl{margin:0;display:flex;flex-direction:column;gap:10px}
+.about dt{font-size:13px;font-weight:700;color:var(--muted)}
+.about dd{margin:0;font-size:15px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips i{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);display:block}
+.raises{margin:0;padding-left:1.1em;font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.badge{align-self:flex-start;font-size:13px;font-weight:700;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--panel)}
+.phones{display:flex;gap:24px;flex-wrap:wrap}
+.cap{font-size:13px;color:var(--muted);font-weight:600;margin:0 0 8px}
+.phonewrap{flex:0 1 390px;min-width:0}
+.phone{width:100%;max-width:390px;height:800px;border-radius:44px;padding:10px;background:#0d0f0e;box-shadow:0 18px 40px -18px rgba(0,0,0,.45)}
+.scr{position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;display:flex;flex-direction:column}
+.note{color:var(--muted);font-size:15px;max-width:68ch;margin:0}
+.ico{width:22px;height:22px;flex:none}
+.num{font-variant-numeric:tabular-nums lining-nums}
+/* Quiet person tag shared: initial + name; color never alone */
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;white-space:nowrap}
+.tag b{width:18px;height:18px;border-radius:50%;display:inline-grid;place-items:center;font-size:10px;color:#fff}
+.tag.p b{background:var(--p)} .tag.b b{background:var(--b)} .tag.e b{background:var(--e)} .tag.l b{background:var(--l)}
+.tag.x b{background:transparent;border:1.5px dashed currentColor;color:inherit}
+
+/* ===================== A · FOLHINHA ===================== */
+.A{--ink:#141414;--paper:#f6f6f3;--leaf:#ffffff;--print:#1d3fa8;--printd:#14307f;--sun:#c41d2e;--rule:#dcdcd6;--soft:#5a5a55;
+  font-family:"Barlow", system-ui, sans-serif;color:var(--ink);background:var(--paper)}
+.A .cond{font-family:"Barlow Condensed", "Barlow", sans-serif}
+.A .band{background:var(--print);color:#fff;padding:52px 18px 14px;display:flex;flex-direction:column;gap:10px}
+.A .band .top{display:flex;justify-content:space-between;align-items:baseline}
+.A .band h3{margin:0;font:700 30px/1 "Barlow Condensed";letter-spacing:.01em;text-transform:uppercase}
+.A .band small{font-size:13px;color:#d6defa;font-weight:500}
+.A .month{display:grid;grid-template-columns:repeat(15,1fr);gap:2px;background:rgba(255,255,255,.14);padding:6px;border-radius:6px}
+.A .month span{font:600 13px/1 "Barlow Condensed";text-align:center;padding:5px 0 4px;color:#e6ebfb;border-radius:3px;position:relative}
+.A .month span.sun{color:#ffb3ba}
+.A .month span.close{background:#fff;color:var(--print)}
+.A .month span.due{background:var(--sun);color:#fff}
+.A .month span.today{outline:1.5px solid #fff;outline-offset:-1.5px}
+.A .legend{display:flex;gap:12px;font-size:12px;color:#d6defa}
+.A .legend em{font-style:normal;display:inline-flex;align-items:center;gap:5px}
+.A .legend em::before{content:"";width:10px;height:10px;border-radius:2px;background:#fff}
+.A .legend em.d::before{background:var(--sun)}
+.A .body{flex:1;overflow:hidden;padding:14px 14px 0;display:flex;flex-direction:column;gap:14px}
+.A .sec{font:700 15px/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--soft);margin:2px 2px 0}
+.A .card{background:var(--leaf);border:1px solid var(--rule);border-radius:6px;display:flex;align-items:stretch}
+.A .leafd{width:62px;flex:none;border-right:1px dashed var(--rule);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0}
+.A .leafd b{font:700 34px/0.9 "Barlow Condensed";}
+.A .leafd b.due{color:var(--sun)}
+.A .leafd span{font:600 11px/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--soft);margin-top:3px}
+.A .cinfo{flex:1;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.A .cinfo .r1{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.A .cinfo .nm{font-weight:600;font-size:15px}
+.A .cinfo .v{font:600 22px/1 "Barlow Condensed"}
+.A .cinfo .st{font-size:13px;color:var(--soft)}
+.A .pend{background:var(--leaf);border:1px solid var(--rule);border-radius:6px}
+.A .pend > div{display:flex;align-items:center;gap:10px;padding:11px 12px;border-top:1px solid var(--rule);min-height:52px}
+.A .pend > div:first-child{border-top:0}
+.A .pend .t{flex:1;min-width:0;font-size:14px;line-height:1.3}
+.A .pend .t b{display:block;font-size:15px}
+.A .pend .go{font-weight:600;font-size:14px;color:var(--print)}
+.A .dot{width:8px;height:8px;border-radius:50%;background:var(--print);flex:none}
+.A .tabbar{position:absolute;inset:auto 0 0 0;height:80px;background:var(--leaf);border-top:1px solid var(--rule);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px 22px}
+.A .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--soft)}
+.A .tabbar a.on{color:var(--print)}
+.A .tabbar a.add span.plus{width:44px;height:36px;border-radius:8px;background:var(--print);color:#fff;display:grid;place-items:center}
+/* fatura A */
+.A .fhead{background:var(--print);color:#fff;padding:50px 16px 12px;display:flex;flex-direction:column;gap:8px}
+.A .fhead .nav{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:#d6defa}
+.A .fhead .mo{display:flex;align-items:baseline;gap:10px}
+.A .fhead .mo h3{margin:0;font:700 28px/1 "Barlow Condensed";text-transform:uppercase}
+.A .fhead .tot{display:flex;justify-content:space-between;align-items:flex-end}
+.A .fhead .tot b{font:700 36px/1 "Barlow Condensed"}
+.A .fhead .tot span{font-size:13px;color:#d6defa;text-align:right}
+.A .split{display:flex;height:8px;border-radius:2px;overflow:hidden;gap:2px}
+.A .split i{display:block}
+.A .ppl{display:flex;gap:6px;overflow:hidden;padding:10px 14px 4px}
+.A .pp{flex:none;border:1px solid var(--rule);background:var(--leaf);border-radius:6px;padding:6px 8px;display:flex;flex-direction:column;gap:2px}
+.A .pp .v{font:600 16px/1 "Barlow Condensed"}
+.A .pp.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.A .count{padding:6px 16px 8px;font-size:13px;color:var(--soft);display:flex;justify-content:space-between}
+.A .count b{color:var(--ink)}
+.A .rows{flex:1;overflow:hidden;padding:0 14px}
+.A .day{display:grid;grid-template-columns:44px 1fr;border-top:1px solid var(--rule)}
+.A .day > .dn{font:700 24px/1 "Barlow Condensed";padding-top:10px;color:var(--ink)}
+.A .day > .dn small{display:block;font-size:11px;letter-spacing:.06em;color:var(--soft);font-weight:600}
+.A .ln{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;padding:9px 0;min-height:50px;border-top:1px solid #ececea}
+.A .day .ln:first-of-type{border-top:0}
+.A .ln .ck{width:20px;height:20px;border:1.5px solid #9a9a94;border-radius:4px}
+.A .ln.sel{background:#eef2fd;margin:0 -6px;padding-inline:6px;border-radius:4px}
+.A .ln.sel .ck{background:var(--print);border-color:var(--print)}
+.A .ln .d1{font-weight:600;font-size:14px;line-height:1.2}
+.A .ln .d2{font-size:12px;color:var(--soft);margin-top:2px;display:flex;gap:8px;align-items:center}
+.A .ln .vv{font:600 18px/1 "Barlow Condensed";text-align:right}
+.A .bulk{position:absolute;left:10px;right:10px;bottom:88px;background:var(--ink);color:#fff;border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;font-size:14px}
+.A .bulk b{flex:1}
+.A .bulk a{background:#fff;color:var(--ink);font-weight:600;padding:7px 10px;border-radius:6px;font-size:13px}
+
+/* ===================== B · SUPERFÍCIE DA CASA ===================== */
+.B{--ground:#f1efeb;--card:#ffffff;--ink:#1c1b19;--soft:#625f58;--rule:#e7e4de;--act:#2d47d6;--actsoft:#e8ebfb;
+  font-family:"Figtree", system-ui, sans-serif;color:var(--ink);background:var(--ground)}
+.B .hd{padding:54px 20px 6px;display:flex;flex-direction:column;gap:2px}
+.B .hd small{font-size:14px;color:var(--soft);font-weight:500}
+.B .hd h3{margin:0;font-size:30px;font-weight:800;letter-spacing:-.02em}
+.B .body{flex:1;overflow:hidden;padding:10px 14px 0;display:flex;flex-direction:column;gap:12px}
+.B .c{background:var(--card);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(40,30,10,.05)}
+.B .c h4{margin:0;font-size:13px;font-weight:700;color:var(--soft)}
+.B .big{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.B .big .t{font-size:17px;font-weight:700;line-height:1.25}
+.B .big .t span{display:block;font-size:14px;font-weight:500;color:var(--soft)}
+.B .btn{background:var(--act);color:#fff;font-weight:700;font-size:14px;padding:10px 14px;border-radius:999px;white-space:nowrap}
+.B .who{display:flex;flex-direction:column;gap:0}
+.B .who > div{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--rule);min-height:44px}
+.B .who > div:first-child{border-top:0}
+.B .who .v{font-weight:700;font-size:16px}
+.B .cards{display:flex;gap:10px}
+.B .cc{flex:1;border-radius:20px;padding:14px;color:#fff;display:flex;flex-direction:column;gap:14px;min-width:0}
+.B .cc.nu{background:#5b2a86}
+.B .cc.bb{background:#f4d63c;color:#1c1b19}
+.B .cc .n{font-size:13px;font-weight:700;opacity:.9}
+.B .cc .v{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.B .cc .s{font-size:12px;font-weight:500;opacity:.9}
+.B .tabbar{position:absolute;inset:auto 0 0 0;height:82px;background:rgba(255,255,255,.94);border-top:1px solid var(--rule);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px 22px}
+.B .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--soft)}
+.B .tabbar a.on{color:var(--act)}
+.B .tabbar a.add span.plus{width:48px;height:48px;margin-top:-14px;border-radius:50%;background:var(--act);color:#fff;display:grid;place-items:center;box-shadow:0 6px 14px -6px rgba(45,71,214,.6)}
+/* fatura B */
+.B .fh{padding:50px 16px 8px;display:flex;flex-direction:column;gap:10px}
+.B .fh .nav{display:flex;justify-content:space-between;align-items:center}
+.B .fh .nav .back{width:40px;height:40px;border-radius:50%;background:var(--card);display:grid;place-items:center}
+.B .seg{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:999px;padding:4px}
+.B .seg span{padding:6px 12px;border-radius:999px;font-weight:700;font-size:14px}
+.B .seg .on{background:var(--ink);color:#fff}
+.B .tot{background:var(--card);border-radius:22px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.B .tot .r{display:flex;justify-content:space-between;align-items:baseline}
+.B .tot b{font-size:28px;font-weight:800;letter-spacing:-.02em}
+.B .tot small{font-size:13px;color:var(--soft)}
+.B .bar{display:flex;height:10px;border-radius:99px;overflow:hidden;gap:2px}
+.B .filters{display:flex;gap:6px;overflow:hidden;padding:2px 16px 8px}
+.B .filters span{flex:none;padding:7px 12px;border-radius:999px;background:var(--card);font-size:13px;font-weight:600}
+.B .filters .on{background:var(--actsoft);color:var(--act)}
+.B .list{flex:1;overflow:hidden;padding:0 14px}
+.B .grp{background:var(--card);border-radius:20px;padding:4px 12px}
+.B .ln{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:10px 0;min-height:56px;border-top:1px solid var(--rule)}
+.B .ln:first-child{border-top:0}
+.B .ln .ck{width:22px;height:22px;border-radius:50%;border:1.5px solid #b8b4ab}
+.B .ln.sel .ck{background:var(--act);border-color:var(--act)}
+.B .ln .d1{font-weight:700;font-size:15px;line-height:1.2}
+.B .ln .d2{font-size:12px;color:var(--soft);margin-top:3px;display:flex;gap:8px;align-items:center}
+.B .ln .vv{font-weight:700;font-size:15px;text-align:right}
+.B .dh{font-size:12px;font-weight:700;color:var(--soft);padding:10px 4px 6px}
+.B .bulk{position:absolute;left:12px;right:12px;bottom:92px;background:var(--ink);color:#fff;border-radius:22px;padding:10px 10px 10px 16px;display:flex;align-items:center;gap:8px;font-size:14px;box-shadow:0 10px 24px -10px rgba(0,0,0,.5)}
+.B .bulk b{flex:1}
+.B .bulk a{background:var(--act);color:#fff;font-weight:700;padding:8px 12px;border-radius:999px;font-size:13px}
+
+/* ===================== C · CADERNETA ===================== */
+.C{--cover:#1f4a3a;--coverd:#173a2d;--page:#fbfbf9;--ink:#1a1f1c;--soft:#59625e;--rule:#e3e6e2;--pen:#1c3f9e;
+  font-family:"Public Sans", system-ui, sans-serif;color:var(--ink);background:var(--page)}
+.C .val{font-family:"Spectral", Georgia, serif;font-weight:600}
+.C .cv{background:var(--cover);color:#fff;padding:52px 18px 0;display:flex;flex-direction:column;gap:12px}
+.C .cv .r{display:flex;justify-content:space-between;align-items:baseline}
+.C .cv h3{margin:0;font:600 28px/1.1 "Spectral";letter-spacing:-.01em}
+.C .cv small{font-size:13px;color:#c5d8cf}
+.C .idx{display:flex;gap:4px;align-items:flex-end}
+.C .idx span{flex:1;background:var(--coverd);color:#d9e7e0;font-size:12px;font-weight:700;text-align:center;padding:8px 0 7px;border-radius:8px 8px 0 0;border-top:4px solid var(--c)}
+.C .idx span.on{background:var(--page);color:var(--ink);padding-top:11px}
+.C .body{flex:1;overflow:hidden;padding:14px 16px 0;display:flex;flex-direction:column;gap:16px}
+.C .sum{display:flex;flex-direction:column}
+.C .sum .row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--rule);min-height:52px;align-items:center}
+.C .sum .row .s{grid-column:1/-1;font-size:12px;color:var(--soft);margin-top:-2px}
+.C .sum .row .v{font-size:20px}
+.C h4{margin:0;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
+.C .todo{display:flex;flex-direction:column;gap:8px}
+.C .todo > div{display:flex;gap:10px;align-items:center;border:1px solid var(--rule);border-radius:12px;padding:10px 12px;min-height:52px;background:#fff}
+.C .todo .t{flex:1;font-size:14px;line-height:1.3;min-width:0}
+.C .todo .t b{display:block;font-size:15px}
+.C .todo .go{color:var(--pen);font-weight:700;font-size:14px}
+.C .cd{display:flex;gap:10px}
+.C .cd > div{flex:1;border:1px solid var(--rule);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;background:#fff;min-width:0}
+.C .cd .n{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+.C .cd .n i{width:10px;height:10px;border-radius:3px;display:block}
+.C .cd .v{font-size:22px}
+.C .cd .s{font-size:12px;color:var(--soft)}
+.C .tabbar{position:absolute;inset:auto 0 0 0;height:80px;background:#fff;border-top:1px solid var(--rule);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px 22px}
+.C .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--soft)}
+.C .tabbar a.on{color:var(--cover)}
+.C .tabbar a.add span.plus{width:46px;height:36px;border-radius:10px;background:var(--cover);color:#fff;display:grid;place-items:center}
+/* fatura C */
+.C .ftop{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:#c5d8cf}
+.C .ftot{display:flex;justify-content:space-between;align-items:flex-end}
+.C .ftot b{font:600 34px/1 "Spectral"}
+.C .ftot span{font-size:12px;color:#c5d8cf;text-align:right}
+.C .idx span em{display:block;font-style:normal;font-family:"Spectral";font-size:13px;font-weight:600;margin-top:1px}
+.C .count{padding:10px 16px 4px;font-size:13px;color:var(--soft);display:flex;justify-content:space-between;align-items:center}
+.C .count b{color:var(--ink)}
+.C .count .f{display:flex;gap:6px}
+.C .count .f span{border:1px solid var(--rule);border-radius:99px;padding:3px 9px;font-size:12px;font-weight:600;color:var(--ink);background:#fff}
+.C .list{flex:1;overflow:hidden;padding:0 16px}
+.C .ln{display:grid;grid-template-columns:22px 40px 1fr auto;gap:8px;align-items:center;padding:9px 0;min-height:54px;border-bottom:1px solid var(--rule)}
+.C .ln .ck{width:20px;height:20px;border-radius:5px;border:1.5px solid #9aa39f}
+.C .ln.sel{background:#eef1fb;margin:0 -8px;padding-inline:8px}
+.C .ln.sel .ck{background:var(--pen);border-color:var(--pen)}
+.C .ln .dt{font-size:12px;color:var(--soft);font-weight:600;line-height:1.1}
+.C .ln .d1{font-weight:600;font-size:14px;line-height:1.2}
+.C .ln .d2{font-size:12px;color:var(--soft);margin-top:2px;display:flex;gap:8px;align-items:center}
+.C .ln .vv{font-size:17px;text-align:right}
+.C .bulk{position:absolute;left:10px;right:10px;bottom:88px;background:var(--cover);color:#fff;border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;font-size:14px}
+.C .bulk b{flex:1}
+.C .bulk a{background:#fff;color:var(--cover);font-weight:700;padding:7px 10px;border-radius:8px;font-size:13px}
+
+@media (max-width:860px){.dir{grid-template-columns:1fr}.about{position:static}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a1 1 0 0 1-1-1z M4 7l11-3v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="16" cy="13" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="18" cy="12" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div class="wrap">
+<header class="intro">
+  <h1>Três direções para o B&amp;P Finanças</h1>
+  <p>Mesma estrutura nas três (barra inferior Início · Cartões · Lançar · Carteiras · Mais, mesmos dados fictícios do cenário de novembro); muda a sensação: cor, tipografia, densidade e um gesto marcante de cada uma. As telas são de 4 de novembro: a fatura Nubank já foi importada e ainda tem 12 linhas sem dono.</p>
+  <p>Cada pessoa tem cor fixa e sempre vem com a inicial e o nome, para ninguém depender só da cor (inclusive com daltonismo). Os dados são inventados.</p>
+</header>
+
+<!-- ============ A ============ -->
+<section class="dir">
+  <div class="about">
+    <span class="badge">Direção A</span>
+    <h2>Folhinha</h2>
+    <p class="thesis">O calendário de parede da cozinha, aquele que a padaria dá todo ano: o app gira em torno de datas (fecha, vence, termina), então as datas viram o desenho.</p>
+    <dl>
+      <dt>Cores</dt><dd><div class="chips"><i style="background:#1d3fa8"></i><i style="background:#f6f6f3"></i><i style="background:#141414"></i><i style="background:#c41d2e"></i></div></dd>
+      <dt>Tipografia</dt><dd>Números grandes e estreitos (Barlow Condensed), como os dias da folhinha; texto em Barlow.</dd>
+      <dt>Gesto marcante</dt><dd>O mês em faixa no topo, com o dia de fechar em branco e o de vencer em vermelho de domingo. Na fatura, as compras agrupadas pelo dia, com o número grande na margem.</dd>
+      <dt>Densidade</dt><dd>Alta: cabe mais linha por tela, bom para fatura de 200 linhas.</dd>
+      <dt>Risco</dt><dd>O vermelho de domingo só pode marcar vencimento; se escapar para outras coisas, vira cor de alerta.</dd>
+      <dt>Disciplinas trazidas de outras referências</dt>
+      <dd><ul class="raises">
+        <li>Da capa de fita cassete: valores alinhados à direita, colados na margem, e o subtotal fecha a coluna.</li>
+        <li>Do mapa de parque: a cor da pessoa em campo chapado, não em bolinha perdida.</li>
+        <li>Da página de referência: fios finos e colunas de números rigorosas.</li>
+        <li>Do catálogo de streaming: o que está selecionado se destaca, o resto recua.</li>
+      </ul></dd>
+    </dl>
+  </div>
+  <div class="phones">
+    <div class="phonewrap"><p class="cap">Início</p><div class="phone"><div class="scr A">
+      <div class="band">
+        <div class="top"><h3>Novembro 2026</h3><small>Olá, Bruna</small></div>
+        <div class="month" aria-label="Dias de novembro">
+          <span>1</span><span class="sun">2</span><span class="close">3</span><span class="today">4</span><span>5</span><span>6</span><span>7</span><span>8</span><span class="sun">9</span><span class="due">10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+          <span class="sun">16</span><span class="due">17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span class="sun">23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span class="sun">30</span>
+        </div>
+        <div class="legend"><em>fecha</em><em class="d">vence</em><span>hoje: 4</span></div>
+      </div>
+      <div class="body">
+        <p class="sec">Para fazer</p>
+        <div class="pend">
+          <div><i class="dot"></i><div class="t"><b>12 linhas sem dono</b>Nubank · fatura Nov/26</div><span class="go">Marcar</span></div>
+          <div><i class="dot"></i><div class="t"><b>3 resumos de Nov/26 prontos</b>Pedro, Eliete e Lucimar</div><span class="go">Enviar</span></div>
+          <div><i class="dot" style="background:#9a9a94"></i><div class="t"><b>Eliete · falta R$ 20,00</b>fechamento Out/26</div><span class="go">Ver</span></div>
+        </div>
+        <p class="sec">Cartões</p>
+        <div class="card"><div class="leafd"><b class="due">10</b><span>vence</span></div><div class="cinfo"><div class="r1"><span class="nm">Nubank Bruna</span><span class="v num">R$ 2.184,37</span></div><span class="st">Fatura Nov/26 · fechou dia 3 · importada</span></div></div>
+        <div class="card"><div class="leafd"><b>10</b><span>fecha</span></div><div class="cinfo"><div class="r1"><span class="nm">BB Bruna</span><span class="v num">R$ 640,20</span></div><span class="st">Fatura Nov/26 · parcial · vence dia 17</span></div></div>
+      </div>
+      <nav class="tabbar"><a class="on"><svg class="ico"><use href="#i-home"/></svg>Início</a><a><svg class="ico"><use href="#i-card"/></svg>Cartões</a><a class="add"><span class="plus"><svg class="ico"><use href="#i-plus"/></svg></span>Lançar</a><a><svg class="ico"><use href="#i-wallet"/></svg>Carteiras</a><a><svg class="ico"><use href="#i-more"/></svg>Mais</a></nav>
+    </div></div></div>
+
+    <div class="phonewrap"><p class="cap">Fatura</p><div class="phone"><div class="scr A">
+      <div class="fhead">
+        <div class="nav"><span>‹ Cartões</span><span>Importar</span></div>
+        <div class="mo"><svg class="ico"><use href="#i-back"/></svg><h3>Nubank · Nov/26</h3><svg class="ico"><use href="#i-next"/></svg></div>
+        <div class="tot"><b class="num">R$ 2.184,37</b><span>vence 10/11<br>importada · 47 linhas</span></div>
+        <div class="split" aria-hidden="true"><i style="flex:640;background:#5aa9e6"></i><i style="flex:1050;background:#e48bbd"></i><i style="flex:154;background:#4fd1a8"></i><i style="flex:126;background:#f2b04a"></i><i style="flex:214;background:rgba(255,255,255,.35)"></i></div>
+      </div>
+      <div class="ppl">
+        <div class="pp"><span class="tag p"><b>P</b>Pedro</span><span class="v num">R$ 640,30</span></div>
+        <div class="pp"><span class="tag b"><b>B</b>Bruna</span><span class="v num">R$ 1.050,17</span></div>
+        <div class="pp"><span class="tag e"><b>E</b>Eliete</span><span class="v num">R$ 154,00</span></div>
+        <div class="pp"><span class="tag l"><b>L</b>Lucimar</span><span class="v num">R$ 125,90</span></div>
+      </div>
+      <div class="count"><span><b>12 de 47</b> sem dono</span><span>Todas ▾</span></div>
+      <div class="rows">
+        <div class="day"><div class="dn">04<small>OUT</small></div><div>
+          <div class="ln sel"><i class="ck"></i><div><div class="d1">Drogasil</div><div class="d2"><span class="tag x"><b>?</b>sem dono</span></div></div><span class="vv num">R$ 38,90</span></div>
+          <div class="ln"><i class="ck"></i><div><div class="d1">Pão de Açúcar</div><div class="d2"><span class="tag b"><b>B</b>Bruna</span>Casal · Mercado</div></div><span class="vv num">R$ 186,42</span></div>
+        </div></div>
+        <div class="day"><div class="dn">07<small>OUT</small></div><div>
+          <div class="ln"><i class="ck"></i><div><div class="d1">Magazine Luiza · 3/10</div><div class="d2"><span class="tag l"><b>L</b>Lucimar</span>faltam 7x</div></div><span class="vv num">R$ 80,00</span></div>
+        </div></div>
+        <div class="day"><div class="dn">14<small>OUT</small></div><div>
+          <div class="ln"><i class="ck"></i><div><div class="d1">Uber *Trip</div><div class="d2"><span class="tag p"><b>P</b>Pedro</span>Pessoal · Transporte</div></div><span class="vv num">R$ 23,00</span></div>
+        </div></div>
+        <div class="day"><div class="dn">15<small>OUT</small></div><div>
+          <div class="ln"><i class="ck"></i><div><div class="d1">Centauro · 1/3</div><div class="d2"><span class="tag p"><b>P</b>Pedro</span>faltam 2x</div></div><span class="vv num">R$ 100,00</span></div>
+        </div></div>
+        <div class="day"><div class="dn">18<small>OUT</small></div><div>
+          <div class="ln sel"><i class="ck"></i><div><div class="d1">iFood</div><div class="d2"><span class="tag x"><b>?</b>sem dono</span></div></div><span class="vv num">R$ 54,90</span></div>
+        </div></div>
+      </div>
+      <div class="bulk"><b>2 selecionadas</b><a>Atribuir a…</a><a>Categoria</a></div>
+      <nav class="tabbar"><a><svg class="ico"><use href="#i-home"/></svg>Início</a><a class="on"><svg class="ico"><use href="#i-card"/></svg>Cartões</a><a class="add"><span class="plus"><svg class="ico"><use href="#i-plus"/></svg></span>Lançar</a><a><svg class="ico"><use href="#i-wallet"/></svg>Carteiras</a><a><svg class="ico"><use href="#i-more"/></svg>Mais</a></nav>
+    </div></div></div>
+  </div>
+</section>
+
+<!-- ============ B ============ -->
+<section class="dir">
+  <div class="about">
+    <span class="badge">Direção B</span>
+    <h2>Sala de estar</h2>
+    <p class="thesis">Um app de consumo bem acabado, macio e acolhedor: fundo levemente quente, cartões brancos com cantos generosos e uma única cor viva que só aparece onde dá para tocar.</p>
+    <dl>
+      <dt>Cores</dt><dd><div class="chips"><i style="background:#f1efeb"></i><i style="background:#ffffff"></i><i style="background:#1c1b19"></i><i style="background:#2d47d6"></i></div></dd>
+      <dt>Tipografia</dt><dd>Figtree, arredondada e amigável, em tamanhos confortáveis.</dd>
+      <dt>Gesto marcante</dt><dd>Cartões que afundam de leve ao toque (mola, sem quique) e o seletor de pessoa numa folha que sobe de baixo, com quatro botões grandes.</dd>
+      <dt>Densidade</dt><dd>Baixa: muito respiro, menos linhas por tela.</dd>
+      <dt>Risco</dt><dd>É a mais próxima do que outros apps já fazem; o capricho tem que estar nos detalhes, senão fica genérica.</dd>
+    </dl>
+  </div>
+  <div class="phones">
+    <div class="phonewrap"><p class="cap">Início</p><div class="phone"><div class="scr B">
+      <div class="hd"><small>Terça, 4 de novembro</small><h3>Olá, Bruna</h3></div>
+      <div class="body">
+        <div class="c"><div class="big"><div class="t">12 linhas sem dono<span>Nubank · fatura Nov/26</span></div><span class="btn">Marcar</span></div></div>
+        <div class="c"><h4>Resumos de Nov/26</h4><div class="who">
+          <div><span class="tag p"><b>P</b>Pedro</span><span class="v num">R$ 812,40</span></div>
+          <div><span class="tag e"><b>E</b>Eliete</span><span class="v num">R$ 154,00</span></div>
+          <div><span class="tag l"><b>L</b>Lucimar</span><span class="v num">R$ 206,40</span></div>
+        </div><span class="btn" style="align-self:flex-start">Enviar resumos</span></div>
+        <div class="cards">
+          <div class="cc nu"><span class="n">Nubank</span><span class="v num">R$ 2.184,37</span><span class="s">Nov/26 · vence 10/11</span></div>
+          <div class="cc bb"><span class="n">BB</span><span class="v num">R$ 640,20</span><span class="s">parcial · fecha 10/11</span></div>
+        </div>
+        <div class="c"><div class="big"><div class="t" style="font-size:15px">Eliete · falta R$ 20,00<span>fechamento Out/26</span></div></div></div>
+      </div>
+      <nav class="tabbar"><a class="on"><svg class="ico"><use href="#i-home"/></svg>Início</a><a><svg class="ico"><use href="#i-card"/></svg>Cartões</a><a class="add"><span class="plus"><svg class="ico"><use href="#i-plus"/></svg></span>Lançar</a><a><svg class="ico"><use href="#i-wallet"/></svg>Carteiras</a><a><svg class="ico"><use href="#i-more"/></svg>Mais</a></nav>
+    </div></div></div>
+
+    <div class="phonewrap"><p class="cap">Fatura</p><div class="phone"><div class="scr B">
+      <div class="fh">
+        <div class="nav"><span class="back"><svg class="ico"><use href="#i-back"/></svg></span><div class="seg"><span>Out</span><span class="on">Nov/26</span><span>Dez</span></div><span class="back" style="font-weight:700;font-size:13px;width:auto;padding:0 12px;border-radius:99px">Importar</span></div>
+        <div class="tot"><div class="r"><b class="num">R$ 2.184,37</b><small>Nubank · vence 10/11</small></div>
+          <div class="bar" aria-hidden="true"><i style="flex:640;background:var(--p)"></i><i style="flex:1050;background:var(--b)"></i><i style="flex:154;background:var(--e)"></i><i style="flex:126;background:var(--l)"></i><i style="flex:214;background:#d8d4cc"></i></div>
+          <small>12 de 47 linhas sem dono</small></div>
+      </div>
+      <div class="filters"><span class="on">Todas</span><span>Sem dono · 12</span><span>Pedro</span><span>Bruna</span><span>Eliete</span></div>
+      <div class="list">
+        <div class="dh">Outubro</div>
+        <div class="grp">
+          <div class="ln sel"><i class="ck"></i><div><div class="d1">Drogasil</div><div class="d2"><span class="tag x"><b>?</b>sem dono</span>04/10</div></div><span class="vv num">R$ 38,90</span></div>
+          <div class="ln"><i class="ck"></i><div><div class="d1">Pão de Açúcar</div><div class="d2"><span class="tag b"><b>B</b>Bruna</span>Casal · 04/10</div></div><span class="vv num">R$ 186,42</span></div>
+          <div class="ln"><i class="ck"></i><div><div class="d1">Magazine Luiza · 3/10</div><div class="d2"><span class="tag l"><b>L</b>Lucimar</span>faltam 7x</div></div><span class="vv num">R$ 80,00</span></div>
+          <div class="ln"><i class="ck"></i><div><div class="d1">Uber *Trip</div><div class="d2"><span class="tag p"><b>P</b>Pedro</span>Pessoal · 14/10</div></div><span class="vv num">R$ 23,00</span></div>
+          <div class="ln sel"><i class="ck"></i><div><div class="d1">iFood</div><div class="d2"><span class="tag x"><b>?</b>sem dono</span>18/10</div></div><span class="vv num">R$ 54,90</span></div>
+        </div>
+      </div>
+      <div class="bulk"><b>2 selecionadas</b><a>Atribuir a…</a></div>
+      <nav class="tabbar"><a><svg class="ico"><use href="#i-home"/></svg>Início</a><a class="on"><svg class="ico"><use href="#i-card"/></svg>Cartões</a><a class="add"><span class="plus"><svg class="ico"><use href="#i-plus"/></svg></span>Lançar</a><a><svg class="ico"><use href="#i-wallet"/></svg>Carteiras</a><a><svg class="ico"><use href="#i-more"/></svg>Mais</a></nav>
+    </div></div></div>
+  </div>
+</section>
+
+<!-- ============ C ============ -->
+<section class="dir">
+  <div class="about">
+    <span class="badge">Direção C · minha preferida</span>
+    <h2>Caderneta</h2>
+    <p class="thesis">O caderno de contas da casa, de capa verde: cada pessoa tem sua aba colorida no topo, e abrir a aba é ver só a parte dela.</p>
+    <dl>
+      <dt>Cores</dt><dd><div class="chips"><i style="background:#1f4a3a"></i><i style="background:#fbfbf9"></i><i style="background:#1a1f1c"></i><i style="background:#1c3f9e"></i></div></dd>
+      <dt>Tipografia</dt><dd>Valores em Spectral, uma serifa sóbria que dá peso aos números; texto em Public Sans.</dd>
+      <dt>Gesto marcante</dt><dd>As abas de pessoa saem da capa como as divisórias de um caderno; cada aba mostra o total da pessoa e funciona como filtro.</dd>
+      <dt>Densidade</dt><dd>Média: lista enxuta, com a data numa coluna fixa à esquerda.</dd>
+      <dt>Risco</dt><dd>É a leitura mais literal do briefing (“caderno de contas”) e pode soar nostálgica se a serifa e o verde pesarem demais.</dd>
+    </dl>
+  </div>
+  <div class="phones">
+    <div class="phonewrap"><p class="cap">Início</p><div class="phone"><div class="scr C">
+      <div class="cv">
+        <div class="r"><h3>Novembro</h3><small>terça, 4</small></div>
+        <div class="idx"><span class="on" style="--c:#fbfbf9">Casa</span><span style="--c:#4aa3e0">Pedro</span><span style="--c:#e07fb5">Bruna</span><span style="--c:#3ccf9f">Eliete</span><span style="--c:#f0ad3e">Lucimar</span></div>
+      </div>
+      <div class="body">
+        <div class="todo">
+          <div><div class="t"><b>12 linhas sem dono</b>Nubank · fatura Nov/26</div><span class="go">Marcar</span></div>
+          <div><div class="t"><b>Resumos de Nov/26 prontos</b>3 pessoas para avisar</div><span class="go">Enviar</span></div>
+        </div>
+        <div><h4>Quanto cada um deve em Nov/26</h4>
+        <div class="sum">
+          <div class="row"><span class="tag p"><b>P</b>Pedro</span><span class="v val num">R$ 812,40</span><span class="s">inclui empréstimo e Shopee</span></div>
+          <div class="row"><span class="tag e"><b>E</b>Eliete</span><span class="v val num">R$ 154,00</span><span class="s">e ainda falta R$ 20,00 de Out/26</span></div>
+          <div class="row"><span class="tag l"><b>L</b>Lucimar</span><span class="v val num">R$ 206,40</span></div>
+        </div></div>
+        <div class="cd">
+          <div><span class="n"><i style="background:#7a2fb0"></i>Nubank</span><span class="v val num">R$ 2.184,37</span><span class="s">vence 10/11</span></div>
+          <div><span class="n"><i style="background:#e0b400"></i>BB</span><span class="v val num">R$ 640,20</span><span class="s">parcial · fecha 10/11</span></div>
+        </div>
+      </div>
+      <nav class="tabbar"><a class="on"><svg class="ico"><use href="#i-home"/></svg>Início</a><a><svg class="ico"><use href="#i-card"/></svg>Cartões</a><a class="add"><span class="plus"><svg class="ico"><use href="#i-plus"/></svg></span>Lançar</a><a><svg class="ico"><use href="#i-wallet"/></svg>Carteiras</a><a><svg class="ico"><use href="#i-more"/></svg>Mais</a></nav>
+    </div></div></div>
+
+    <div class="phonewrap"><p class="cap">Fatura</p><div class="phone"><div class="scr C">
+      <div class="cv">
+        <div class="ftop"><span>‹ Cartões</span><span>‹ Nov/26 ›</span><span>Importar</span></div>
+        <div class="ftot"><b class="num">R$ 2.184,37</b><span>Nubank · vence 10/11<br>importada · 47 linhas</span></div>
+        <div class="idx"><span class="on" style="--c:#fbfbf9">Todas</span><span style="--c:#4aa3e0">Pedro<em class="num">640</em></span><span style="--c:#e07fb5">Bruna<em class="num">1.050</em></span><span style="--c:#3ccf9f">Eliete<em class="num">154</em></span><span style="--c:#f0ad3e">Lucimar<em class="num">126</em></span></div>
+      </div>
+      <div class="count"><span><b>12 de 47</b> sem dono</span><span class="f"><span>Sem dono</span><span>Parceladas</span></span></div>
+      <div class="list">
+        <div class="ln sel"><i class="ck"></i><span class="dt">04<br>out</span><div><div class="d1">Drogasil</div><div class="d2"><span class="tag x"><b>?</b>sem dono</span></div></div><span class="vv val num">R$ 38,90</span></div>
+        <div class="ln"><i class="ck"></i><span class="dt">04<br>out</span><div><div class="d1">Pão de Açúcar</div><div class="d2"><span class="tag b"><b>B</b>Bruna</span>Casal</div></div><span class="vv val num">R$ 186,42</span></div>
+        <div class="ln"><i class="ck"></i><span class="dt">07<br>out</span><div><div class="d1">Magazine Luiza · 3/10</div><div class="d2"><span class="tag l"><b>L</b>Lucimar</span>faltam 7x</div></div><span class="vv val num">R$ 80,00</span></div>
+        <div class="ln"><i class="ck"></i><span class="dt">14<br>out</span><div><div class="d1">Uber *Trip</div><div class="d2"><span class="tag p"><b>P</b>Pedro</span>Pessoal</div></div><span class="vv val num">R$ 23,00</span></div>
+        <div class="ln"><i class="ck"></i><span class="dt">15<br>out</span><div><div class="d1">Centauro · 1/3</div><div class="d2"><span class="tag p"><b>P</b>Pedro</span>faltam 2x</div></div><span class="vv val num">R$ 100,00</span></div>
+        <div class="ln sel"><i class="ck"></i><span class="dt">18<br>out</span><div><div class="d1">iFood</div><div class="d2"><span class="tag x"><b>?</b>sem dono</span></div></div><span class="vv val num">R$ 54,90</span></div>
+      </div>
+      <div class="bulk"><b>2 selecionadas</b><a>Atribuir a…</a><a>Categoria</a></div>
+      <nav class="tabbar"><a><svg class="ico"><use href="#i-home"/></svg>Início</a><a class="on"><svg class="ico"><use href="#i-card"/></svg>Cartões</a><a class="add"><span class="plus"><svg class="ico"><use href="#i-plus"/></svg></span>Lançar</a><a><svg class="ico"><use href="#i-wallet"/></svg>Carteiras</a><a><svg class="ico"><use href="#i-more"/></svg>Mais</a></nav>
+    </div></div></div>
+  </div>
+</section>
+
+<p class="note">Se nenhuma das três agradar, há sempre a saída do padrão da categoria: o visual que os apps de banco e finanças já usam, executado com capricho. Também dá para misturar (por exemplo, a faixa do mês da Folhinha com as abas da Caderneta). Todas ganham modo escuro no design system.</p>
+</div>
