@@ -1,0 +1,115 @@
+/* B&P Finanças · tokens do design system (direção "Sala de estar")
+   Fonte da verdade para o app: o Next.js importa este arquivo em globals.css. */
+
+:root{
+  /* Superfícies */
+  --chao:#f1efeb;            /* fundo do app, papel quente */
+  --cartao:#ffffff;          /* cartões e linhas */
+  --elevado:#ffffff;         /* folhas e diálogos */
+  --vidro:rgba(255,255,255,.82);
+  --linha:#e4e0d8;           /* divisórias finas */
+  --linha-forte:#cfcac0;     /* bordas de campo */
+  --veu:rgba(28,27,25,.32);  /* escurece o fundo atrás de folha/diálogo */
+
+  /* Texto */
+  --tinta:#1c1b19;
+  --suave:#5b574f;           /* 7,2:1 no cartão, 6,3:1 no chão */
+  --apagado:#6e6962;         /* 4,8:1 no chão, 5,5:1 no cartão; só texto de apoio */
+  --no-acao:#ffffff;
+
+  /* Ação: a única cor de interface */
+  --acao:#2d47d6;
+  --acao-forte:#2338b0;      /* pressionado */
+  --acao-texto:#2d47d6;      /* links e ícones ativos */
+  --acao-leve:#e9ecfd;       /* fundo de item selecionado */
+  --foco:#2d47d6;
+
+  /* Significado (sempre com palavra ou ícone junto) */
+  --ok:#1f7a4d;     --ok-leve:#e3f3ea;        /* pago, conferido */
+  --atencao:#8a5a00; --atencao-leve:#fdf1d8;  /* sem dono, falta pagar, parcial */
+  --erro:#b3261e;   --erro-leve:#fde8e6;      /* arquivo inválido, falha */
+  --no-erro:#ffffff;                          /* texto sobre o vermelho cheio */
+
+  /* Superfície invertida: aviso com Desfazer */
+  --inverso:#1c1b19; --no-inverso:#f4f2ee; --acao-inverso:#aebaff;
+
+  /* Pessoas: cor fixa, sempre com inicial e nome. Testadas para daltonismo
+     (distância mínima ΔE 26 em protanopia, deuteranopia e tritanopia). */
+  --pedro:#56b4e9;   --pedro-tinta:#1c1b19;
+  --bruna:#bd4a87;   --bruna-tinta:#ffffff;
+  --eliete:#054836;  --eliete-tinta:#ffffff;
+  --lucimar:#e69f00; --lucimar-tinta:#1c1b19;
+  --sem-dono:#6e6962;
+  --anel-pessoa:transparent;
+
+  /* Bancos (cor do cartão na tela de Cartões) */
+  --nubank:#820ad1; --bb:#fcf000; --bb-tinta:#2a3a8f;
+
+  /* Tipo */
+  --fonte:"Figtree", "Segoe UI", system-ui, sans-serif;
+  --t-mes:800 32px/1.1 var(--fonte);        /* título da tela */
+  --t-valor:800 34px/1.05 var(--fonte);     /* total da fatura */
+  --t-titulo:700 20px/1.25 var(--fonte);
+  --t-forte:700 17px/1.3 var(--fonte);
+  --t-corpo:500 16px/1.45 var(--fonte);
+  --t-apoio:500 14px/1.4 var(--fonte);
+  --t-rotulo:700 13px/1.3 var(--fonte);
+  --t-mini:600 12px/1.3 var(--fonte);
+  --aperto-grande:-.02em;                   /* só em 28px ou mais */
+  --aperto-medio:-.01em;
+
+  /* Espaço (base 4) */
+  --e1:4px; --e2:8px; --e3:12px; --e4:16px; --e5:20px; --e6:24px; --e8:32px; --e10:40px;
+  --margem:16px;              /* margem lateral no celular */
+  --alvo:44px;                /* menor alvo de toque */
+
+  /* Raios */
+  --r-pequeno:8px; --r-campo:14px; --r-bloco:16px; --r-cartao:22px; --r-folha:28px; --r-pilula:999px;
+
+  /* Sombras (sempre com deslocamento e desfoque) */
+  --s-cartao:0 1px 2px rgba(40,30,10,.06), 0 0 0 1px rgba(40,30,10,.03);
+  --s-elevado:0 10px 30px -10px rgba(40,30,10,.22), 0 2px 6px -2px rgba(40,30,10,.08);
+  --s-folha:0 -10px 40px -12px rgba(40,30,10,.28);
+  --s-acao:0 6px 14px -6px rgba(45,71,214,.6);
+
+  /* Movimento */
+  --ease-saida:cubic-bezier(.22,1,.36,1);   /* entrada de coisas; rápida no começo */
+  --ease-troca:cubic-bezier(.65,0,.35,1);   /* algo que já está na tela muda de lugar */
+  --d-toque:100ms;  --d-cor:160ms;  --d-curta:220ms;  --d-folha:340ms;
+  /* Mola criticamente amortecida (resposta 0,34s), para CSS; o JS usa a mola de verdade */
+  --mola:linear(0,.1407,.3776,.5855,.7374,.8391,.9037,.9434,.9672,.9812,.9893,.994,.9966,.9981,.999,.9994,1);
+  --aperto-toque:.97;
+
+  color-scheme:light;
+}
+
+/* Escuro: noite em casa, sem preto puro */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --chao:#141519; --cartao:#1e2025; --elevado:#26282e; --vidro:rgba(30,32,37,.82);
+    --linha:#2e3036; --linha-forte:#43464e; --veu:rgba(0,0,0,.5);
+    --tinta:#eceae6; --suave:#aaa59c; --apagado:#9a958d;
+    --acao:#3d57e6; --acao-forte:#2f48cc; --acao-texto:#8c9cff; --acao-leve:#252b4d; --foco:#8c9cff;
+    --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#3a2e15; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#141519; --inverso:#eceae6; --no-inverso:#141519; --acao-inverso:#2d47d6;
+    --sem-dono:#9a958d; --anel-pessoa:rgba(255,255,255,.22); --s-acao:0 6px 14px -6px rgba(0,0,0,.6);
+    --s-cartao:0 1px 2px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.04);
+    --s-elevado:0 12px 32px -10px rgba(0,0,0,.6);
+    --s-folha:0 -10px 40px -12px rgba(0,0,0,.7);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --chao:#141519; --cartao:#1e2025; --elevado:#26282e; --vidro:rgba(30,32,37,.82);
+  --linha:#2e3036; --linha-forte:#43464e; --veu:rgba(0,0,0,.5);
+  --tinta:#eceae6; --suave:#aaa59c; --apagado:#9a958d;
+  --acao:#3d57e6; --acao-forte:#2f48cc; --acao-texto:#8c9cff; --acao-leve:#252b4d; --foco:#8c9cff;
+  --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#3a2e15; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#141519; --inverso:#eceae6; --no-inverso:#141519; --acao-inverso:#2d47d6;
+  --sem-dono:#9a958d; --anel-pessoa:rgba(255,255,255,.22); --s-acao:0 6px 14px -6px rgba(0,0,0,.6);
+  --s-cartao:0 1px 2px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.04);
+  --s-elevado:0 12px 32px -10px rgba(0,0,0,.6);
+  --s-folha:0 -10px 40px -12px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+
+@media (prefers-reduced-transparency: reduce){ :root{ --vidro:var(--cartao); } }
+@media (prefers-contrast: more){ :root{ --linha:var(--linha-forte); --suave:var(--tinta); } }

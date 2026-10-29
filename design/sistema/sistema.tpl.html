@@ -1,0 +1,717 @@
+<title>Design system B&amp;P</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800&display=swap">
+<style>
+/*TOKENS*/
+
+/* Layout: mostruário em uma coluna larga; cada seção tem explicação à esquerda e exemplos à direita (empilha no celular). Componentes são mostrados na largura de celular. */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--chao);color:var(--tinta);font:var(--t-corpo);padding:0 var(--margem) 120px;
+  -webkit-tap-highlight-color:transparent}
+::selection{background:var(--acao-leve);color:var(--tinta)}
+:focus-visible{outline:2.5px solid var(--foco);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums lining-nums}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+.topo{position:sticky;top:0;z-index:20;margin:0 calc(var(--margem) * -1);padding:12px var(--margem);
+  background:var(--vidro);backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.topo .marca{display:flex;align-items:center;gap:10px;font:var(--t-forte)}
+.topo .marca svg{width:30px;height:30px;flex:none}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:64px;padding-top:32px}
+.abertura{display:flex;flex-direction:column;gap:12px;max-width:62ch}
+.abertura h1{font:var(--t-mes);font-size:clamp(32px,6vw,44px);letter-spacing:var(--aperto-grande)}
+.abertura p{color:var(--suave)}
+.sec{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:32px;align-items:start}
+.sec > .txt{display:flex;flex-direction:column;gap:10px;position:sticky;top:76px}
+.sec > .txt h2{font:var(--t-titulo);font-size:24px;letter-spacing:var(--aperto-medio)}
+.sec > .txt p,.sec > .txt li{color:var(--suave);font:var(--t-apoio)}
+.sec > .txt ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:6px}
+.ex{display:flex;flex-direction:column;gap:20px;min-width:0}
+.rot{font:var(--t-rotulo);color:var(--suave)}
+.fila{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.cel{max-width:400px;width:100%}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:16px}.sec > .txt{position:static}}
+
+/* Amostras de cor */
+.amostras{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.am{background:var(--cartao);border-radius:var(--r-bloco);box-shadow:var(--s-cartao);overflow:hidden;display:flex;flex-direction:column}
+.am i{height:56px;display:block;border-bottom:1px solid var(--linha)}
+.am div{padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.am b{font:var(--t-rotulo)}
+.am small{font:var(--t-mini);color:var(--suave)}
+
+/* Selo de pessoa */
+.selo{display:inline-flex;align-items:center;gap:6px;font:var(--t-mini);font-size:13px;white-space:nowrap;color:var(--tinta)}
+.selo b{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font:800 11px/1 var(--fonte);box-shadow:0 0 0 1.5px var(--anel-pessoa)}
+.selo.p b{background:var(--pedro);color:var(--pedro-tinta)}
+.selo.b b{background:var(--bruna);color:var(--bruna-tinta)}
+.selo.e b{background:var(--eliete);color:var(--eliete-tinta)}
+.selo.l b{background:var(--lucimar);color:var(--lucimar-tinta)}
+.selo.x{color:var(--atencao)}
+.selo.x b{background:transparent;border:1.5px dashed currentColor;color:currentColor;box-shadow:none}
+.selo.g b{width:32px;height:32px;font-size:14px}
+.selo.g{font:var(--t-forte);font-size:15px;gap:8px}
+
+/* Tipo */
+.tipo{display:flex;flex-direction:column;background:var(--cartao);border-radius:var(--r-cartao);box-shadow:var(--s-cartao);padding:4px 20px}
+.tipo > div{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:baseline;padding:14px 0;border-top:1px solid var(--linha)}
+.tipo > div:first-child{border-top:0}
+.tipo small{font:var(--t-mini);color:var(--apagado)}
+
+/* Espaço, raio, sombra */
+.reguas{display:flex;flex-direction:column;gap:8px;background:var(--cartao);border-radius:var(--r-cartao);box-shadow:var(--s-cartao);padding:16px 20px}
+.reguas div{display:flex;align-items:center;gap:12px;font:var(--t-mini);color:var(--suave)}
+.reguas span{height:12px;background:var(--acao);border-radius:3px;display:block}
+.reguas em{font-style:normal;width:64px;flex:none}
+.caixas{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px}
+.caixas div{height:88px;background:var(--cartao);display:grid;place-items:end start;padding:10px;font:var(--t-mini);color:var(--suave)}
+
+/* Ícones */
+.ic{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.icones{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px}
+.icones div{background:var(--cartao);border-radius:var(--r-bloco);box-shadow:var(--s-cartao);padding:14px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;font:var(--t-mini);color:var(--suave);text-align:center}
+.icones .ic{color:var(--tinta)}
+
+/* Botões */
+.bt{appearance:none;border:0;font:700 16px/1 var(--fonte);min-height:48px;padding:0 20px;border-radius:var(--r-pilula);
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;user-select:none;-webkit-user-select:none;
+  transition:transform var(--d-toque) var(--ease-saida),background-color var(--d-cor) var(--ease-saida),box-shadow var(--d-cor) var(--ease-saida)}
+.bt .ic{width:20px;height:20px}
+.bt.principal{background:var(--acao);color:var(--no-acao);box-shadow:var(--s-acao)}
+.bt.secundario{background:var(--cartao);color:var(--tinta);box-shadow:inset 0 0 0 1.5px var(--linha-forte)}
+.bt.discreto{background:transparent;color:var(--acao-texto);padding:0 12px}
+.bt.destrutivo{background:var(--erro-leve);color:var(--erro)}
+.bt:active,.bt.is-press{transform:scale(var(--aperto-toque))}
+.bt.principal:active,.bt.principal.is-press{background:var(--acao-forte)}
+.bt.is-foco{outline:2.5px solid var(--foco);outline-offset:2px}
+.bt.link{min-height:var(--alvo);padding:0;align-self:flex-start;background:transparent;color:inherit;text-decoration:underline;text-underline-offset:3px}
+.bt:disabled{cursor:not-allowed;opacity:1;background:var(--linha);color:var(--apagado);box-shadow:none;transform:none}
+.bt.discreto:disabled{background:transparent}
+.bt[aria-busy="true"]{pointer-events:none}
+.giro{width:18px;height:18px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;animation:gira .7s linear infinite}
+@keyframes gira{to{transform:rotate(1turn)}}
+.estados{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px 16px;align-items:end}
+.estados figure{margin:0;display:flex;flex-direction:column;gap:8px}
+.estados figcaption{font:var(--t-mini);color:var(--apagado)}
+
+/* Campos */
+.campo{display:flex;flex-direction:column;gap:6px}
+.campo label{font:var(--t-rotulo);color:var(--suave)}
+.entrada{min-height:52px;border-radius:var(--r-campo);background:var(--cartao);box-shadow:inset 0 0 0 1.5px var(--linha-forte);
+  display:flex;align-items:center;gap:8px;padding:0 16px;font:var(--t-corpo);color:var(--tinta);width:100%;border:0;
+  transition:box-shadow var(--d-cor) var(--ease-saida)}
+.entrada:focus-within,.entrada.is-foco{box-shadow:inset 0 0 0 2px var(--foco)}
+.entrada input{all:unset;flex:1;min-width:0;font:inherit;color:inherit;font-size:16px}
+.entrada input::placeholder{color:var(--apagado)}
+.entrada.valor{min-height:64px;font:var(--t-valor);letter-spacing:var(--aperto-grande)}
+.entrada.valor span{font:700 20px/1 var(--fonte);color:var(--suave)}
+.entrada.erro{box-shadow:inset 0 0 0 2px var(--erro)}
+.entrada.desligado{background:var(--chao);color:var(--apagado);box-shadow:inset 0 0 0 1.5px var(--linha)}
+.ajuda{font:var(--t-apoio);font-size:13px;color:var(--suave);display:flex;gap:6px;align-items:flex-start}
+.ajuda.erro{color:var(--erro)}
+.ajuda .ic{width:16px;height:16px;margin-top:1px}
+
+/* Segmentado */
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--linha);border-radius:var(--r-pilula);padding:3px;position:relative;isolation:isolate}
+.seg button{all:unset;min-height:42px;display:grid;place-items:center;font:700 15px/1 var(--fonte);color:var(--suave);border-radius:var(--r-pilula);cursor:pointer;position:relative;z-index:1}
+.seg button[aria-pressed="true"]{color:var(--tinta)}
+.seg button:focus-visible{outline:2.5px solid var(--foco);outline-offset:-2px}
+.seg .pino{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--cartao);border-radius:var(--r-pilula);box-shadow:var(--s-cartao);
+  transition:transform var(--d-curta) var(--mola)}
+.seg[data-v="1"] .pino{transform:translateX(100%)}
+
+/* Cartão e resumo */
+.cartao{background:var(--cartao);border-radius:var(--r-cartao);box-shadow:var(--s-cartao);padding:16px;display:flex;flex-direction:column;gap:12px}
+.cartao h3{font:var(--t-rotulo);color:var(--suave)}
+.fat-topo{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.banco{display:flex;align-items:center;gap:10px;font:var(--t-forte)}
+.banco i{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:800 12px/1 var(--fonte);font-style:normal;flex:none}
+.banco i.nu{background:var(--nubank);color:#fff}
+.banco i.bb{background:var(--bb);color:var(--bb-tinta)}
+.banco small{display:block;font:var(--t-apoio);color:var(--suave)}
+.total{font:var(--t-valor);letter-spacing:var(--aperto-grande)}
+.total span{font:700 20px/1 var(--fonte);color:var(--suave);margin-right:4px;letter-spacing:0}
+.quem{display:flex;flex-direction:column}
+.quem > div{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:48px;border-top:1px solid var(--linha)}
+.quem > div:first-child{border-top:0}
+.quem .v{font:var(--t-forte);font-size:16px}
+
+/* Pílulas de status: sempre palavra + ícone */
+.pil{display:inline-flex;align-items:center;gap:5px;font:var(--t-mini);padding:5px 10px 5px 8px;border-radius:var(--r-pilula);white-space:nowrap}
+.pil .ic{width:14px;height:14px;stroke-width:2.25}
+.pil.ok{background:var(--ok-leve);color:var(--ok)}
+.pil.at{background:var(--atencao-leve);color:var(--atencao)}
+.pil.neutra{background:var(--chao);color:var(--suave);box-shadow:inset 0 0 0 1px var(--linha)}
+.pil.acao{background:var(--acao-leve);color:var(--acao-texto)}
+.pil.er{background:var(--erro-leve);color:var(--erro)}
+
+/* Linhas da fatura */
+.lista{background:var(--cartao);border-radius:var(--r-cartao);box-shadow:var(--s-cartao);overflow:hidden}
+.dia{font:var(--t-rotulo);color:var(--suave);padding:14px 16px 4px}
+.lin{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 16px;min-height:64px;position:relative;cursor:pointer;
+  transition:background-color var(--d-cor) var(--ease-saida)}
+.lin + .lin::before{content:"";position:absolute;top:0;left:64px;right:0;height:1px;background:var(--linha)}
+.lin:active{background:var(--chao)}
+.lin[aria-selected="true"]{background:var(--acao-leve)}
+.logo{width:36px;height:36px;border-radius:50%;background:var(--chao);box-shadow:inset 0 0 0 1px var(--linha);display:grid;place-items:center;font:800 14px/1 var(--fonte);color:var(--suave);flex:none;position:relative}
+.lin[aria-selected="true"] .logo{background:var(--acao);color:var(--no-acao);box-shadow:none}
+.lin .d{min-width:0;display:flex;flex-direction:column;gap:3px}
+.lin .d b{font:600 16px/1.3 var(--fonte);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lin .d small{font:var(--t-apoio);font-size:13px;color:var(--suave);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lin .r{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.lin .r .v{font:700 16px/1.2 var(--fonte)}
+.parc{font:var(--t-mini);color:var(--suave);background:var(--chao);border-radius:var(--r-pequeno);padding:1px 6px}
+.lin.filho .d b{font-weight:500;color:var(--suave)}
+.lin.filho .logo{background:transparent;box-shadow:none}
+
+/* Aviso, vazio, erro, carregando */
+.aviso{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-bloco);background:var(--atencao-leve);color:var(--atencao);font:600 14px/1.4 var(--fonte)}
+.aviso .ic{width:20px;height:20px;flex:none}
+.aviso.er{background:var(--erro-leve);color:var(--erro)}
+.vazio{background:var(--cartao);border-radius:var(--r-cartao);box-shadow:var(--s-cartao);padding:28px 20px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.vazio h3{font:var(--t-forte)}
+.vazio p{color:var(--suave);font:var(--t-apoio)}
+.esq{background:var(--cartao);border-radius:var(--r-cartao);box-shadow:var(--s-cartao);padding:16px;display:flex;flex-direction:column;gap:14px}
+.esq div{display:flex;gap:12px;align-items:center}
+.esq i{display:block;background:var(--linha);border-radius:8px;height:12px;animation:respira 1.6s var(--ease-troca) infinite alternate}
+.esq i.c{width:36px;height:36px;border-radius:50%;flex:none}
+@keyframes respira{from{opacity:1}to{opacity:.45}}
+
+/* Barra inferior */
+.barra{height:84px;background:var(--vidro);backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);
+  border-radius:0 0 var(--r-cartao) var(--r-cartao);box-shadow:inset 0 1px 0 var(--linha);display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px 20px}
+.barra a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:600 11px/1 var(--fonte);letter-spacing:-.01em;white-space:nowrap;color:var(--suave);text-decoration:none;min-height:var(--alvo);border-radius:var(--r-pequeno)}
+.barra a[aria-current="page"]{color:var(--acao-texto)}
+.barra a.lancar span{width:52px;height:52px;margin-top:-18px;border-radius:50%;background:var(--acao);color:var(--no-acao);display:grid;place-items:center;box-shadow:var(--s-acao);
+  transition:transform var(--d-toque) var(--ease-saida)}
+.barra a.lancar:active span{transform:scale(var(--aperto-toque))}
+.fundo-tela{background:var(--chao);border-radius:var(--r-cartao);box-shadow:inset 0 0 0 1px var(--linha);overflow:hidden;display:flex;flex-direction:column}
+.fundo-tela .cnt{padding:16px;height:120px;color:var(--apagado);font:var(--t-apoio)}
+
+/* Aviso que some (toast) */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:60;
+  background:var(--inverso);color:var(--no-inverso);border-radius:var(--r-bloco);box-shadow:var(--s-elevado);padding:8px 8px 8px 16px;display:flex;align-items:center;gap:12px;
+  width:min(380px,calc(100vw - 32px));font:600 14px/1.35 var(--fonte);pointer-events:none;
+  transition:transform var(--d-curta) var(--ease-saida),opacity var(--d-curta) var(--ease-saida)}
+.toast.on{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.toast p{flex:1}
+.toast button{all:unset;cursor:pointer;color:var(--acao-inverso);font:700 14px/1 var(--fonte);padding:0 12px;min-height:40px;display:inline-flex;align-items:center;gap:6px;border-radius:var(--r-pequeno)}
+.toast button:focus-visible{outline:2px solid var(--acao-inverso)}
+.toast .ic{width:18px;height:18px}
+
+/* Folha de baixo: escolher pessoa (interação-assinatura) */
+.veu{position:fixed;inset:0;background:var(--veu);opacity:0;pointer-events:none;z-index:40;transition:opacity var(--d-folha) var(--ease-saida)}
+.veu.on{opacity:1;pointer-events:auto}
+.folha{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:480px;z-index:50;background:var(--elevado);border-radius:var(--r-folha) var(--r-folha) 0 0;box-shadow:var(--s-folha);
+  padding:8px 16px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(110%);touch-action:none;visibility:hidden}
+.folha .pega{width:40px;height:5px;border-radius:3px;background:var(--linha-forte);margin:2px auto 10px}
+.folha h3{font:var(--t-titulo);padding:4px 4px 2px}
+.folha .sub{font:var(--t-apoio);color:var(--suave);padding:0 4px 12px}
+.pessoas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pessoas button{all:unset;cursor:pointer;min-height:64px;border-radius:var(--r-bloco);background:var(--cartao);box-shadow:inset 0 0 0 1.5px var(--linha);display:flex;align-items:center;gap:10px;padding:0 14px;
+  transition:transform var(--d-toque) var(--ease-saida),box-shadow var(--d-cor) var(--ease-saida)}
+.pessoas button:active{transform:scale(var(--aperto-toque))}
+.pessoas button:focus-visible{outline:2.5px solid var(--foco);outline-offset:2px}
+.pessoas button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--acao-texto);background:var(--acao-leve)}
+.escopo{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+
+/* Diálogo */
+.dialogo{position:fixed;left:50%;top:50%;transform:translate(-50%,-48%) scale(.97);opacity:0;pointer-events:none;z-index:55;width:min(340px,calc(100vw - 32px));
+  background:var(--elevado);border-radius:var(--r-cartao);box-shadow:var(--s-elevado);padding:20px;display:flex;flex-direction:column;gap:12px;
+  transition:transform var(--d-curta) var(--ease-saida),opacity var(--d-curta) var(--ease-saida)}
+.dialogo.on{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
+.dialogo h3{font:var(--t-titulo)}
+.dialogo p{color:var(--suave);font:var(--t-apoio)}
+.dialogo .acoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+
+/* Movimento: tabela de regras */
+.regras{background:var(--cartao);border-radius:var(--r-cartao);box-shadow:var(--s-cartao);overflow:hidden}
+.regras > div{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:12px;padding:12px 16px;border-top:1px solid var(--linha);font:var(--t-apoio)}
+.regras > div:first-child{border-top:0}
+.regras b{font-weight:700}
+.regras span{color:var(--suave)}
+.tema{display:flex;gap:4px;background:var(--linha);border-radius:var(--r-pilula);padding:3px}
+.tema button{all:unset;cursor:pointer;font:700 13px/1 var(--fonte);color:var(--suave);padding:0 12px;min-height:36px;display:grid;place-items:center;border-radius:var(--r-pilula)}
+.tema button[aria-pressed="true"]{background:var(--cartao);color:var(--tinta);box-shadow:var(--s-cartao)}
+.tema button:focus-visible{outline:2.5px solid var(--foco)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:1ms !important;animation-iteration-count:1 !important}
+  .bt,.pessoas button,.barra a.lancar span{transition:background-color var(--d-cor) linear}
+  .bt:active,.bt.is-press,.pessoas button:active{transform:none}
+  .seg .pino{transition:none}
+  .toast,.dialogo{transition:opacity 150ms linear}
+  .toast{transform:translate(-50%,0)} .dialogo{transform:translate(-50%,-50%)}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-inicio" viewBox="0 0 24 24"><path d="M3.5 10.5 12 3.5l8.5 7V19a1.5 1.5 0 0 1-1.5 1.5h-4v-6H9v6H5A1.5 1.5 0 0 1 3.5 19z"/></symbol>
+    <symbol id="i-cartao" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></symbol>
+    <symbol id="i-importar" viewBox="0 0 24 24"><path d="M14 3H6.5A2 2 0 0 0 4.5 5v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8.5z"/><path d="M14 3v5.5h5.5M12 18v-6M9 14.5l3-3 3 3"/></symbol>
+    <symbol id="i-mais" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-fechamento" viewBox="0 0 24 24"><path d="M5 3.5h14v17l-2.5-1.5-2.5 1.5-2-1.5-2 1.5-2.5-1.5L5 20.5z"/><path d="M8.5 8h7M8.5 11.5h7M8.5 15h4"/></symbol>
+    <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></symbol>
+    <symbol id="i-voltar" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-seguir" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-ok" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-atencao" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></symbol>
+    <symbol id="i-mensagem" viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.1-4.2A8.5 8.5 0 1 1 20.5 12z"/></symbol>
+    <symbol id="i-copiar" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2"/><path d="M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5"/></symbol>
+    <symbol id="i-desfazer" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+    <symbol id="i-lixo" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12.5A1.5 1.5 0 0 0 8.5 21h7a1.5 1.5 0 0 0 1.5-1.5L18 7M9 7V4h6v3"/></symbol>
+    <symbol id="i-buscar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-calendario" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-parcelas" viewBox="0 0 24 24"><path d="m12 3.5 8.5 4.5-8.5 4.5L3.5 8z"/><path d="m3.5 12.5 8.5 4.5 8.5-4.5M3.5 16.5l8.5 4.5 8.5-4.5"/></symbol>
+    <symbol id="i-pessoa" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></symbol>
+    <symbol id="i-sol" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></symbol>
+    <symbol id="i-recarregar" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></symbol>
+  </defs>
+</svg>
+
+<header class="topo">
+  <div class="marca">{{marca}}<span>Design system</span></div>
+  <div class="tema" role="group" aria-label="Tema da página">
+    <button type="button" data-t="light" aria-pressed="false">Claro</button>
+    <button type="button" data-t="dark" aria-pressed="false">Escuro</button>
+    <button type="button" data-t="auto" aria-pressed="true">Do celular</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="abertura" aria-labelledby="t0">
+    <h1 id="t0">As peças do B&amp;P Finanças</h1>
+    <p>Cores, letras, espaços, ícones, componentes e movimento, cada um com seus estados. Tudo aqui é a peça de verdade que o app vai usar, não um desenho dela. Troque entre claro e escuro no alto da página, e toque nos exemplos marcados com "experimente".</p>
+  </section>
+
+  <!-- CORES -->
+  <section class="sec" aria-labelledby="t1">
+    <div class="txt">
+      <h2 id="t1">Cores</h2>
+      <p>O chão é um papel quente e os cartões são brancos. O azul é a única cor de interface e só aparece no que dá para tocar ou no que está selecionado.</p>
+      <p>Verde, âmbar e vermelho têm significado fixo, e sempre vêm com palavra ou ícone junto. Nenhum texto fica abaixo do contraste exigido (4,5 para 1).</p>
+    </div>
+    <div class="ex">
+      <span class="rot">Superfícies e texto</span>
+      <div class="amostras">
+        <div class="am"><i style="background:var(--chao)"></i><div><b>Chão</b><small>fundo do app</small></div></div>
+        <div class="am"><i style="background:var(--cartao)"></i><div><b>Cartão</b><small>cartões e listas</small></div></div>
+        <div class="am"><i style="background:var(--linha)"></i><div><b>Linha</b><small>divisórias</small></div></div>
+        <div class="am"><i style="background:var(--tinta)"></i><div><b>Tinta</b><small>texto principal</small></div></div>
+        <div class="am"><i style="background:var(--suave)"></i><div><b>Suave</b><small>texto de apoio</small></div></div>
+        <div class="am"><i style="background:var(--acao)"></i><div><b>Ação</b><small>botões, seleção</small></div></div>
+      </div>
+      <span class="rot">Significado</span>
+      <div class="fila">
+        <span class="pil ok"><svg class="ic"><use href="#i-ok"/></svg>Pago</span>
+        <span class="pil at"><svg class="ic"><use href="#i-atencao"/></svg>Falta pagar</span>
+        <span class="pil at"><svg class="ic"><use href="#i-atencao"/></svg>Parcial</span>
+        <span class="pil er"><svg class="ic"><use href="#i-atencao"/></svg>Arquivo não lido</span>
+        <span class="pil acao"><svg class="ic"><use href="#i-calendario"/></svg>Aberta</span>
+        <span class="pil neutra"><svg class="ic"><use href="#i-ok"/></svg>Fechada</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PESSOAS -->
+  <section class="sec" aria-labelledby="t2">
+    <div class="txt">
+      <h2 id="t2">Pessoas</h2>
+      <p>Cada pessoa tem uma cor fixa, mas a cor nunca aparece sozinha: sempre vem a inicial e o nome.</p>
+      <ul>
+        <li>Testei as quatro cores simulando os três tipos de daltonismo; elas continuam diferentes entre si.</li>
+        <li>Duas cores são claras (Pedro, Lucimar) e duas escuras (Bruna, Eliete). A diferença de claro e escuro é a que mais resiste ao daltonismo.</li>
+        <li>"Sem dono" não tem cor de pessoa: é um círculo tracejado com "?" e a palavra.</li>
+      </ul>
+    </div>
+    <div class="ex">
+      <div class="fila">
+        <span class="selo g p"><b>P</b>Pedro</span>
+        <span class="selo g b"><b>B</b>Bruna</span>
+        <span class="selo g e"><b>E</b>Eliete</span>
+        <span class="selo g l"><b>L</b>Lucimar</span>
+        <span class="selo g x"><b>?</b>Sem dono</span>
+      </div>
+      <div class="fila">
+        <span class="selo p"><b>P</b>Pedro</span>
+        <span class="selo b"><b>B</b>Bruna</span>
+        <span class="selo e"><b>E</b>Eliete</span>
+        <span class="selo l"><b>L</b>Lucimar</span>
+        <span class="selo x"><b>?</b>Sem dono</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIPO -->
+  <section class="sec" aria-labelledby="t3">
+    <div class="txt">
+      <h2 id="t3">Letras e números</h2>
+      <p>Uma fonte só, a Figtree, que é redonda e calma. Os números usam algarismos de largura igual, para que os valores fiquem alinhados um embaixo do outro.</p>
+      <p>Dinheiro é sempre <b>R$ 1.234,56</b>: o "R$" fica menor e mais claro, o valor manda.</p>
+    </div>
+    <div class="ex">
+      <div class="tipo">
+        <div><small>Título da tela</small><span style="font:var(--t-mes);letter-spacing:var(--aperto-grande)">Novembro</span></div>
+        <div><small>Total</small><span class="total num"><span>R$</span>2.184,37</span></div>
+        <div><small>Título</small><span style="font:var(--t-titulo)">Quem paga quanto</span></div>
+        <div><small>Destaque</small><span style="font:var(--t-forte)">Nubank da Bruna</span></div>
+        <div><small>Corpo</small><span>Fecha em 3/11 e vence em 10/11.</span></div>
+        <div><small>Apoio</small><span style="font:var(--t-apoio);color:var(--suave)">47 linhas, 12 sem dono</span></div>
+        <div><small>Rótulo</small><span style="font:var(--t-rotulo);color:var(--suave)">Segunda, 6 de outubro</span></div>
+      </div>
+      <div class="cartao num" aria-label="Exemplo de valores alinhados">
+        <div class="quem">
+          <div><span>Drogasil</span><span class="v">R$ 54,90</span></div>
+          <div><span>Pão de Açúcar</span><span class="v">R$ 212,37</span></div>
+          <div><span>Uber</span><span class="v">R$ 23,40</span></div>
+          <div><span>Anuidade</span><span class="v">R$ 1.111,00</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ESPAÇO -->
+  <section class="sec" aria-labelledby="t4">
+    <div class="txt">
+      <h2 id="t4">Espaço, cantos e sombras</h2>
+      <p>Os espaços crescem de 4 em 4. Margem lateral de 16 no celular. Nada que se toca tem menos de 44 de altura.</p>
+      <p>Cantos bem arredondados nos cartões (22) e nas folhas que sobem (28). Sombras curtas e macias: o cartão quase encosta no chão; só o que está por cima ganha sombra mais funda.</p>
+      <p>A barra de baixo é de vidro: o conteúdo passa por trás dela. Quem pede menos transparência no celular recebe a barra sólida.</p>
+    </div>
+    <div class="ex">
+      <div class="reguas">
+        <div><em>4</em><span style="width:4px"></span>entre ícone e texto</div>
+        <div><em>8</em><span style="width:8px"></span>dentro de um grupo</div>
+        <div><em>12</em><span style="width:12px"></span>entre linhas de um cartão</div>
+        <div><em>16</em><span style="width:16px"></span>margem e respiro do cartão</div>
+        <div><em>24</em><span style="width:24px"></span>entre blocos</div>
+        <div><em>32</em><span style="width:32px"></span>entre seções</div>
+      </div>
+      <div class="caixas">
+        <div style="border-radius:var(--r-pequeno);box-shadow:var(--s-cartao)">Pequeno 8</div>
+        <div style="border-radius:var(--r-campo);box-shadow:var(--s-cartao)">Campo 14</div>
+        <div style="border-radius:var(--r-cartao);box-shadow:var(--s-cartao)">Cartão 22</div>
+        <div style="border-radius:var(--r-folha) var(--r-folha) 0 0;box-shadow:var(--s-elevado)">Folha 28, elevada</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÍCONES -->
+  <section class="sec" aria-labelledby="t5">
+    <div class="txt">
+      <h2 id="t5">Ícones</h2>
+      <p>Traço de 1,75, pontas arredondadas, todos no mesmo quadro de 24. No app, vêm da coleção Lucide, que tem esse mesmo desenho e centenas de ícones a mais.</p>
+      <p>Ícone sozinho só quando o significado é óbvio (voltar, fechar). Nos outros casos, vem com palavra.</p>
+    </div>
+    <div class="ex">
+      <div class="icones">
+        <div><svg class="ic"><use href="#i-inicio"/></svg>Início</div>
+        <div><svg class="ic"><use href="#i-cartao"/></svg>Cartões</div>
+        <div><svg class="ic"><use href="#i-importar"/></svg>Importar</div>
+        <div><svg class="ic"><use href="#i-mais"/></svg>Lançar</div>
+        <div><svg class="ic"><use href="#i-fechamento"/></svg>Fechamentos</div>
+        <div><svg class="ic"><use href="#i-ajustes"/></svg>Configurações</div>
+        <div><svg class="ic"><use href="#i-mensagem"/></svg>WhatsApp</div>
+        <div><svg class="ic"><use href="#i-copiar"/></svg>Copiar</div>
+        <div><svg class="ic"><use href="#i-desfazer"/></svg>Desfazer</div>
+        <div><svg class="ic"><use href="#i-lixo"/></svg>Excluir</div>
+        <div><svg class="ic"><use href="#i-parcelas"/></svg>Parcelas</div>
+        <div><svg class="ic"><use href="#i-calendario"/></svg>Vencimento</div>
+        <div><svg class="ic"><use href="#i-buscar"/></svg>Buscar</div>
+        <div><svg class="ic"><use href="#i-pessoa"/></svg>Pessoa</div>
+        <div><svg class="ic"><use href="#i-atencao"/></svg>Atenção</div>
+        <div><svg class="ic"><use href="#i-voltar"/></svg>Voltar</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTÕES -->
+  <section class="sec" aria-labelledby="t6">
+    <div class="txt">
+      <h2 id="t6">Botões</h2>
+      <p>Um botão principal por tela, no máximo. Ele reage no instante do toque, encolhendo de leve, e não quando você solta o dedo.</p>
+      <ul>
+        <li><b>Principal:</b> a ação da tela (Lançar, Salvar, Mandar no WhatsApp).</li>
+        <li><b>Secundário:</b> alternativa (Copiar texto).</li>
+        <li><b>Discreto:</b> ação de texto (Ver todas).</li>
+        <li><b>Destrutivo:</b> sempre pede confirmação ou oferece desfazer.</li>
+      </ul>
+    </div>
+    <div class="ex">
+      <div class="estados">
+        <figure><button class="bt principal" type="button"><svg class="ic"><use href="#i-mais"/></svg>Lançar</button><figcaption>Normal</figcaption></figure>
+        <figure><button class="bt principal is-press" type="button" tabindex="-1">Lançar</button><figcaption>Pressionado</figcaption></figure>
+        <figure><button class="bt principal is-foco" type="button" tabindex="-1">Lançar</button><figcaption>Foco pelo teclado</figcaption></figure>
+        <figure><button class="bt principal" type="button" disabled>Salvar</button><figcaption>Desativado</figcaption></figure>
+        <figure><button class="bt principal" type="button" aria-busy="true"><span class="giro" aria-hidden="true"></span>Salvando</button><figcaption>Carregando</figcaption></figure>
+      </div>
+      <div class="estados">
+        <figure><button class="bt secundario" type="button"><svg class="ic"><use href="#i-copiar"/></svg>Copiar texto</button><figcaption>Secundário</figcaption></figure>
+        <figure><button class="bt discreto" type="button">Ver todas</button><figcaption>Discreto</figcaption></figure>
+        <figure><button class="bt destrutivo" type="button" id="abre-dialogo"><svg class="ic"><use href="#i-lixo"/></svg>Excluir importação</button><figcaption>Destrutivo · experimente</figcaption></figure>
+        <figure><button class="bt secundario" type="button" disabled>Copiar texto</button><figcaption>Secundário desativado</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAMPOS -->
+  <section class="sec" aria-labelledby="t7">
+    <div class="txt">
+      <h2 id="t7">Campos</h2>
+      <p>O valor é o campo maior da tela de Lançar, com teclado numérico. O erro diz o que houve e como resolver, logo abaixo do campo, enquanto você digita, e não só quando tenta salvar.</p>
+      <p>Pessoal ou Casal é um seletor de dois lados, que só aparece quando a pessoa é Pedro ou Bruna.</p>
+    </div>
+    <div class="ex cel">
+      <div class="campo"><label for="c1">Valor</label>
+        <div class="entrada valor num"><span>R$</span><input id="c1" inputmode="decimal" value="300,00" aria-describedby="c1a"></div>
+        <p class="ajuda" id="c1a">Em 3 vezes: 100,00 + 100,00 + 100,00</p></div>
+      <div class="campo"><label for="c2">Descrição</label>
+        <div class="entrada"><input id="c2" placeholder="Ex.: Tênis Centauro"></div></div>
+      <div class="campo"><label for="c3">Parcelas</label>
+        <div class="entrada erro"><input id="c3" inputmode="numeric" value="0" aria-invalid="true" aria-describedby="c3a"></div>
+        <p class="ajuda erro" id="c3a"><svg class="ic"><use href="#i-atencao"/></svg>Parcelas vai de 1 a 48. Para à vista, use 1.</p></div>
+      <div class="campo"><label for="c4">Cartão</label>
+        <div class="entrada desligado"><input id="c4" value="Nubank da Bruna" disabled></div>
+        <p class="ajuda">Só há um cartão ativo.</p></div>
+      <div class="campo"><span class="rot" id="seg-r">Para quê (experimente)</span>
+        <div class="seg" data-v="0" role="group" aria-labelledby="seg-r"><span class="pino" aria-hidden="true"></span>
+          <button type="button" aria-pressed="true">Pessoal</button><button type="button" aria-pressed="false">Casal</button></div></div>
+    </div>
+  </section>
+
+  <!-- FATURA -->
+  <section class="sec" aria-labelledby="t8">
+    <div class="txt">
+      <h2 id="t8">Fatura e resumo</h2>
+      <p>O cartão da fatura mostra o total e quem paga quanto, Bruna incluída, com o valor dela, igual às outras pessoas. Cada linha tem o logo da loja à esquerda, a descrição, a data e o selo da pessoa; o valor fica à direita, alinhado.</p>
+      <ul>
+        <li>O logo real da loja entra no círculo; aqui aparece a inicial, que é o que o app mostra quando não conhece a loja.</li>
+        <li>O IOF aparece logo abaixo da compra, mais apagado.</li>
+        <li>Toque numa linha para dizer de quem é; toque longo para marcar várias (experimente).</li>
+      </ul>
+    </div>
+    <div class="ex cel">
+      <div class="cartao">
+        <div class="fat-topo">
+          <div class="banco"><i class="nu" aria-hidden="true">nu</i><div>Nubank da Bruna<small>Vence 10/11</small></div></div>
+          <span class="pil acao"><svg class="ic"><use href="#i-calendario"/></svg>Aberta</span>
+        </div>
+        <div class="total num"><span>R$</span>2.184,37</div>
+        <div class="quem num">
+          <div><span class="selo p"><b>P</b>Pedro</span><span class="v">R$ 640,30</span></div>
+          <div><span class="selo b"><b>B</b>Bruna</span><span class="v">R$ 1.050,17</span></div>
+          <div><span class="selo e"><b>E</b>Eliete</span><span class="v">R$ 154,00</span></div>
+          <div><span class="selo l"><b>L</b>Lucimar</span><span class="v">R$ 125,90</span></div>
+          <div><span class="selo x"><b>?</b>12 sem dono</span><span class="v">R$ 214,00</span></div>
+        </div>
+      </div>
+      <div class="aviso" role="status"><svg class="ic"><use href="#i-atencao"/></svg><p>12 linhas desta fatura ainda sem dono, o total de cada pessoa pode mudar.</p></div>
+      <div class="lista" role="listbox" aria-label="Linhas da fatura" aria-multiselectable="true" id="linhas">
+        <div class="dia">Sexta, 3 de outubro</div>
+        <div class="lin" role="option" aria-selected="false" tabindex="0"><span class="logo" aria-hidden="true">D</span><span class="d"><b>Drogasil</b><small>03/10 <span class="selo b"><b>B</b>Bruna</span></small></span><span class="r"><span class="v num">R$ 54,90</span></span></div>
+        <div class="lin" role="option" aria-selected="false" tabindex="0"><span class="logo" aria-hidden="true">P</span><span class="d"><b>Pão de Açúcar</b><small>03/10 <span class="selo p"><b>P</b>Pedro · Casal</span></small></span><span class="r"><span class="v num">R$ 212,37</span></span></div>
+        <div class="dia">Segunda, 6 de outubro</div>
+        <div class="lin" role="option" aria-selected="false" tabindex="0"><span class="logo" aria-hidden="true">M</span><span class="d"><b>Magazine Luiza</b><small><span class="parc num">3/10</span><span class="selo l"><b>L</b>Lucimar</span></small></span><span class="r"><span class="v num">R$ 89,90</span></span></div>
+        <div class="lin" role="option" aria-selected="false" tabindex="0"><span class="logo" aria-hidden="true">C</span><span class="d"><b>Centauro</b><small><span class="parc num">1/3</span><span class="selo x"><b>?</b>Sem dono</span></small></span><span class="r"><span class="v num">R$ 33,34</span></span></div>
+        <div class="lin" role="option" aria-selected="false" tabindex="0"><span class="logo" aria-hidden="true">A</span><span class="d"><b>Amazon</b><small>06/10 <span class="selo b"><b>B</b>Bruna</span></small></span><span class="r"><span class="v num">R$ 128,40</span></span></div>
+        <div class="lin filho" role="option" aria-selected="false" tabindex="0"><span class="logo" aria-hidden="true"></span><span class="d"><b>IOF Amazon</b><small>06/10 <span class="selo b"><b>B</b>Bruna</span></small></span><span class="r"><span class="v num">R$ 3,21</span></span></div>
+        <div class="lin" role="option" aria-selected="false" tabindex="0"><span class="logo" aria-hidden="true">I</span><span class="d"><b>iFood</b><small>06/10 <span class="selo x"><b>?</b>Sem dono</span></small></span><span class="r"><span class="v num">R$ 47,80</span></span></div>
+      </div>
+      <button class="bt principal" type="button" id="abre-folha"><svg class="ic"><use href="#i-pessoa"/></svg>Escolher de quem é (experimente)</button>
+    </div>
+  </section>
+
+  <!-- ESTADOS -->
+  <section class="sec" aria-labelledby="t9">
+    <div class="txt">
+      <h2 id="t9">Vazio, carregando e erro</h2>
+      <p>Toda tela tem esses três estados. O vazio explica o que vai aparecer ali e oferece o primeiro passo. O carregando mostra o formato do que vem, pulsando devagar. O erro diz o que houve e como seguir, sem culpa.</p>
+    </div>
+    <div class="ex cel">
+      <div class="vazio">
+        <svg class="ic" style="width:32px;height:32px;color:var(--suave)"><use href="#i-importar"/></svg>
+        <h3>Nenhuma fatura ainda</h3>
+        <p>Quando a fatura do Nubank fechar, baixe o arquivo no app do banco e traga para cá. As linhas aparecem aqui para você dizer de quem é cada uma.</p>
+        <button class="bt principal" type="button"><svg class="ic"><use href="#i-importar"/></svg>Importar fatura</button>
+      </div>
+      <div class="esq" aria-busy="true" aria-label="Carregando a fatura">
+        <div><i class="c"></i><i style="width:55%"></i><i style="width:18%;margin-left:auto"></i></div>
+        <div><i class="c"></i><i style="width:42%"></i><i style="width:22%;margin-left:auto"></i></div>
+        <div><i class="c"></i><i style="width:60%"></i><i style="width:16%;margin-left:auto"></i></div>
+      </div>
+      <div class="aviso er" role="alert"><svg class="ic"><use href="#i-atencao"/></svg>
+        <div style="display:flex;flex-direction:column;gap:8px"><p>Não consegui ler este arquivo. Ele parece ser um extrato da conta, não a fatura do cartão.</p>
+        <button class="bt link" type="button">Escolher outro arquivo</button></div></div>
+    </div>
+  </section>
+
+  <!-- NAVEGAÇÃO -->
+  <section class="sec" aria-labelledby="t10">
+    <div class="txt">
+      <h2 id="t10">Barra de baixo</h2>
+      <p>Cinco lugares, sempre com nome. O botão Lançar fica no meio, elevado, ao alcance do polegar em qualquer tela.</p>
+    </div>
+    <div class="ex cel">
+      <div class="fundo-tela">
+        <div class="cnt">Conteúdo da tela passa por trás da barra.</div>
+        <nav class="barra" aria-label="Navegação principal">
+          <a href="#t10" aria-current="page"><svg class="ic"><use href="#i-inicio"/></svg>Início</a>
+          <a href="#t10"><svg class="ic"><use href="#i-cartao"/></svg>Cartões</a>
+          <a href="#t10" class="lancar" aria-label="Lançar compra"><span><svg class="ic"><use href="#i-mais"/></svg></span>Lançar</a>
+          <a href="#t10"><svg class="ic"><use href="#i-fechamento"/></svg>Fechamentos</a>
+          <a href="#t10"><svg class="ic"><use href="#i-ajustes"/></svg>Ajustes</a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOVIMENTO -->
+  <section class="sec" aria-labelledby="t11">
+    <div class="txt">
+      <h2 id="t11">Movimento</h2>
+      <p>Movimento só quando explica alguma coisa: de onde algo veio, para onde foi, que o toque foi sentido. Tudo pode ser interrompido no meio, e quem pede menos movimento no celular recebe só troca suave de opacidade.</p>
+      <p>O momento principal é a folha de escolher a pessoa: ela sobe com mola, segue o dedo enquanto você arrasta e, se você jogar para baixo, fecha com a velocidade do gesto.</p>
+    </div>
+    <div class="ex">
+      <div class="regras">
+        <div><b>Toque em botão</b><span>Encolhe 3% em 100 ms, na hora do toque</span></div>
+        <div><b>Folha que sobe</b><span>Mola sem quique, cerca de 0,34 s; segue o dedo; pode ser agarrada no meio</span></div>
+        <div><b>Seletor e troca de aba</b><span>Mola curta, 0,22 s</span></div>
+        <div><b>Aviso com Desfazer</b><span>Sobe 20 px e aparece em 0,22 s; fica 5 s</span></div>
+        <div><b>Diálogo de confirmação</b><span>Aparece de 97% para 100% em 0,22 s, com o fundo escurecendo</span></div>
+        <div><b>Números e listas</b><span>Não animam: valor é informação, aparece pronto</span></div>
+        <div><b>Atalhos de teclado</b><span>Nunca animam</span></div>
+        <div><b>Menos movimento</b><span>Sem deslocamento nem mola; só opacidade em 0,15 s</span></div>
+      </div>
+      <div class="fila">
+        <button class="bt principal" type="button" id="abre-folha2"><svg class="ic"><use href="#i-pessoa"/></svg>Abrir a folha</button>
+        <button class="bt secundario" type="button" id="abre-toast"><svg class="ic"><use href="#i-desfazer"/></svg>Mostrar aviso com Desfazer</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Camadas interativas -->
+<div class="veu" id="veu"></div>
+<div class="folha" id="folha" role="dialog" aria-modal="true" aria-labelledby="f-t">
+  <div class="pega" aria-hidden="true"></div>
+  <h3 id="f-t">De quem é?</h3>
+  <p class="sub" id="f-sub">Centauro · 1/3 · R$ 33,34</p>
+  <div class="pessoas">
+    <button type="button" aria-pressed="false" data-p="Pedro"><span class="selo g p"><b>P</b>Pedro</span></button>
+    <button type="button" aria-pressed="false" data-p="Bruna"><span class="selo g b"><b>B</b>Bruna</span></button>
+    <button type="button" aria-pressed="false" data-p="Eliete"><span class="selo g e"><b>E</b>Eliete</span></button>
+    <button type="button" aria-pressed="false" data-p="Lucimar"><span class="selo g l"><b>L</b>Lucimar</span></button>
+  </div>
+  <p class="sub" style="padding-top:12px">Arraste a folha para baixo para fechar.</p>
+</div>
+<div class="dialogo" id="dialogo" role="alertdialog" aria-modal="true" aria-labelledby="d-t" aria-describedby="d-p">
+  <h3 id="d-t">Excluir a importação de 3/11?</h3>
+  <p id="d-p">As 47 linhas da fatura Nubank Nov/26 saem do app, junto com quem você marcou em cada uma. O arquivo pode ser importado de novo depois.</p>
+  <div class="acoes"><button class="bt secundario" type="button" data-fecha>Manter</button><button class="bt destrutivo" type="button" data-fecha style="background:var(--erro);color:var(--no-erro)">Excluir</button></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"><p id="toast-t">Centauro marcada como Lucimar</p><button type="button" id="desfazer"><svg class="ic"><use href="#i-desfazer"/></svg>Desfazer</button></div>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const temaBts = document.querySelectorAll('.tema button');
+  const setTema = t => { if (t === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', t);
+    temaBts.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === t)));
+    try { localStorage.setItem('bp-tema', t); } catch (e) {} };
+  temaBts.forEach(b => b.addEventListener('click', () => setTema(b.dataset.t)));
+  try { const t = localStorage.getItem('bp-tema'); if (t) setTema(t); } catch (e) {}
+
+  const reduz = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Seletor Pessoal / Casal
+  document.querySelectorAll('.seg').forEach(seg => seg.querySelectorAll('button').forEach((b, i) => b.addEventListener('click', () => {
+    seg.dataset.v = i; seg.querySelectorAll('button').forEach((x, j) => x.setAttribute('aria-pressed', String(i === j)));
+  })));
+
+  // Linhas: toque escolhe, toque longo seleciona várias
+  const linhas = document.getElementById('linhas');
+  let segura, longo = false, alvoLinha = null;
+  linhas.querySelectorAll('.lin').forEach(l => {
+    l.addEventListener('pointerdown', () => { longo = false; segura = setTimeout(() => { longo = true; l.setAttribute('aria-selected', l.getAttribute('aria-selected') !== 'true'); }, 450); });
+    ['pointerup','pointerleave','pointercancel'].forEach(ev => l.addEventListener(ev, () => clearTimeout(segura)));
+    l.addEventListener('click', () => {
+      if (longo) return;
+      if (linhas.querySelector('[aria-selected="true"]')) { l.setAttribute('aria-selected', l.getAttribute('aria-selected') !== 'true'); return; }
+      alvoLinha = l; abreFolha(l);
+    });
+    l.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); alvoLinha = l; abreFolha(l); } });
+  });
+
+  // Folha com mola (criticamente amortecida, interrompível, segue o dedo)
+  const folha = document.getElementById('folha'), veu = document.getElementById('veu');
+  let y = 0, v = 0, alvo = 0, raf = 0, aberta = false, ultimoFoco = null;
+  const altura = () => folha.getBoundingClientRect().height + 24;
+  const pinta = () => { folha.style.transform = `translateY(${y}px)`; };
+  const passo = (() => { let t0 = 0; const w = 2 * Math.PI / 0.34; return function f(t) {
+      const dt = Math.min(0.032, t0 ? (t - t0) / 1000 : 0.016); t0 = t;
+      const a = -w * w * (y - alvo) - 2 * w * v; v += a * dt; y += v * dt; pinta();
+      if (Math.abs(y - alvo) < 0.5 && Math.abs(v) < 5) { y = alvo; v = 0; pinta(); t0 = 0; raf = 0; if (!aberta) folha.style.visibility = 'hidden'; return; }
+      raf = requestAnimationFrame(f); }; })();
+  const molaPara = (destino, vel = v) => { alvo = destino; v = vel;
+    if (reduz()) { y = destino; pinta(); folha.style.opacity = aberta ? 1 : 0; if (!aberta) folha.style.visibility = 'hidden'; return; }
+    folha.style.opacity = 1; if (!raf) raf = requestAnimationFrame(passo); };
+  function abreFolha(linha) {
+    ultimoFoco = document.activeElement; aberta = true;
+    if (linha) document.getElementById('f-sub').textContent = linha.querySelector('.d b').textContent + ' · ' + linha.querySelector('.v').textContent;
+    folha.style.visibility = 'visible';
+    if (!raf && y === 0) { y = altura(); pinta(); }
+    if (reduz()) folha.style.transition = 'opacity 150ms linear';
+    veu.classList.add('on'); molaPara(0);
+    folha.querySelector('.pessoas button').focus({ preventScroll: true });
+  }
+  function fechaFolha(vel = 0) { aberta = false; veu.classList.remove('on'); molaPara(altura(), vel); if (ultimoFoco) ultimoFoco.focus({ preventScroll: true }); }
+  y = 9999; // começa fora da tela
+  document.getElementById('abre-folha').addEventListener('click', () => abreFolha(linhas.querySelector('.lin:nth-of-type(4)') && linhas.querySelectorAll('.lin')[3]));
+  document.getElementById('abre-folha2').addEventListener('click', () => abreFolha(linhas.querySelectorAll('.lin')[3]));
+  veu.addEventListener('click', () => fechaFolha());
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (aberta) fechaFolha(); fechaDialogo(); } });
+
+  // Arrastar: 1:1 com o dedo, elástico para cima, decide pela velocidade
+  let arrastando = false, inicioY = 0, baseY = 0, hist = [];
+  folha.addEventListener('pointerdown', e => {
+    if (e.target.closest('button')) return;
+    arrastando = true; folha.setPointerCapture(e.pointerId); cancelAnimationFrame(raf); raf = 0;
+    inicioY = e.clientY; baseY = y; hist = [{ y: e.clientY, t: e.timeStamp }];
+  });
+  folha.addEventListener('pointermove', e => {
+    if (!arrastando) return;
+    let d = baseY + e.clientY - inicioY;
+    if (d < 0) d = -(-d * 120 * 0.55) / (120 + 0.55 * -d); // resistência ao puxar para cima
+    y = d; pinta(); hist.push({ y: e.clientY, t: e.timeStamp }); if (hist.length > 5) hist.shift();
+  });
+  const solta = () => {
+    if (!arrastando) return; arrastando = false;
+    const a = hist[0], b = hist[hist.length - 1]; const vel = b && a && b.t > a.t ? (b.y - a.y) / ((b.t - a.t) / 1000) : 0;
+    const projetado = y + (vel / 1000) * 0.998 / (1 - 0.998);
+    if (projetado > altura() * 0.5) fechaFolha(vel); else molaPara(0, vel);
+  };
+  folha.addEventListener('pointerup', solta); folha.addEventListener('pointercancel', solta);
+
+  // Escolher pessoa → fecha e mostra aviso com Desfazer
+  const toast = document.getElementById('toast'); let tt;
+  const mostraToast = txt => { document.getElementById('toast-t').textContent = txt; toast.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove('on'), 5000); };
+  folha.querySelectorAll('.pessoas button').forEach(b => b.addEventListener('click', () => {
+    folha.querySelectorAll('.pessoas button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    const nome = (alvoLinha && alvoLinha.querySelector('.d b').textContent) || 'Centauro';
+    setTimeout(() => { fechaFolha(); mostraToast(`${nome} marcada como ${b.dataset.p}`); }, reduz() ? 0 : 120);
+  }));
+  document.getElementById('abre-toast').addEventListener('click', () => mostraToast('Centauro marcada como Lucimar'));
+  document.getElementById('desfazer').addEventListener('click', () => { toast.classList.remove('on'); setTimeout(() => mostraToast('Desfeito. Centauro voltou para sem dono'), reduz() ? 0 : 240); });
+
+  // Diálogo destrutivo
+  const dialogo = document.getElementById('dialogo'); let focoAntes = null;
+  function fechaDialogo() { if (!dialogo.classList.contains('on')) return; dialogo.classList.remove('on'); veu.classList.remove('on'); if (focoAntes) focoAntes.focus(); }
+  document.getElementById('abre-dialogo').addEventListener('click', e => { focoAntes = e.currentTarget; dialogo.classList.add('on'); veu.classList.add('on'); dialogo.querySelector('[data-fecha]').focus(); });
+  dialogo.querySelectorAll('[data-fecha]').forEach(b => b.addEventListener('click', fechaDialogo));
+  veu.addEventListener('click', fechaDialogo);
+})();
+</script>
