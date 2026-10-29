@@ -1,9 +1,9 @@
 'use client';
 // Fatura (T4): linhas por dia, filtros, totais por pessoa, marcação individual e em massa (§4.6).
 import { useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, FileUp, X, Check, CircleAlert, Copy } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileUp, X, Check, Copy } from 'lucide-react';
 import { useApp } from '../estado';
-import { Folha, Logo, LogoBanco, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
+import { Divisao, Folha, Logo, LogoBanco, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
 import { faturaDe, linhasDaFatura, situacaoDaFatura, totaisDaFatura, type LinhaFatura } from '@/dados/consultas';
 import { marcar } from '@/dados/operacoes';
 import { datasDaFatura, somarMeses } from '@/dominio/ciclo';
@@ -59,20 +59,20 @@ export function Fatura() {
           <p>Quando a fatura {mesCurto(mes)} do {cartao.apelido} fechar ({ddmm(d.fechamento)}), baixe o arquivo no app do banco e traga para cá. Compras lançadas no app também aparecem aqui.</p>
           <div className="acoes"><button className="bt principal medio" onClick={() => ir({ tela: 'importar', cartao: cartao.id })}>Importar</button><button className="bt secundario medio" onClick={() => ir({ tela: 'lancar' })}>Lançar</button></div></div>
       ) : (<>
-        <section className="cartao">
-          <div className="linha-topo"><div className="banco"><LogoBanco banco={cartao.banco} /><span>{cartao.apelido}<small>{sit === 'aberta' ? `Parcial · fecha ${ddmm(d.fechamento)}` : `Fechou ${ddmm(d.fechamento)}`}</small></span></div>
-            <span className={`pil ${sit === 'aberta' ? 'acao' : sit === 'fechada' ? 'at' : 'neutra'}`}>{sit[0].toUpperCase() + sit.slice(1)}</span></div>
-          <div className="total num"><span>R$</span>{reais(t.total).slice(3)}</div>
-          <div className="quem num">
-            {r.pessoa.map(p => <button key={p.id} onClick={() => setFiltro(filtro === p.id ? 'todas' : p.id)} aria-label={`Ver só ${p.nome}`}><Selo pessoa={p} /><span className="v">{reais(t.porPessoa.get(p.id) ?? 0)}</span></button>)}
-            {t.semDono ? <button onClick={() => setFiltro('sem')}><Selo semDono={`${t.semDono} sem dono`} /><span className="v">{reais(t.valorSemDono)}</span></button> : null}
-            {t.pendentes ? <button onClick={() => ir({ tela: 'conciliacao' })}><Selo semDono={`${t.pendentes} para conferir`} /><span className="v">{reais(t.valorPendente)}</span></button> : null}
-          </div>
-        </section>
-        {tudoCerto ? <div className="aviso ok" role="status"><Check size={20} aria-hidden="true" /><div><p>Todas as linhas têm dono. Os fechamentos estão prontos.</p><button className="bt link" onClick={() => ir({ tela: 'fechamentos', mes })}>Ver fechamentos e mandar resumos</button></div></div> : null}
-        {t.semDono ? <div className="aviso" role="status"><CircleAlert size={20} aria-hidden="true" /><p>{t.semDono} {t.semDono > 1 ? 'linhas' : 'linha'} desta fatura ainda sem dono, o total pode mudar.</p></div> : null}
-        {t.pendentes ? <button className="aviso info" onClick={() => ir({ tela: 'conciliacao' })} style={{ border: 0, textAlign: 'left', cursor: 'pointer', font: 'inherit' }}><Copy size={20} aria-hidden="true" /><div><p>{t.pendentes} {t.pendentes > 1 ? 'linhas esperam' : 'linha espera'} você conferir a importação.</p><span className="bt link" style={{ minHeight: 0 }}>Conferir agora</span></div></button> : null}
-        {sit !== 'importada' ? <p className="mini">Esta é a parcial com o que foi lançado no app e as parcelas previstas. Ao importar a fatura do banco, ela vira a palavra final.</p> : null}
+        <div className="duas">
+        <div className="col-a">
+        <Divisao total={t.total}
+          sub={<><LogoBanco banco={cartao.banco} /><span>{cartao.apelido} · {sit === 'aberta' ? `parcial, fecha ${ddmm(d.fechamento)}` : sit === 'importada' ? `importada, vence ${ddmm(d.vencimento)}` : `fechou ${ddmm(d.fechamento)}`}</span></>}
+          fatias={[...r.pessoa.map(p => ({ pessoa: p, valor: t.porPessoa.get(p.id) ?? 0, acao: () => setFiltro(filtro === p.id ? 'todas' : p.id) })),
+            ...(t.semDono ? [{ pessoa: null, valor: t.valorSemDono, rotulo: `${t.semDono} sem dono`, acao: () => setFiltro('sem') }] : []),
+            ...(t.pendentes ? [{ pessoa: null, valor: t.valorPendente, rotulo: `${t.pendentes} para conferir`, acao: () => ir({ tela: 'conciliacao' }) }] : [])]}>
+          {t.semDono && !t.pendentes ? <p className="heroi-nota">{t.semDono} {t.semDono > 1 ? 'linhas ainda sem dono' : 'linha ainda sem dono'}, o total de cada pessoa pode mudar.</p> : null}
+          {sit !== 'importada' ? <p className="heroi-nota">Parcial com o que foi lançado no app e as parcelas previstas. Ao importar a fatura do banco, ela vira a palavra final.</p> : null}
+        </Divisao>
+        {t.pendentes ? <button className="aviso info" onClick={() => ir({ tela: 'conciliacao' })} style={{ border: 0, textAlign: 'left', cursor: 'pointer', font: 'inherit' }}><Copy size={20} aria-hidden="true" /><div><p>{t.pendentes} {t.pendentes > 1 ? 'linhas esperam' : 'linha espera'} você conferir a importação.</p><span className="bt link" style={{ minHeight: 0 }}>Conferir agora</span></div></button>
+          : tudoCerto ? <div className="aviso ok" role="status"><Check size={20} aria-hidden="true" /><div><p>Todas as linhas têm dono. Os fechamentos estão prontos.</p><button className="bt link" onClick={() => ir({ tela: 'fechamentos', mes })}>Ver fechamentos e mandar resumos</button></div></div> : null}
+        </div>
+        <div className="col-b">
         <div className="filtros" role="group" aria-label="Filtrar linhas">{filtros.filter(([, , n], i) => n || i < 2).map(([k, n, q]) => <button key={k} className="chip" aria-pressed={filtro === k} onClick={() => setFiltro(filtro === k && k !== 'todas' ? 'todas' : k)}>{n} <span className="n">{q}</span></button>)}</div>
         <p className="mini" aria-live="polite">{t.semDono} de {t.quantidade} linhas sem dono{selecao ? '' : ' · toque longo para marcar várias'}</p>
         {visiveis.length ? (
@@ -81,6 +81,7 @@ export function Fatura() {
               onClick={() => tocar(l)} onPointerDown={() => apertar(l)} onPointerUp={soltar} onPointerLeave={soltar} onPointerCancel={soltar} />)}</div>))}
           </div>
         ) : <div className="vazio"><h2>Nada neste filtro</h2><p>{filtro === 'sem' ? 'Todas as linhas já têm dono.' : 'Nenhuma linha combina com este filtro.'}</p><button className="bt secundario medio" onClick={() => setFiltro('todas')}>Ver todas</button></div>}
+        </div></div>
       </>)}
     </main>
     <div className={`massa ${selecao ? 'on' : ''}`} role="region" aria-label="Seleção">

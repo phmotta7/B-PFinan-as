@@ -440,3 +440,121 @@ input[type="file"].escondido{position:absolute;width:1px;height:1px;opacity:0;po
 .faixa-demo button{position:relative}
 .faixa-demo button::before{content:"";position:absolute;inset:-6px -8px}
 .resumo-ct p svg{flex:none}
+
+/* ================= Estrutura premium (as duas propostas) ================= */
+/* Layout: no celular, uma coluna com o herói (total + divisão) no topo; a partir de 1024 px, menu lateral à esquerda e a tela em duas colunas (herói e resumo à esquerda, conteúdo à direita). */
+.coluna{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+.lateral{display:none}
+.duas,.col-a,.col-b{display:flex;flex-direction:column;gap:14px;min-width:0}
+
+/* Valor: reais grandes, R$ e centavos discretos */
+.valor{display:inline-flex;align-items:baseline;white-space:nowrap;font-variant-numeric:tabular-nums lining-nums;color:var(--tinta)}
+.valor-moeda{font-weight:600;color:var(--suave);margin-right:.18em;font-size:.42em;align-self:flex-start;margin-top:.32em}
+.valor-inteiro{font-weight:700}
+.valor-cent{font-weight:600;color:var(--suave);font-size:.5em;align-self:flex-start;margin-top:.22em;margin-left:.04em}
+.valor-gg{font-size:56px;line-height:1;letter-spacing:-.035em}
+.valor-g{font-size:34px;line-height:1;letter-spacing:-.025em}
+.valor-m{font-size:16px;letter-spacing:0}
+.valor-m .valor-moeda,.valor-m .valor-cent{font-size:inherit;align-self:auto;margin-top:0;font-weight:inherit;color:inherit}
+.valor-m .valor-moeda{margin-right:.25em}
+
+/* Herói: o total do mês e de quem é esse dinheiro, direto no fundo */
+.heroi{display:flex;flex-direction:column;gap:12px;padding:6px 2px 4px}
+.heroi-sub{display:flex;align-items:center;gap:8px;font:var(--t-apoio);color:var(--suave)}
+.heroi-sub .logo{width:24px;height:24px}
+.heroi-nota{font:var(--t-apoio);font-size:13px;color:var(--suave)}
+.regua{display:flex;gap:3px;height:14px;border-radius:7px;overflow:hidden;margin-top:6px}
+.regua-fatia{min-width:6px;flex-basis:0;transition:flex-grow var(--d-folha) var(--ease-troca)}
+.regua-fatia.p{background:var(--pedro)}.regua-fatia.b{background:var(--bruna)}.regua-fatia.e{background:var(--eliete)}.regua-fatia.l{background:var(--lucimar)}.regua-fatia.outro{background:var(--suave)}
+.regua-fatia.x{background:repeating-linear-gradient(135deg,var(--linha) 0 5px,var(--linha-forte) 5px 10px)}
+.legenda{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.legenda li{min-width:0}
+.legenda li:has(.selo.x){grid-column:1/-1}
+.legenda li > *{all:unset;box-sizing:border-box;width:100%;min-height:52px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:3px;padding:4px 0;border-radius:var(--r-pequeno);cursor:default}
+.legenda li > * > .valor{padding-left:28px}
+.legenda li > button{cursor:pointer}
+.legenda li > button:focus-visible{outline:2.5px solid var(--foco);outline-offset:2px}
+.legenda .valor{font-weight:700;font-size:15px}
+.legenda .selo{min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media (prefers-reduced-motion: reduce){.regua-fatia{transition:none}}
+
+/* Folhas nunca mais largas que um celular grande */
+.folha{max-width:560px;margin:0 auto}
+
+/* Computador */
+@media (min-width:1024px){
+  body{background:var(--chao)}
+  .tela{max-width:none;flex-direction:row;box-shadow:none}
+  .lateral{display:flex;flex-direction:column;gap:4px;width:248px;flex:none;padding:24px 16px;border-right:1px solid var(--linha);background:var(--chao)}
+  .lateral-marca{display:flex;align-items:center;gap:10px;font:var(--t-forte);padding:0 8px 18px}
+  .lateral-lancar{margin:0 0 16px;width:100%}
+  .lateral-item{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:12px;font:600 15px/1 var(--fonte);color:var(--suave)}
+  .lateral-item:hover{background:var(--cartao)}
+  .lateral-item[aria-current="page"]{background:var(--cartao);color:var(--tinta);box-shadow:var(--s-cartao)}
+  .lateral-item:focus-visible{outline:2.5px solid var(--foco)}
+  .barra{display:none}
+  .coluna .topo,.coluna .conteudo{padding-left:max(32px,calc((100% - 1120px)/2));padding-right:max(32px,calc((100% - 1120px)/2))}
+  .coluna .conteudo{padding-bottom:48px}
+  .duas{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:32px;align-items:start}
+  .col-a{position:sticky;top:0}
+  .valor-gg{font-size:64px}
+  .rodape{margin-left:-32px;margin-right:-32px;padding-left:32px;padding-right:32px}
+}
+
+/* ================= Proposta 1 · Papel e tinta ================= */
+/* Calma e luz: papel quente, tinta quase preta, um azul de tinta só no principal, sombras quentes em duas camadas; escuro em carvão quente */
+:root[data-estilo="papel"]{
+  --chao:#f4f1ec;--cartao:#fffdf9;--elevado:#fffdf9;--linha:#e8e2d8;--linha-forte:#d3cbbe;--tinta:#1d1b17;--suave:#5f584e;--apagado:#6b645a;
+  --acao:#2a3f9e;--acao-forte:#1f3182;--acao-texto:#2a3f9e;--acao-leve:#eceffa;--foco:#2a3f9e;--vidro:rgba(250,247,242,.86);
+  --s-cartao:0 1px 1px rgba(60,40,10,.04),0 6px 18px -10px rgba(60,40,10,.16);
+  --s-elevado:0 2px 4px rgba(60,40,10,.05),0 18px 40px -16px rgba(60,40,10,.28);
+  --s-acao:0 1px 2px rgba(20,24,60,.18);
+  --r-cartao:20px;
+}
+@media (prefers-color-scheme: dark){:root[data-estilo="papel"]:not([data-theme="light"]){
+  --chao:#171512;--cartao:#221f1b;--elevado:#2b2722;--linha:#34302a;--linha-forte:#4a443c;--tinta:#efe9df;--suave:#b5ac9e;--apagado:#a39a8c;
+  --acao:#4a62d6;--acao-forte:#3c53c2;--acao-texto:#aab8ff;--acao-leve:#2a2d45;--foco:#aab8ff;--vidro:rgba(28,26,22,.86);
+  --s-cartao:0 1px 0 rgba(255,250,240,.04) inset,0 8px 20px -12px rgba(0,0,0,.6);--s-elevado:0 1px 0 rgba(255,250,240,.05) inset,0 20px 44px -16px rgba(0,0,0,.75);--s-acao:none}}
+:root[data-estilo="papel"][data-theme="dark"]{
+  --chao:#171512;--cartao:#221f1b;--elevado:#2b2722;--linha:#34302a;--linha-forte:#4a443c;--tinta:#efe9df;--suave:#b5ac9e;--apagado:#a39a8c;
+  --acao:#4a62d6;--acao-forte:#3c53c2;--acao-texto:#aab8ff;--acao-leve:#2a2d45;--foco:#aab8ff;--vidro:rgba(28,26,22,.86);
+  --s-cartao:0 1px 0 rgba(255,250,240,.04) inset,0 8px 20px -12px rgba(0,0,0,.6);--s-elevado:0 1px 0 rgba(255,250,240,.05) inset,0 20px 44px -16px rgba(0,0,0,.75);--s-acao:none}
+:root[data-estilo="papel"] .topo h1{font-size:30px;letter-spacing:-.025em}
+:root[data-estilo="papel"] .barra .lancar span{width:48px;height:48px;margin-top:-20px;box-shadow:0 6px 16px -8px rgba(20,24,60,.45)}
+:root[data-estilo="papel"] .passos li.feito b{text-decoration:none;color:var(--apagado);font-weight:500}
+
+/* ================= Proposta 2 · Cofre ================= */
+/* Banco de primeira linha: porcelana fria, o total num painel escuro de "cofre" com luz no alto, letra Geist, botão principal em tinta-marinho */
+:root[data-estilo="cofre"]{
+  --fonte:var(--geist),"Geist","Segoe UI",system-ui,sans-serif;
+  --chao:#f2f3f6;--cartao:#ffffff;--elevado:#ffffff;--linha:#e2e5eb;--linha-forte:#c9ced8;--tinta:#11141c;--suave:#565e6e;--apagado:#636b7b;
+  --acao:#1b2453;--acao-forte:#121a40;--acao-texto:#2b3a8f;--acao-leve:#e9ecf8;--foco:#2b3a8f;--vidro:rgba(246,247,250,.86);
+  --s-cartao:0 1px 2px rgba(17,20,40,.05),0 8px 22px -14px rgba(17,20,40,.2);
+  --s-elevado:0 2px 6px rgba(17,20,40,.06),0 22px 48px -18px rgba(17,20,40,.32);
+  --s-acao:0 1px 2px rgba(17,20,40,.2);
+  --cofre-1:#1d2446;--cofre-2:#0f1328;--cofre-tinta:#f3f5fb;--cofre-suave:#aeb6cf;
+  --r-cartao:18px;
+}
+@media (prefers-color-scheme: dark){:root[data-estilo="cofre"]:not([data-theme="light"]){
+  --chao:#0d0f15;--cartao:#161922;--elevado:#1d212c;--linha:#262b37;--linha-forte:#3a404e;--tinta:#eef0f5;--suave:#a5adbd;--apagado:#9aa2b2;
+  --acao:#4d5fd6;--acao-forte:#3f50c0;--acao-texto:#a9b6ff;--acao-leve:#232945;--foco:#a9b6ff;--vidro:rgba(16,18,26,.86);
+  --s-cartao:0 1px 0 rgba(255,255,255,.04) inset,0 8px 22px -14px rgba(0,0,0,.7);--s-elevado:0 1px 0 rgba(255,255,255,.05) inset,0 22px 48px -18px rgba(0,0,0,.8);--s-acao:none;
+  --cofre-1:#232a4d;--cofre-2:#141936}}
+:root[data-estilo="cofre"][data-theme="dark"]{
+  --chao:#0d0f15;--cartao:#161922;--elevado:#1d212c;--linha:#262b37;--linha-forte:#3a404e;--tinta:#eef0f5;--suave:#a5adbd;--apagado:#9aa2b2;
+  --acao:#4d5fd6;--acao-forte:#3f50c0;--acao-texto:#a9b6ff;--acao-leve:#232945;--foco:#a9b6ff;--vidro:rgba(16,18,26,.86);
+  --s-cartao:0 1px 0 rgba(255,255,255,.04) inset,0 8px 22px -14px rgba(0,0,0,.7);--s-elevado:0 1px 0 rgba(255,255,255,.05) inset,0 22px 48px -18px rgba(0,0,0,.8);--s-acao:none;
+  --cofre-1:#232a4d;--cofre-2:#141936}
+:root[data-estilo="cofre"] .topo h1{font-size:28px;font-weight:700;letter-spacing:-.03em}
+:root[data-estilo="cofre"] .heroi{background-color:var(--cofre-2);background-image:radial-gradient(120% 90% at 20% 0%,var(--cofre-1),var(--cofre-2));color:var(--cofre-tinta);border-radius:24px;padding:22px 20px 14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 18px 40px -20px rgba(15,19,40,.6)}
+:root[data-estilo="cofre"] .heroi .valor{color:var(--cofre-tinta)}
+:root[data-estilo="cofre"] .heroi .valor-moeda,:root[data-estilo="cofre"] .heroi .valor-cent,:root[data-estilo="cofre"] .heroi-sub,:root[data-estilo="cofre"] .heroi-nota{color:var(--cofre-suave)}
+:root[data-estilo="cofre"] .heroi .selo{color:var(--cofre-tinta)}
+:root[data-estilo="cofre"] .heroi .selo b{box-shadow:0 0 0 1.5px rgba(255,255,255,.35)}
+:root[data-estilo="cofre"] .heroi .selo.x{color:#f6cd7a}
+:root[data-estilo="cofre"] .heroi .regua-fatia.x{background:repeating-linear-gradient(135deg,rgba(255,255,255,.12) 0 5px,rgba(255,255,255,.26) 5px 10px)}
+:root[data-estilo="cofre"] .heroi .legenda li > button:focus-visible{outline-color:#fff}
+:root[data-estilo="cofre"] .valor-inteiro{font-weight:600}
+:root[data-estilo="cofre"] .barra .lancar span{width:48px;height:48px;margin-top:-20px;box-shadow:0 6px 16px -8px rgba(17,20,40,.5)}
+:root[data-estilo="cofre"] .passos li.feito b{text-decoration:none;color:var(--apagado);font-weight:500}

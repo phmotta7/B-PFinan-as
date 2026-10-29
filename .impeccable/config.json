@@ -9,7 +9,8 @@
       "design/marca/marca.tpl.html",
       "design/redesenho.html",
       "design/premium/antes.html",
-      "design/premium/diagnostico.html"
+      "design/premium/diagnostico.html",
+      "design/premium/propostas.html"
     ],
     "ignoreValues": [
       {

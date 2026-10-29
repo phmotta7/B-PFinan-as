@@ -153,3 +153,41 @@ export function Dialogo({ pedido, aoFechar }: { pedido: Confirmacao; aoFechar: (
     </>
   );
 }
+
+// ---------- Valor: o número como protagonista (R$ e centavos discretos) ----------
+export function Valor({ c, tamanho = 'g', className = '' }: { c: number; tamanho?: 'gg' | 'g' | 'm'; className?: string }) {
+  const txt = reais(c).replace(' ', ' ');
+  const neg = txt.startsWith('-');
+  const [inteiro, cent] = txt.replace(/^-?R\$ /, '').split(',');
+  return (
+    <span className={`valor valor-${tamanho} num ${className}`} aria-label={txt}>
+      <span className="valor-moeda" aria-hidden="true">{neg ? '-' : ''}R$</span>
+      <span className="valor-inteiro" aria-hidden="true">{inteiro}</span>
+      <span className="valor-cent" aria-hidden="true">,{cent}</span>
+    </span>
+  );
+}
+
+// ---------- Divisão do total por pessoa: o único gráfico, com a pergunta "de quem é esse dinheiro?" ----------
+export type FatiaDivisao = { pessoa: Pessoa | null; valor: number; rotulo?: string; acao?: () => void };
+export function Divisao({ total, fatias, sub, children }: { total: number; fatias: FatiaDivisao[]; sub?: ReactNode; children?: ReactNode }) {
+  const visiveis = fatias.filter(f => f.valor > 0);
+  const descricao = fatias.map(f => `${f.rotulo ?? f.pessoa?.nome ?? 'Sem dono'} ${reais(f.valor)}`).join(', ');
+  return (
+    <section className="heroi" aria-label="Total do mês e quem paga quanto">
+      <Valor c={total} tamanho="gg" />
+      {sub ? <p className="heroi-sub">{sub}</p> : null}
+      <div className="regua" role="img" aria-label={`Divisão: ${descricao}`}>
+        {visiveis.map((f, i) => <span key={i} className={`regua-fatia ${f.pessoa ? classePessoa(f.pessoa) : 'x'}`} style={{ flexGrow: f.valor }} />)}
+      </div>
+      <ul className="legenda num">
+        {fatias.map((f, i) => {
+          const conteudo = <><Selo pessoa={f.pessoa} semDono={f.rotulo} /><Valor c={f.valor} tamanho="m" /></>;
+          return <li key={i}>{f.acao ? <button onClick={f.acao}>{conteudo}</button> : <div>{conteudo}</div>}</li>;
+        })}
+      </ul>
+      {children}
+    </section>
+  );
+}
+export const classePessoa = (p: Pessoa) => ({ Pedro: 'p', Bruna: 'b', Eliete: 'e', Lucimar: 'l' } as Record<string, string>)[p.nome] ?? 'outro';

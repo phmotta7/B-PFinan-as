@@ -6,15 +6,19 @@ import type { Compra, Fatura, ParcelaCartao, Pessoa, Retrato } from './tipos';
 
 export type LinhaFatura = { parcela: ParcelaCartao; compra: Compra; valor: number; data: string; numero: number; total: number; prevista: boolean; pendente: boolean };
 
+/** Data em que a linha aparece na fatura: a do arquivo do banco quando veio dele; senão, a da compra. */
+let _linhas: Map<string, string> | null = null, _ref: unknown = null;
+function dataNaFatura(p: ParcelaCartao, c: Compra): string { return (p.linhaImportada && _linhas?.get(p.linhaImportada)) || c.data; }
 export const faturaDe = (r: Retrato, cartao: string, mes: Mes): Fatura | undefined => r.fatura.find(f => f.cartao === cartao && f.mes === mes);
 
 /** Numa fatura importada, só valem as linhas do banco (RN-CO-01); previstas que não vieram ficam na conferência. */
 export function linhasDaFatura(r: Retrato, faturaId: string, incluirNaoEncontradas = false): LinhaFatura[] {
   const compras = new Map(r.compra.map(c => [c.id, c]));
   const importada = r.fatura.find(f => f.id === faturaId)?.status === 'importada';
+  if (_ref !== r.linha_importada) { _ref = r.linha_importada; _linhas = new Map(r.linha_importada.map(l => [l.id, String((l.dados as { data?: string }).data ?? '')])); }
   return r.parcela_cartao.filter(p => p.fatura === faturaId && (incluirNaoEncontradas || !importada || p.status === 'confirmada')).map(p => {
     const c = compras.get(p.compra)!;
-    return { parcela: p, compra: c, valor: p.valor, data: c.data, numero: p.numero, total: c.parcelas, prevista: p.status === 'prevista', pendente: !!c.pendencia };
+    return { parcela: p, compra: c, valor: p.valor, data: dataNaFatura(p, c), numero: p.numero, total: c.parcelas, prevista: p.status === 'prevista', pendente: !!c.pendencia };
   }).sort((a, b) => a.data.localeCompare(b.data) || (a.compra.tipo === 'iof' ? 1 : 0) - (b.compra.tipo === 'iof' ? 1 : 0));
 }
 
