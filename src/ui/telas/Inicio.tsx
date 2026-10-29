@@ -1,6 +1,6 @@
 'use client';
 // Início (T2, Etapa 1: cartões e pendências) e Cartões (T3).
-import { Check, FileUp, Copy, User, MessageCircle } from 'lucide-react';
+import { Check, FileUp, Copy, User, MessageCircle, Plus } from 'lucide-react';
 import { useApp } from '../estado';
 import { Esqueleto, LogoBanco, Selo, Topo, ddmm, mesLongo, reais } from '../comum';
 import { aReceberAntesDe, faturaDe, fechamentosDoMes, linhasDaFatura, parcelasNaoEncontradas, situacaoDaFatura, totaisDaFatura } from '@/dados/consultas';
@@ -19,11 +19,16 @@ export function passosDoMes(r: Retrato, mes: Mes, titular: string, hoje: string)
   const fech = fechamentosDoMes(r, mes, titular).filter(f => f.total > 0);
   const avisados = fech.filter(f => f.enviadoEm).length;
   const abertas = faturas.filter(x => hoje < x.d.fechamento);
+  // Nenhuma fatura do mês fechou ainda: o primeiro passo é esperar, lançando as compras no app
+  const esperando = !paraImportar.length && faturas.length > 0 && faturas.every(x => hoje < x.d.fechamento);
+  const proxima = [...faturas].sort((a, b) => a.d.fechamento.localeCompare(b.d.fechamento))[0];
   const passos = [
-    { nome: 'Importar as faturas', feito: !paraImportar.length, dica: paraImportar.length ? `${paraImportar.map(x => x.c.apelido).join(' e ')} já ${paraImportar.length > 1 ? 'fecharam' : 'fechou'}. Traga o arquivo.` : '', botao: paraImportar.length ? `Importar fatura do ${paraImportar[0].c.banco === 'nubank' ? 'Nubank' : paraImportar[0].c.banco === 'bb' ? 'BB' : paraImportar[0].c.apelido}` : '', rota: { tela: 'importar' as const, cartao: paraImportar[0]?.c.id }, icone: FileUp },
+    esperando
+      ? { nome: 'Importar as faturas', feito: false, dica: `A primeira fatura (${proxima.c.apelido}) fecha em ${ddmm(proxima.d.fechamento)}. Até lá, lance as compras no app.`, botao: 'Lançar uma compra', rota: { tela: 'lancar' as const }, icone: Plus }
+      : { nome: 'Importar as faturas', feito: !paraImportar.length, dica: paraImportar.length ? `${paraImportar.map(x => x.c.apelido).join(' e ')} já ${paraImportar.length > 1 ? 'fecharam' : 'fechou'}. Traga o arquivo.` : '', botao: paraImportar.length ? `Importar fatura do ${paraImportar[0].c.banco === 'nubank' ? 'Nubank' : paraImportar[0].c.banco === 'bb' ? 'BB' : paraImportar[0].c.apelido}` : '', rota: { tela: 'importar' as const, cartao: paraImportar[0]?.c.id }, icone: FileUp },
     { nome: 'Conferir o que o app encontrou', feito: !conferir, dica: `${conferir} ${conferir === 1 ? 'item' : 'itens'}: duplicidades e parcelas.`, botao: `Conferir ${conferir} ${conferir === 1 ? 'item' : 'itens'}`, rota: { tela: 'conciliacao' as const }, icone: Copy },
     { nome: 'Dizer de quem é cada linha', feito: !semDono, dica: `${semDono} linhas sem dono.`, botao: `Marcar ${semDono} linhas`, rota: { tela: 'fatura' as const, cartao: faturas.find(x => x.f && linhasDaFatura(r, x.f.id).some(l => !l.compra.pagador && !l.pendente))?.c.id, mes, filtro: 'sem' }, icone: User },
-    { nome: 'Mandar os resumos no WhatsApp', feito: fech.length > 0 && avisados === fech.length && !paraImportar.length && !semDono, dica: `${fech.length - avisados} de ${fech.length} ainda sem aviso.`, botao: 'Mandar os resumos', rota: { tela: 'fechamentos' as const, mes }, icone: MessageCircle },
+    { nome: 'Mandar os resumos no WhatsApp', feito: avisados === fech.length && !paraImportar.length && !semDono, dica: fech.length ? `${fech.length - avisados} de ${fech.length} ainda sem aviso.` : 'Ninguém além da titular tem compras neste mês.', botao: 'Mandar os resumos', rota: { tela: 'fechamentos' as const, mes }, icone: MessageCircle },
   ];
   // Um passo só conta como feito quando os anteriores também estão
   passos.forEach((p, i) => { if (i && !passos[i - 1].feito) p.feito = false; });
@@ -59,7 +64,7 @@ export function Inicio() {
         </ol>
         {atual ? <button className="bt principal cheio" onClick={() => ir(atual.rota)}><atual.icone size={20} strokeWidth={1.75} aria-hidden="true" />{atual.botao}</button>
           : <div className="aviso ok" role="status"><Check size={20} aria-hidden="true" /><p>Tudo marcado e todos avisados. Agora é registrar os Pix quando chegarem.</p></div>}
-        {abertas.length ? <p className="mini">{abertas.map(a => `${a.c.apelido} fecha em ${ddmm(a.d.fechamento)}`).join(' · ')}; até lá os totais são parciais.</p> : null}
+        {abertas.length && atual?.rota.tela !== 'lancar' ? <p className="mini">{abertas.map(a => `${a.c.apelido} fecha em ${ddmm(a.d.fechamento)}`).join(' · ')}; até lá os totais são parciais.</p> : null}
       </section>
       {rec.length ? (
         <section className="cartao" aria-labelledby="h-rec"><h3 id="h-rec">A receber de meses anteriores</h3>
