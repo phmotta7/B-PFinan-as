@@ -473,7 +473,7 @@ input[type="file"].escondido{position:absolute;width:1px;height:1px;opacity:0;po
 .regua-fatia.x{background:repeating-linear-gradient(135deg,var(--linha) 0 5px,var(--linha-forte) 5px 10px)}
 .legenda{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
 .legenda li{min-width:0}
-.legenda li:has(.selo.x){grid-column:1/-1}
+
 .legenda li > *{all:unset;box-sizing:border-box;width:100%;min-height:52px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:3px;padding:4px 0;border-radius:var(--r-pequeno);cursor:default}
 .legenda li > * > .valor{padding-left:28px}
 .legenda li > button{cursor:pointer}
@@ -520,3 +520,31 @@ input[type="file"].escondido{position:absolute;width:1px;height:1px;opacity:0;po
 .valor-inteiro{font-weight:600}
 .barra .lancar span{width:48px;height:48px;margin-top:-20px;box-shadow:var(--s-lancar)}
 .passos li.feito b{text-decoration:none;color:var(--apagado);font-weight:500}
+
+/* ================= Início e Fatura no Cofre ================= */
+/* Troca de mês: um controle só, em pílula */
+.seletor-mes{display:inline-flex;align-items:center;gap:2px;align-self:flex-start;margin-top:8px;background:var(--cartao);border-radius:var(--r-pilula);box-shadow:var(--s-cartao);padding:2px}
+.seletor-mes button{all:unset;cursor:pointer;width:44px;height:40px;border-radius:var(--r-pilula);display:grid;place-items:center;color:var(--suave);position:relative}
+.seletor-mes button::before{content:"";position:absolute;inset:-2px 0}
+.seletor-mes button:active{background:var(--chao)}
+.seletor-mes button:focus-visible{outline:2.5px solid var(--foco)}
+.seletor-mes b{font:600 14px/1 var(--fonte);min-width:132px;text-align:center;font-variant-numeric:tabular-nums}
+.topo .nav .chip{min-height:38px}
+.dica-lista{font:var(--t-mini);color:var(--apagado)}
+
+/* Linhas: nome calmo, valor firme, logo com borda fina */
+.lin .d b{font-weight:500}
+.lin .v{font-weight:600;letter-spacing:-.01em}
+.lin .logo{box-shadow:inset 0 0 0 1px var(--linha)}
+.dia{font:var(--t-rotulo);color:var(--apagado);padding:16px 16px 4px}
+@media (hover:hover){.lin:hover{background:var(--chao)}.legenda li > button:hover{background:rgba(255,255,255,.06)}}
+
+/* Carregando no formato do painel */
+.carregando{padding-top:24px}
+.esq-titulo{display:flex;flex-direction:column;gap:8px;padding:8px 0 4px}
+.esq-titulo i{display:block;height:26px;width:46%;border-radius:var(--r-pequeno);background:var(--linha);animation:respira 1.6s var(--ease-troca) infinite alternate}
+.esq-titulo i + i{height:12px;width:70%}
+.esq-heroi{border-radius:var(--r-painel);padding:22px 20px;background-color:var(--cofre-2);background-image:radial-gradient(120% 90% at 20% 0%,var(--cofre-1),var(--cofre-2));box-shadow:var(--s-painel);display:flex;flex-direction:column;gap:14px}
+.esq-heroi i{display:block;border-radius:var(--r-pequeno);background:rgba(255,255,255,.12);animation:respira 1.6s var(--ease-troca) infinite alternate}
+.esq-heroi .t{height:48px;width:62%}.esq-heroi .s{height:12px;width:54%}.esq-heroi .r{height:14px;border-radius:var(--r-pilula)}
+.esq-heroi .l{display:grid;grid-template-columns:1fr 1fr;gap:12px}.esq-heroi .l i{height:30px}

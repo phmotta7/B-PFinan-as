@@ -130,5 +130,12 @@ function EstadoInicial({ sessao, erro, repo, entrar, recarregar }: { sessao: Ses
         <button className="bt link" onClick={recarregar}>Tentar de novo</button></div></div>
     </main>
   );
-  return <main className="conteudo" style={{ paddingTop: 80 }} aria-busy="true"><div className="esq"><i className="g" /><div><i className="c" /><i style={{ width: '50%' }} /></div><div><i className="c" /><i style={{ width: '40%' }} /></div></div></main>;
+  // Carregando no formato real da tela: o painel do total, a régua e as linhas
+  return (
+    <main className="conteudo carregando" aria-busy="true" aria-label="Carregando">
+      <div className="esq-titulo"><i /><i /></div>
+      <div className="esq-heroi"><i className="t" /><i className="s" /><i className="r" /><div className="l"><i /><i /><i /><i /></div></div>
+      <div className="esq">{[52, 40, 64].map(w => <div key={w}><i className="c" /><i style={{ width: `${w}%` }} /><i style={{ width: '18%', marginLeft: 'auto' }} /></div>)}</div>
+    </main>
+  );
 }

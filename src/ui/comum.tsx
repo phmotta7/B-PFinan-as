@@ -1,7 +1,7 @@
 'use client';
 // Peças comuns da interface (DESIGN.md): selos, logos, cabeçalho, pílulas, esqueleto, folha com mola e diálogo.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { ChevronLeft, CircleAlert } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CircleAlert } from 'lucide-react';
 import { formatarReais } from '@/dominio/dinheiro';
 import type { Pessoa } from '@/dados/tipos';
 
@@ -38,16 +38,32 @@ export function Logo({ loja, vazio }: { loja: string; vazio?: boolean }) {
 export const LogoBanco = ({ banco }: { banco: string }) =>
   banco === 'nubank' || banco === 'bb' ? <span className="logo" aria-hidden="true"><img src={`/logos/${banco}.svg`} alt="" /></span> : <Logo loja={banco} />;
 
-export function Topo({ titulo, sub, voltar, direita }: { titulo: string; sub?: ReactNode; voltar?: () => void; direita?: ReactNode }) {
+export function Topo({ titulo, sub, voltar, direita, abaixo }: { titulo: string; sub?: ReactNode; voltar?: () => void; direita?: ReactNode; abaixo?: ReactNode }) {
   return (
     <header className="topo">
-      <div className="nav">
-        {voltar ? <button className="redondo" onClick={voltar} aria-label="Voltar"><span><ChevronLeft size={20} strokeWidth={1.75} /></span></button> : <span />}
-        {direita}
-      </div>
+      {voltar || direita ? (
+        <div className="nav">
+          {voltar ? <button className="redondo" onClick={voltar} aria-label="Voltar"><span><ChevronLeft size={20} strokeWidth={1.75} /></span></button> : <span />}
+          {direita}
+        </div>
+      ) : null}
       <h1>{titulo}</h1>
       {sub ? <p className="sub">{sub}</p> : null}
+      {abaixo}
     </header>
+  );
+}
+
+const MESES_LONGOS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+/** Troca de mês num controle só: anterior, nome do mês, próximo. */
+export function SeletorMes({ mes, mudar, rotulo = 'Mês' }: { mes: string; mudar: (k: number) => void; rotulo?: string }) {
+  const nome = MESES_LONGOS[Number(mes.slice(5, 7)) - 1];
+  return (
+    <div className="seletor-mes" role="group" aria-label={rotulo}>
+      <button onClick={() => mudar(-1)} aria-label="Mês anterior"><ChevronLeft size={20} strokeWidth={1.75} aria-hidden="true" /></button>
+      <b aria-live="polite">{nome[0].toUpperCase() + nome.slice(1)} de {mes.slice(0, 4)}</b>
+      <button onClick={() => mudar(1)} aria-label="Próximo mês"><ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" /></button>
+    </div>
   );
 }
 

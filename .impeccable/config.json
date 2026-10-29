@@ -12,7 +12,8 @@
       "design/premium/diagnostico.html",
       "design/premium/propostas.html",
       "design/prototipo/prototipo.tpl.html",
-      "design/prototipo.html"
+      "design/prototipo.html",
+      "design/premium/inicio-fatura.html"
     ],
     "ignoreValues": [
       {

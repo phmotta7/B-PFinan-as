@@ -1,9 +1,9 @@
 'use client';
 // Fatura (T4): linhas por dia, filtros, totais por pessoa, marcação individual e em massa (§4.6).
 import { useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, FileUp, X, Check, Copy } from 'lucide-react';
+import { FileUp, X, Check, Copy } from 'lucide-react';
 import { useApp } from '../estado';
-import { Divisao, Folha, Logo, LogoBanco, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
+import { Divisao, Folha, Logo, LogoBanco, SeletorMes, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
 import { faturaDe, linhasDaFatura, situacaoDaFatura, totaisDaFatura, type LinhaFatura } from '@/dados/consultas';
 import { marcar } from '@/dados/operacoes';
 import { datasDaFatura, somarMeses } from '@/dominio/ciclo';
@@ -46,13 +46,9 @@ export function Fatura() {
 
   const tudoCerto = fatura?.status === 'importada' && !t.semDono && !t.pendentes && linhas.length > 0;
   return (<>
-    <Topo titulo={cartao.banco === 'nubank' ? 'Nubank' : cartao.banco === 'bb' ? 'BB' : cartao.apelido} sub={`Fatura ${mesCurto(mes)} · vence ${ddmm(d.vencimento)}`} voltar={podeVoltar ? voltar : undefined}
-      direita={<div className="mes">
-        <button className="redondo" onClick={() => mudarMes(-1)} aria-label="Fatura anterior"><span><ChevronLeft size={20} strokeWidth={1.75} /></span></button>
-        <b>{mesCurto(mes)}</b>
-        <button className="redondo" onClick={() => mudarMes(1)} aria-label="Próxima fatura"><span><ChevronRight size={20} strokeWidth={1.75} /></span></button>
-        <button className="chip" onClick={() => ir({ tela: 'importar', cartao: cartao.id })}><FileUp size={16} strokeWidth={1.75} aria-hidden="true" />Importar</button>
-      </div>} />
+    <Topo titulo={cartao.banco === 'nubank' ? 'Nubank' : cartao.banco === 'bb' ? 'BB' : cartao.apelido} voltar={podeVoltar ? voltar : undefined}
+      direita={<button className="chip" onClick={() => ir({ tela: 'importar', cartao: cartao.id })}><FileUp size={16} strokeWidth={1.75} aria-hidden="true" />Importar</button>}
+      abaixo={<SeletorMes mes={mes} mudar={mudarMes} rotulo="Fatura" />} />
     <main className="conteudo">
       {!linhas.length ? (
         <div className="vazio"><h2>Nenhuma linha nesta fatura ainda</h2>
@@ -74,7 +70,7 @@ export function Fatura() {
         </div>
         <div className="col-b">
         <div className="filtros" role="group" aria-label="Filtrar linhas">{filtros.filter(([, , n], i) => n || i < 2).map(([k, n, q]) => <button key={k} className="chip" aria-pressed={filtro === k} onClick={() => setFiltro(filtro === k && k !== 'todas' ? 'todas' : k)}>{n} <span className="n">{q}</span></button>)}</div>
-        <p className="mini" aria-live="polite">{t.semDono} de {t.quantidade} linhas sem dono{selecao ? '' : ' · toque longo para marcar várias'}</p>
+        <p className="dica-lista" aria-live="polite">{selecao ? 'Toque nas linhas para marcar ou desmarcar.' : 'Toque numa linha para dizer de quem é; toque longo para marcar várias.'}</p>
         {visiveis.length ? (
           <div className="lista">{[...grupos.entries()].map(([dia, ls]) => (
             <div key={dia}><div className="dia">{diaLongo(dia)}</div>{ls.map(l => <Linha key={l.parcela.id} l={l} pessoa={nome(l.compra.pagador)} marcada={selecao?.has(l.compra.id)} emSelecao={!!selecao}
