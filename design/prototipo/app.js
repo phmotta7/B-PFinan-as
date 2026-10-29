@@ -663,7 +663,7 @@ A['f-esc'] = d => { S.form.esc = d.v; render(); };
 A['f-cat'] = d => { S.form.cat = S.form.cat === d.v ? '' : d.v; render(); };
 A['f-todas'] = () => { S.form.todasCats = true; render(); };
 A['f-abre'] = () => { S.form.abreCartao = true; render(); };
-A['f-n'] = d => { S.form.n = Math.min(48, Math.max(1, S.form.n + +d.k)); render(); };
+A['f-n'] = d => { S.form.n = Math.max(1, S.form.n + +d.k); render(); };
 A['f-cartao'] = d => { S.form.cartao = d.c; render(); };
 A['f-data'] = d => { S.form.data = d.v; render(); };
 A['f-salvar'] = () => {

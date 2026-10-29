@@ -208,13 +208,13 @@ Gerada por pessoa, para o mês. Botão "Enviar no WhatsApp" abre `wa.me/<telefon
 Resumo Fatura Nov/26 – Lucimar
 
 💳 Nubank (vence 10/11)
-• Farmácia São João – R$ 45,90 (02/10)
 • Magazine Luiza – 3/10 – R$ 80,00 – faltam 7x – restante R$ 560,00 (15/08)
+• Farmácia São João – R$ 45,90 (02/10)
 Subtotal Nubank: R$ 125,90
 
 💳 BB (vence 17/11)
-• Renner – 1/4 – R$ 62,50 – faltam 3x – restante R$ 187,50 (20/10)
 • Padaria Pão Quente – R$ 18,00 (12/10)
+• Renner – 1/4 – R$ 62,50 – faltam 3x – restante R$ 187,50 (20/10)
 Subtotal BB: R$ 80,50
 
 TOTAL: R$ 206,40
@@ -623,3 +623,4 @@ Os arquivos reais de fatura/extrato (com valores e nomes alterados) virarão **c
 | D9 | **Logos reais de bancos e lojas** (28/10/2026): bancos e lojas conhecidas mostram o logo verdadeiro da marca, guardado dentro do app (nunca buscado em serviço de fora, para não expor as compras). Loja desconhecida mostra a inicial num círculo; o usuário pode trocar o logo associado a uma loja. O logo não define dono (sem atribuição automática por loja). | §16 |
 | D10 | **Barra de baixo na Etapa 1** (28/10/2026): Início · Cartões · Lançar · Fechamentos · Mais. Na Etapa 2, Carteiras entra no lugar de Fechamentos, que passa para dentro do Início e do Mais (§12.1 vale a partir da Etapa 2). | §12.1 |
 | D11 | **Cadastro de dívidas na Etapa 1** (28/10/2026): fica em Mais → Dívidas, ao lado de Configurações; na Etapa 3 a mesma tela ganha as visões completas. | T12, T15 |
+| D12 | **Ordem na mensagem do WhatsApp** (28/10/2026): dentro de cada cartão, por data da compra original (parcelas antigas primeiro, pela data em que a compra foi feita). O exemplo do §5.3 foi corrigido para seguir RN-WA-04. | RN-WA-04, §5.3 |

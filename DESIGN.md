@@ -399,7 +399,7 @@ Firmes e calmos; respondem no instante do toque.
 - **Style:** 52 de altura, fundo cartão, borda interna `linha-forte` de 1,5px, raio 14, texto 16px. Rótulo em cima (`t-rotulo`, `suave`) e ajuda embaixo (13px, `suave`).
 - **Campo de valor:** 64 de altura, número em `t-valor` com "R$" menor e suave; abre teclado numérico; a ajuda mostra a divisão em parcelas ("Em 3 vezes: 100,00 + 100,00 + 100,00").
 - **Focus:** a borda vira 2px `foco`.
-- **Error:** borda 2px `erro` e, logo abaixo, ícone de atenção + frase que diz o que houve e como resolver ("Parcelas vai de 1 a 48. Para à vista, use 1."), enquanto a pessoa digita.
+- **Error:** borda 2px `erro` e, logo abaixo, ícone de atenção + frase que diz o que houve e como resolver ("Parcelas precisa ser 1 ou mais. Para à vista, use 1."), enquanto a pessoa digita.
 - **Disabled:** fundo `chao`, borda `linha`, texto `apagado`, com ajuda explicando o porquê.
 
 ### Segmentado (Pessoal / Casal)

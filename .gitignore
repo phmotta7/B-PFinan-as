@@ -6,3 +6,8 @@ node_modules/
 .impeccable/config.local.json
 .impeccable/review/
 .impeccable/build/
+
+# Next.js e testes
+/coverage
+*.tsbuildinfo
+next-env.d.ts
