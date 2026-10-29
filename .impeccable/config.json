@@ -47,6 +47,24 @@
         ],
         "createdAt": "2026-10-29T00:53:03.688Z",
         "reason": "falso positivo: mistura token do tema escuro (#aaa59c) com fundo claro; papel de parede escurecido"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "design/marca.html"
+        ],
+        "createdAt": "2026-10-29T01:00:41.979Z",
+        "reason": "falso positivo: detector mistura tokens do tema escuro com fundo claro"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "design/marca/marca.tpl.html"
+        ],
+        "createdAt": "2026-10-29T01:00:42.553Z",
+        "reason": "falso positivo: detector mistura tokens do tema escuro com fundo claro"
       }
     ]
   }
