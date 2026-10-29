@@ -1,6 +1,6 @@
 'use client';
 // Fatura (T4): linhas por dia, filtros, totais por pessoa, marcação individual e em massa (§4.6).
-import { useMemo, useRef, useState } from 'react';
+import { memo, useMemo, useRef, useState } from 'react';
 import { FileUp, X, Check, Copy } from 'lucide-react';
 import { useApp } from '../estado';
 import { Divisao, Folha, Logo, LogoBanco, SeletorMes, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
@@ -43,6 +43,8 @@ export function Fatura() {
   const apertar = (l: LinhaFatura) => { longo.current = false; window.clearTimeout(segura.current);
     segura.current = window.setTimeout(() => { longo.current = true; setSelecao(new Set([...(selecao ?? []), l.compra.id])); navigator.vibrate?.(10); }, 450); };
   const soltar = () => window.clearTimeout(segura.current);
+  const porId = useMemo(() => new Map(linhas.map(l => [l.parcela.id, l])), [linhas]);
+  const daLinha = (e: React.SyntheticEvent) => { const id = (e.target as HTMLElement).closest<HTMLElement>('[data-l]')?.dataset.l; return id ? porId.get(id) : undefined; };
 
   const tudoCerto = fatura?.status === 'importada' && !t.semDono && !t.pendentes && linhas.length > 0;
   return (<>
@@ -72,9 +74,9 @@ export function Fatura() {
         <div className="filtros" role="group" aria-label="Filtrar linhas">{filtros.filter(([, , n], i) => n || i < 2).map(([k, n, q]) => <button key={k} className="chip" aria-pressed={filtro === k} onClick={() => setFiltro(filtro === k && k !== 'todas' ? 'todas' : k)}>{n} <span className="n">{q}</span></button>)}</div>
         <p className="dica-lista" aria-live="polite">{selecao ? 'Toque nas linhas para marcar ou desmarcar.' : 'Toque numa linha para dizer de quem é; toque longo para marcar várias.'}</p>
         {visiveis.length ? (
-          <div className="lista">{[...grupos.entries()].map(([dia, ls]) => (
-            <div key={dia}><div className="dia">{diaLongo(dia)}</div>{ls.map(l => <Linha key={l.parcela.id} l={l} pessoa={nome(l.compra.pagador)} marcada={selecao?.has(l.compra.id)} emSelecao={!!selecao}
-              onClick={() => tocar(l)} onPointerDown={() => apertar(l)} onPointerUp={soltar} onPointerLeave={soltar} onPointerCancel={soltar} />)}</div>))}
+          <div className="lista" onClick={e => { const l = daLinha(e); if (l) tocar(l); }} onPointerDown={e => { const l = daLinha(e); if (l) apertar(l); }}
+            onPointerUp={soltar} onPointerCancel={soltar} onPointerLeave={soltar}>{[...grupos.entries()].map(([dia, ls]) => (
+            <div key={dia}><div className="dia">{diaLongo(dia)}</div>{ls.map(l => <Linha key={l.parcela.id} l={l} pessoa={nome(l.compra.pagador)} marcada={!!selecao?.has(l.compra.id)} emSelecao={!!selecao} />)}</div>))}
           </div>
         ) : <div className="vazio"><h2>Nada neste filtro</h2><p>{filtro === 'sem' ? 'Todas as linhas já têm dono.' : 'Nenhuma linha combina com este filtro.'}</p><button className="bt secundario medio" onClick={() => setFiltro('todas')}>Ver todas</button></div>}
         </div></div>
@@ -89,10 +91,10 @@ export function Fatura() {
   </>);
 }
 
-function Linha({ l, pessoa, marcada, emSelecao, ...ev }: { l: LinhaFatura; pessoa?: Pessoa; marcada?: boolean; emSelecao: boolean } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+const Linha = memo(function Linha({ l, pessoa, marcada, emSelecao }: { l: LinhaFatura; pessoa?: Pessoa; marcada: boolean; emSelecao: boolean }) {
   const nome = `${l.compra.descricao}, ${reais(l.valor)}, ${l.total > 1 ? `parcela ${l.numero} de ${l.total}, ` : ''}${l.pendente ? 'para conferir' : pessoa ? pessoa.nome : 'sem dono'}`;
   return (
-    <button className={`lin${l.compra.tipo === 'iof' ? ' filho' : ''}`} aria-pressed={emSelecao ? !!marcada : undefined} aria-label={nome} {...ev}>
+    <button className={`lin${l.compra.tipo === 'iof' ? ' filho' : ''}`} data-l={l.parcela.id} aria-pressed={emSelecao ? marcada : undefined} aria-label={nome}>
       <Logo loja={l.compra.descricao} vazio={l.compra.tipo === 'iof'} />
       <span className="d"><b>{l.compra.descricao}</b>
         <small>{l.total > 1 ? <span className="parc num">{l.numero}/{l.total}</span> : ddmm(l.data)}{l.prevista ? <span className="mini">prevista</span> : null}
@@ -100,7 +102,7 @@ function Linha({ l, pessoa, marcada, emSelecao, ...ev }: { l: LinhaFatura; pesso
       <span className="r"><span className="v num">{reais(l.valor)}</span></span>
     </button>
   );
-}
+}, (a, b) => a.l.compra === b.l.compra && a.l.parcela === b.l.parcela && a.l.data === b.l.data && a.pessoa === b.pessoa && a.marcada === b.marcada && a.emSelecao === b.emSelecao);
 
 // ---------- Folha "De quem é?" (assinatura): E e L num toque; P e B pedem escopo e categoria (D4, D6) ----------
 const RECENTES_PADRAO = ['Mercado', 'Alimentação fora', 'Transporte', 'Saúde', 'Compras pessoais'];

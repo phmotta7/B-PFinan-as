@@ -1,5 +1,6 @@
 'use client';
 // Casca do app: faixa do modo demonstração, tela atual, barra de baixo (D10) e avisos com Desfazer.
+import { useEffect, useRef } from 'react';
 import { Toaster } from 'sonner';
 import { House, CreditCard, Plus, ReceiptText, Ellipsis } from 'lucide-react';
 import { ProvedorApp, RAIZ, useApp, type NomeTela } from './estado';
@@ -24,6 +25,10 @@ function Casca() {
   const { rota, ir, modo, hoje, confirmacao, fecharConfirmacao, recomecarDemo, confirmar } = useApp();
   const Tela = TELAS[rota.tela] ?? Inicio;
   const comBarra = !SEM_BARRA.includes(rota.tela);
+  // Transição com propósito: entrar numa tela mais funda desliza da direita; trocar de aba ou de mês só acende
+  const anterior = useRef(rota.tela);
+  const entrada = rota.tela === anterior.current ? 'acende' : RAIZ.includes(rota.tela) ? 'acende' : RAIZ.includes(anterior.current) ? 'lado' : 'acende';
+  useEffect(() => { anterior.current = rota.tela; }, [rota.tela]);
   const aba = RAIZ.includes(rota.tela) ? rota.tela : rota.tela === 'fatura' ? 'cartoes' : DE_MAIS.includes(rota.tela) ? 'mais' : 'inicio';
   return (
     <div className="tela">
@@ -33,7 +38,7 @@ function Casca() {
         {ABAS.filter(([k]) => k !== 'lancar').map(([k, nome, Icone]) => (
           <button key={k} className="lateral-item" aria-current={aba === k ? 'page' : undefined} onClick={() => ir({ tela: k })}><Icone size={22} strokeWidth={1.75} aria-hidden="true" />{nome}</button>))}
       </nav>
-      <div className="coluna">
+      <div className="coluna" data-entrada={entrada}>
       {modo === 'demo' ? (
         <div className="faixa-demo" role="note"><span>Modo demonstração · dados fictícios · hoje é {hoje.split('-').reverse().join('/')}</span>
           <button onClick={() => confirmar({ titulo: 'Recomeçar a demonstração?', texto: 'Os dados fictícios voltam ao começo do cenário (03/11, antes de importar).', rotulo: 'Recomeçar', aoConfirmar: recomecarDemo })}>Recomeçar</button></div>

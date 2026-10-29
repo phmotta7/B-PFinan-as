@@ -593,3 +593,12 @@ input[type="file"].escondido{position:absolute;width:1px;height:1px;opacity:0;po
 .login-regua i{flex:1}.login-regua .p{background:var(--pedro)}.login-regua .b{background:var(--bruna);flex:2}.login-regua .e{background:var(--eliete)}.login-regua .l{background:var(--lucimar)}
 .login > div:last-child{padding:28px 24px calc(env(safe-area-inset-bottom,0px) + 32px)}
 @media (min-width:1024px){.login{max-width:480px;margin:auto;height:auto;min-height:620px;border-radius:var(--r-folha);overflow:hidden;box-shadow:var(--s-elevado);background:var(--cartao)}}
+
+/* ================= Movimento entre telas ================= */
+/* Entrar numa tela mais funda: o conteúdo chega da direita (16 px) e acende; trocar de aba ou de mês: só acende. Curto, sem atrasar o toque, interrompido pela próxima troca. */
+.coluna[data-entrada="lado"] > .conteudo{animation:entra-lado var(--d-curta) var(--ease-saida)}
+.coluna[data-entrada="acende"] > .conteudo{animation:acende 160ms var(--ease-saida)}
+.coluna > .topo{animation:acende 160ms var(--ease-saida)}
+@keyframes entra-lado{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+@keyframes acende{from{opacity:.0}to{opacity:1}}
+@media (prefers-reduced-motion: reduce){.coluna[data-entrada="lado"] > .conteudo{animation:acende 120ms linear}}

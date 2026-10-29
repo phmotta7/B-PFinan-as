@@ -26,8 +26,13 @@ export class RepoDemo implements Repositorio {
   static inicio(): Retrato {
     let r = retratoCenario();
     const etapa = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('cenario') : null;
-    if (etapa === 'importado' || etapa === 'marcado') {
+    if (etapa === 'importado' || etapa === 'marcado' || etapa === 'grande') {
       r = aplicar(r, importarFatura(r, { cartao: IDS.nubank, mes: '2026-11', leitura: lerNubank(ARQUIVO_NUBANK_NOV, IDS.nubank), formato: 'nubank_csv', arquivoNome: 'Nubank_2026-11-03.csv', hoje: '2026-11-03' }).mudanca);
+      if (etapa === 'grande') { // teste de volume: mais 200 linhas sem dono na mesma fatura
+        const lojas = ['Pão de Açúcar', 'Drogasil', 'Uber *Trip', 'iFood', 'Shopee', 'Amazon', 'Padaria Real', 'Renner', 'Posto Ipiranga', 'Magazine Luiza'];
+        const csv = ['date,title,amount', ...Array.from({ length: 200 }, (_, i) => `2026-10-${String(3 + (i % 28)).padStart(2, '0')},${lojas[i % lojas.length]} ${i + 1},${((900 + (i * 7919) % 15000) / 100).toFixed(2)}`)].join(String.fromCharCode(10));
+        r = aplicar(r, importarFatura(r, { cartao: IDS.nubank, mes: '2026-11', leitura: lerNubank(csv, IDS.nubank), formato: 'nubank_csv', arquivoNome: 'volume.csv', hoje: '2026-11-03' }).mudanca);
+      }
       if (etapa === 'marcado') {
         for (const c of r.compra.filter(x => x.pendencia?.tipo === 'duplicidade')) r = aplicar(r, confirmarDuplicidade(r, c.id));
         for (const c of r.compra.filter(x => x.pendencia?.tipo === 'ambigua')) r = aplicar(r, escolherCandidata(r, c.id, IDS.ifoodPedro));
