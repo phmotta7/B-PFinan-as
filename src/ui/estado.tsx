@@ -56,7 +56,7 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
       setSessao({ situacao: 'dentro', email }); recarregar();
     };
     conferir();
-    const { data: sub } = sb.auth.onAuthStateChange((ev: string) => { if (ev === 'SIGNED_OUT') setSessao(s => (s.situacao === 'negado' ? s : { situacao: 'fora' })); });
+    const { data: sub } = sb.auth.onAuthStateChange((ev: string) => { if (ev === 'SIGNED_OUT') { setR(null); } if (ev === 'SIGNED_OUT') setSessao(s => (s.situacao === 'negado' ? s : { situacao: 'fora' })); });
     return () => sub.subscription.unsubscribe();
   }, [repo, recarregar]);
 
@@ -95,7 +95,7 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
   }, []);
   const sair = useCallback(async () => {
     if (repo.modo === 'supabase') await supabaseNavegador().auth.signOut();
-    setSessao({ situacao: 'fora' });
+    setR(null); setSessao({ situacao: 'fora' });
   }, [repo]);
   const recomecarDemo = useCallback(() => { RepoDemo.recomecar(); recarregar(); setPilha([{ tela: 'inicio' }]); }, [recarregar]);
 
@@ -117,7 +117,7 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
     repo, recarregar, entrar, sair, recomecarDemo,
   } : null;
 
-  if (!ctx) return <EstadoInicial sessao={sessao} erro={erro} repo={repo} entrar={entrar} recarregar={recarregar} />;
+  if (!ctx || sessao.situacao !== 'dentro') return <EstadoInicial sessao={sessao} erro={erro} repo={repo} entrar={entrar} recarregar={recarregar} />;
   return <Contexto.Provider value={ctx}>{children}</Contexto.Provider>;
 }
 
