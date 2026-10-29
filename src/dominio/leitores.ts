@@ -53,8 +53,8 @@ function paraCentavos(texto: string, decimal: ',' | '.'): Centavos {
 export type FormatoData = 'dd/mm/aaaa' | 'mm/dd/aaaa' | 'aaaa-mm-dd';
 function paraData(texto: string, formato: FormatoData): string {
   const p = texto.trim().split(/[/.-]/).map(Number);
-  let [d, m, a] = formato === 'dd/mm/aaaa' ? p : formato === 'mm/dd/aaaa' ? [p[1], p[0], p[2]] : [p[2], p[1], p[0]];
-  if (a < 100) a += 2000;
+  const [d, m, ano] = formato === 'dd/mm/aaaa' ? p : formato === 'mm/dd/aaaa' ? [p[1], p[0], p[2]] : [p[2], p[1], p[0]];
+  const a = ano < 100 ? ano + 2000 : ano;
   if (!d || !m || !a || m > 12 || d > 31) throw new ErroDeLeitura(`Não entendi a data "${texto}".`);
   return `${a}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }

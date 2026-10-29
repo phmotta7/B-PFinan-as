@@ -31,6 +31,7 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.minha_casa() from public;
 grant execute on function public.minha_casa() to authenticated;
+alter table public.usuario_autorizado alter column casa set default public.minha_casa();
 
 -- Auditoria: quem criou e quem alterou por último ("editado por Bruna em 05/11")
 create or replace function public.carimbar() returns trigger
