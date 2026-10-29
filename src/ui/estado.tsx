@@ -2,6 +2,7 @@
 // Estado do app: retrato dos dados, quem está usando, navegação com histórico (o "voltar" do celular funciona) e execução de mudanças com Desfazer.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { aplicar, inverter, vazia } from '@/dados/mudanca';
 import { RepoDemo, RepoSupabase, type Repositorio } from '@/dados/repositorio';
 import type { Mudanca, Pessoa, Retrato } from '@/dados/tipos';
@@ -34,7 +35,6 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
   const [r, setR] = useState<Retrato | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [sessao, setSessao] = useState<Sessao>({ situacao: 'carregando' });
-  const [pilha, setPilha] = useState<Rota[]>([{ tela: 'inicio' }]);
   const [confirmacao, setConfirmacao] = useState<Confirmacao>(null);
   const rRef = useRef<Retrato | null>(null); rRef.current = r;
 
@@ -60,19 +60,18 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, [repo, recarregar]);
 
-  // Navegação com o histórico do navegador
-  useEffect(() => {
-    const aoVoltar = (e: PopStateEvent) => { const p = e.state?.pilha as Rota[] | undefined; if (p) setPilha(p); };
-    history.replaceState({ pilha: [{ tela: 'inicio' }] }, '');
-    window.addEventListener('popstate', aoVoltar); return () => window.removeEventListener('popstate', aoVoltar);
-  }, []);
-  const ir = useCallback((rota: Rota) => {
-    setPilha(p => {
-      const nova = RAIZ.includes(rota.tela) ? [rota] : p[p.length - 1].tela === rota.tela ? [...p.slice(0, -1), rota] : [...p, rota];
-      history.pushState({ pilha: nova }, ''); return nova;
-    });
-  }, []);
-  const voltar = useCallback(() => { if (pilha.length > 1) history.back(); else ir({ tela: 'inicio' }); }, [pilha.length, ir]);
+  // Navegação pelo roteador do Next: a tela fica no endereço (?tela=fatura&cartao=...), então o "voltar" do celular funciona sem recarregar
+  const router = useRouter(), params = useSearchParams();
+  const rota: Rota = { tela: (params.get('tela') as NomeTela) || 'inicio', cartao: params.get('cartao') ?? undefined, mes: params.get('mes') ?? undefined, filtro: params.get('filtro') ?? undefined };
+  const profundidade = useRef(0);
+  useEffect(() => { const volta = () => { profundidade.current = Math.max(0, profundidade.current - 1); }; window.addEventListener('popstate', volta); return () => window.removeEventListener('popstate', volta); }, []);
+  const ir = useCallback((r: Rota) => {
+    const q = new URLSearchParams(Object.entries(r).filter(([, v]) => v) as [string, string][]);
+    const url = r.tela === 'inicio' && q.size === 1 ? '/' : `/?${q}`;
+    if (RAIZ.includes(r.tela)) { profundidade.current = 0; router.replace(url, { scroll: false }); }
+    else { profundidade.current++; router.push(url, { scroll: false }); }
+  }, [router]);
+  const voltar = useCallback(() => { if (profundidade.current > 0) router.back(); else ir({ tela: 'inicio' }); }, [router, ir]);
 
   const executar = useCallback(async (m: Mudanca, mensagem?: string, opc?: { semDesfazer?: boolean }) => {
     const antes = rRef.current; if (!antes || vazia(m)) return true;
@@ -97,7 +96,7 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
     if (repo.modo === 'supabase') await supabaseNavegador().auth.signOut();
     setR(null); setSessao({ situacao: 'fora' });
   }, [repo]);
-  const recomecarDemo = useCallback(() => { RepoDemo.recomecar(); recarregar(); setPilha([{ tela: 'inicio' }]); }, [recarregar]);
+  const recomecarDemo = useCallback(() => { RepoDemo.recomecar(); recarregar(); router.replace('/'); }, [recarregar, router]);
 
   const hoje = repo.modo === 'demo' ? HOJE_DEMO : hojeEmSaoPaulo();
   const titular = r?.cartao[0]?.titular ?? r?.pessoa.find(p => p.nome === 'Bruna')?.id ?? '';
@@ -112,7 +111,7 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
 
   const ctx: Ctx | null = r ? {
     r, hoje, modo: repo.modo, sessao, carregando: false, erro, usuario, titular, mesDeTrabalho,
-    rota: pilha[pilha.length - 1], ir, voltar, podeVoltar: pilha.length > 1,
+    rota, ir, voltar, podeVoltar: !RAIZ.includes(rota.tela),
     executar, confirmar: c => setConfirmacao(c), confirmacao, fecharConfirmacao: () => setConfirmacao(null),
     repo, recarregar, entrar, sair, recomecarDemo,
   } : null;
