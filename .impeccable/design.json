@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-29T13:18:18.871Z",
+  "generatedAt": "2026-10-29T13:22:16.847Z",
   "title": "Design System: B&P Finanças",
   "extensions": {
     "source": "design/sistema/tokens.css (fonte da verdade, repetido no começo de src/app/globals.css); mostruário design/sistema.html. Estilo \"Cofre\", escolhido em 29/10/2026.",
@@ -719,6 +719,11 @@
           "#a7c9fd",
           "#e5efff"
         ]
+      },
+      "cofre-atencao": {
+        "role": "semantic",
+        "displayName": "Sem dono dentro do cofre",
+        "canonical": "#f6cd7a"
       }
     },
     "personColorTest": {

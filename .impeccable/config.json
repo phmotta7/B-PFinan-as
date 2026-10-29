@@ -10,7 +10,9 @@
       "design/redesenho.html",
       "design/premium/antes.html",
       "design/premium/diagnostico.html",
-      "design/premium/propostas.html"
+      "design/premium/propostas.html",
+      "design/prototipo/prototipo.tpl.html",
+      "design/prototipo.html"
     ],
     "ignoreValues": [
       {
