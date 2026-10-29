@@ -38,7 +38,7 @@ create or replace function public.carimbar() returns trigger
 language plpgsql set search_path = public as $$
 begin
   if tg_op = 'INSERT' then
-    new.criado_em := now(); new.criado_por := auth.uid();
+    new.criado_em := coalesce(new.criado_em, now()); new.criado_por := coalesce(new.criado_por, auth.uid());
     if new.casa is null then new.casa := public.minha_casa(); end if;
   end if;
   new.atualizado_em := now(); new.atualizado_por := auth.uid();
@@ -133,10 +133,10 @@ create table public.compra (
   cartao uuid not null references public.cartao(id) on delete cascade,
   data date not null,
   descricao text not null,
-  descricao_normalizada text not null,
+  descricao_normalizada text generated always as (lower(descricao)) stored,
   valor_total bigint not null,
   parcelas int not null default 1 check (parcelas >= 1),
-  tipo text not null default 'compra' check (tipo in ('compra', 'iof', 'anuidade', 'juros', 'multa', 'estorno', 'ajuste')),
+  tipo text not null default 'compra' check (tipo in ('compra', 'parcela', 'iof', 'anuidade', 'juros', 'multa', 'estorno', 'ajuste')),
   compra_origem uuid references public.compra(id) on delete set null, -- IOF e estorno
   pagador uuid references public.pessoa(id), -- null = sem dono
   escopo text check (escopo in ('pessoal', 'casal')),
@@ -251,4 +251,7 @@ insert into storage.buckets (id, name, public) values ('importacoes', 'importaco
 create policy "casa le arquivos" on storage.objects for select to authenticated
   using (bucket_id = 'importacoes' and (storage.foldername(name))[1] = public.minha_casa()::text);
 create policy "casa envia arquivos" on storage.objects for insert to authenticated
+  with check (bucket_id = 'importacoes' and (storage.foldername(name))[1] = public.minha_casa()::text);
+create policy "casa troca arquivos" on storage.objects for update to authenticated
+  using (bucket_id = 'importacoes' and (storage.foldername(name))[1] = public.minha_casa()::text)
   with check (bucket_id = 'importacoes' and (storage.foldername(name))[1] = public.minha_casa()::text);
