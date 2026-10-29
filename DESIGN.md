@@ -429,7 +429,7 @@ Toda tela tem os três.
 - **Erro:** aviso vermelho que diz o que houve e como seguir, sem culpa.
 
 ### Navigation
-Barra de baixo de 84 de altura, de vidro, com uma linha fina em cima. Cinco lugares, sempre com ícone e nome (600/11px): Início, Cartões, Lançar, Fechamentos, Ajustes. Lugar atual em `acao-texto`, os outros em `suave`. Lançar fica no centro, num círculo azul de 52 com sombra de ação, subindo 18px acima da barra.
+Barra de baixo de 84 de altura, de vidro, com uma linha fina em cima. Cinco lugares, sempre com ícone e nome (600/11px): Início, Cartões, Lançar, Fechamentos, Mais (decisão D10). Lugar atual em `acao-texto`, os outros em `suave`. Lançar fica no centro, num círculo azul de 52 com sombra de ação, subindo 26px acima da barra; os cinco nomes ficam na mesma linha de base.
 
 ### Folha de escolher pessoa (interação-assinatura)
 Sobe de baixo sobre um véu, com topo de raio 28, alça de 40×5 em `linha-forte`, título "De quem é?" e a linha em questão embaixo ("Centauro · 1/3 · R$ 33,34"). Quatro botões de pessoa em duas colunas, 64 de altura, cantos de 16 (`r-bloco`), contorno `linha`; o escolhido ganha contorno 2px `acao-texto` e fundo `acao-leve`. Ao escolher, a folha fecha e aparece o aviso com Desfazer. O foco vai para a primeira pessoa ao abrir e volta para a linha ao fechar; Esc e toque no véu fecham.

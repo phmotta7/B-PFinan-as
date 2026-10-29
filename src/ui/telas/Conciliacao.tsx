@@ -1,6 +1,6 @@
 'use client';
 // Conciliação (T6): duplicidades, ambíguas, parcelas reconhecidas e esperadas não encontradas (§4.5).
-import { Check, Trash2, User } from 'lucide-react';
+import { Check, ChevronRight, Trash2, User } from 'lucide-react';
 import { useApp } from '../estado';
 import { Aviso, Logo, Selo, Topo, ddmm, reais } from '../comum';
 import { confirmarDuplicidade, escolherCandidata, excluirParcelaPrevista, moverParaProximaFatura, negarDuplicidade } from '@/dados/operacoes';
@@ -31,7 +31,7 @@ export function Conciliacao() {
   const nao = parcelasNaoEncontradas(r, fatura.id);
   const series = r.parcela_cartao.filter(p => p.fatura === fatura.id && p.status === 'confirmada' && p.linhaImportada && r.linha_importada.find(l => l.id === p.linhaImportada)?.situacao === 'conciliada');
   const semDono = linhasDaFatura(r, fatura.id).filter(l => !l.compra.pagador && !l.pendente).length;
-  const desc = (c: Compra, onde: string) => <><b>{c.descricao} {reais(c.valorTotal)}</b> <span className="mini">({onde}, {ddmm(c.data)})</span></>;
+  const desc = (c: Compra, onde: string) => <><b>{c.descricao} {reais(c.valorTotal)}</b> <span style={{ color: 'var(--suave)' }}>({onde}, {ddmm(c.data)})</span></>;
 
   const confirmarObvias = async () => {
     let atual = r; const pacotes = dups.map(c => { const m = confirmarDuplicidade(atual, c.id); atual = aplicar(atual, m); return m; });
@@ -49,7 +49,7 @@ export function Conciliacao() {
         if (!m) return null;
         return (
           <div className="cartao" key={c.id}>
-            <p>Encontrei 1 duplicidade: {desc(m, 'manual')} ↔ {desc(c, 'fatura')}.</p>
+            <p>Encontrei 1 duplicidade: {desc(m, 'manual')} e {desc(c, 'fatura')} parecem a mesma compra.</p>
             <p className="mini">Manter a da fatura e copiar <Selo pessoa={pessoa(m.pagador)} />{m.escopo ? `, ${m.escopo === 'casal' ? 'Casal' : 'Pessoal'}` : ''}{cat(m.categoria) ? `, ${cat(m.categoria)}` : ''}?</p>
             <div className="acoes"><button className="bt secundario medio" onClick={() => executar(negarDuplicidade(r, c.id), 'Mantive as duas. A linha da fatura ficou sem dono.')}>Não é a mesma</button>
               <button className="bt principal medio" onClick={() => executar(confirmarDuplicidade(r, c.id), `Duplicidade resolvida: ficou a linha da fatura, com os dados de ${pessoa(m.pagador)?.nome ?? 'quem lançou'}.`)}>Confirmar</button></div>
@@ -63,7 +63,7 @@ export function Conciliacao() {
             {c.pendencia.candidatos.map(id => r.compra.find(x => x.id === id)).filter(Boolean).map(x => (
               <button key={x!.id} onClick={() => executar(escolherCandidata(r, c.id, x!.id), `${c.descricao} ficou com ${pessoa(x!.pagador)?.nome ?? 'sem dono'}.`)}>
                 <span>{x!.descricao} · {ddmm(x!.data)} <Selo pessoa={pessoa(x!.pagador)} extra={x!.escopo === 'casal' ? ' · Casal' : ''} /></span><span className="v">{reais(x!.valorTotal)}</span></button>))}
-            <button onClick={() => executar(escolherCandidata(r, c.id, null), `${c.descricao} ficou sem dono.`)}><span>Nenhuma delas</span></button>
+            <button onClick={() => executar(escolherCandidata(r, c.id, null), `${c.descricao} ficou sem dono.`)}><span>Nenhuma delas, deixar sem dono</span><ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" /></button>
           </div>
         </div>) : null)}
       {nao.length ? <p className="secao">Esperadas e não encontradas</p> : null}

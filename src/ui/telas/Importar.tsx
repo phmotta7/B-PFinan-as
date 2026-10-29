@@ -43,7 +43,7 @@ export function Importar() {
       {lendo ? <Esqueleto linhas={6} /> : passo.n === 'escolher' ? (<>
         <div className="campo"><span className="rot" id="r-cart">Cartão</span>
           <div className="pessoas" role="group" aria-labelledby="r-cart">{r.cartao.filter(c => c.ativo).map(c => (
-            <button key={c.id} aria-pressed={cartaoId === c.id} onClick={() => { setCartaoId(c.id); setErro(''); }}><span className="banco"><LogoBanco banco={c.banco} /><span style={{ font: '700 15px/1.2 var(--fonte)' }}>{c.banco === 'nubank' ? 'Nubank' : c.banco === 'bb' ? 'BB' : c.apelido}<small>{c.banco === 'nubank' ? 'CSV do Nubank' : 'CSV ou planilha'}</small></span></span></button>))}
+            <button key={c.id} aria-pressed={cartaoId === c.id} onClick={() => { setCartaoId(c.id); setErro(''); }}><span className="banco"><LogoBanco banco={c.banco} /><span className="nome-banco">{c.banco === 'nubank' ? 'Nubank' : c.banco === 'bb' ? 'BB' : c.apelido}<small>{c.banco === 'nubank' ? 'Arquivo CSV' : 'CSV ou planilha'}</small></span></span></button>))}
           </div></div>
         {erro ? <Aviso tipo="er" papel="alert"><p>{erro}</p></Aviso> : null}
         <div className="vazio"><h2>Arquivo da fatura</h2>

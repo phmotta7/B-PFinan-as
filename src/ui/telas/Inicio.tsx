@@ -99,7 +99,7 @@ export function Cartoes() {
       const s = f ? situacaoDaFatura(f, hoje) : hoje >= d.fechamento ? 'fechada' : 'aberta';
       return (
         <button key={c.id} className="cartao toque" onClick={() => ir({ tela: 'fatura', cartao: c.id, mes: m })} aria-label={`${c.apelido}, fatura ${mesCurto(m)}, ${reais(v)}`}>
-          <div className={`plastico ${c.banco}`}><div className="t"><span>{c.apelido}</span><span className={`pil ${s === 'aberta' ? 'acao' : s === 'fechada' ? 'at' : 'neutra'}`} style={{ boxShadow: 'none' }}>{s[0].toUpperCase() + s.slice(1)}</span></div>
+          <div className={`plastico ${c.banco}`}><div className="t"><span>{c.apelido}</span><span className="pil sobre-plastico">{s[0].toUpperCase() + s.slice(1)}</span></div>
             <div className="v num">{reais(v)}</div>
             <div className="s">{s === 'aberta' ? 'Parcial da fatura ' : 'Fatura '}{mesCurto(m)} · fecha {ddmm(d.fechamento)} · vence {ddmm(d.vencimento)}</div></div>
           <div className="linha-topo"><span className="mini">Próxima fatura ({mesCurto(somarMeses(m, 1))}), já prevista</span><b className="num">{reais(vp)}</b></div>

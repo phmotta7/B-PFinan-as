@@ -49,7 +49,7 @@ export function Fechamentos() {
             <div className="total num"><span>R$</span>{reais(f.total).slice(3)}</div>
             <p className="mini num">{f.pago ? `Pago ${reais(f.pago)} · falta ${reais(f.emAberto)}` : 'Nada pago ainda'}{f.enviadoEm ? ` · resumo enviado em ${ddmm(f.enviadoEm)}` : ''}</p>
             {aberta ? <div className="msg" aria-label="Detalhe do fechamento">{mensagemDe(r, f.pessoa, mes, titular)}</div>
-              : <button className="bt link" onClick={() => setAberto(f.pessoa.id)} style={{ minHeight: 32, color: 'var(--acao-texto)', alignSelf: 'flex-start' }}>Ver o detalhe</button>}
+              : <button className="bt link" onClick={() => setAberto(f.pessoa.id)} style={{ color: 'var(--acao-texto)', alignSelf: 'flex-start' }}>Ver o detalhe</button>}
             <div className="acoes">
               {f.emAberto ? <button className="bt secundario medio" onClick={() => setPagar({ pessoa: f.pessoa, mes })}>Registrar pagamento</button> : null}
               <button className="bt principal medio" onClick={() => setMsg(f.pessoa)}><MessageCircle size={20} aria-hidden="true" />WhatsApp</button>

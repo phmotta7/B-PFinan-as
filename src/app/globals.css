@@ -161,7 +161,8 @@ h1,h2,h3,p{margin:0}
 .giro{width:18px;height:18px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;animation:gira .7s linear infinite}
 @keyframes gira{to{transform:rotate(1turn)}}
 .acoes{display:flex;gap:10px}
-.acoes > *{flex:1}
+.acoes > *{flex:1 1 0;min-width:0}
+.acoes .bt{white-space:normal;text-align:center;line-height:1.15;padding:0 12px}
 
 /* Selos de pessoa e logos */
 .selo{display:inline-flex;align-items:center;gap:6px;font:600 13px/1.3 var(--fonte);white-space:nowrap;color:var(--tinta)}
@@ -270,10 +271,10 @@ h1,h2,h3,p{margin:0}
 /* Barra de baixo */
 .barra{position:absolute;left:0;right:0;bottom:0;z-index:10;height:calc(84px + env(safe-area-inset-bottom,0px));background:var(--vidro);backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);
   box-shadow:inset 0 1px 0 var(--linha);display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(20px + env(safe-area-inset-bottom,0px))}
-.barra button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:600 11px/1 var(--fonte);letter-spacing:-.01em;white-space:nowrap;color:var(--suave);min-height:var(--alvo);border-radius:var(--r-pequeno)}
+.barra button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;font:600 11px/1 var(--fonte);letter-spacing:-.01em;white-space:nowrap;color:var(--suave);min-height:var(--alvo);border-radius:var(--r-pequeno)}
 .barra button[aria-current="page"]{color:var(--acao-texto)}
 .barra button:focus-visible{outline:2.5px solid var(--foco)}
-.barra .lancar span{width:52px;height:52px;margin-top:-18px;border-radius:50%;background:var(--acao);color:var(--no-acao);display:grid;place-items:center;box-shadow:var(--s-acao);transition:transform var(--d-toque) var(--ease-saida)}
+.barra .lancar span{width:52px;height:52px;margin-top:-26px;border-radius:50%;background:var(--acao);color:var(--no-acao);display:grid;place-items:center;box-shadow:var(--s-acao);transition:transform var(--d-toque) var(--ease-saida)}
 .barra .lancar:active span{transform:scale(var(--aperto-toque))}
 
 /* Campos */
@@ -294,13 +295,15 @@ h1,h2,h3,p{margin:0}
 .passo .redondo span{background:var(--chao);box-shadow:inset 0 0 0 1.5px var(--linha-forte)}
 .passo b{font:800 22px/1 var(--fonte);min-width:44px;text-align:center}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--linha);border-radius:var(--r-pilula);padding:3px;position:relative;isolation:isolate}
-.seg button{all:unset;min-height:42px;display:grid;place-items:center;font:700 15px/1 var(--fonte);color:var(--suave);border-radius:var(--r-pilula);cursor:pointer;position:relative;z-index:1}
+.seg button{all:unset;min-height:44px;display:grid;place-items:center;font:700 15px/1 var(--fonte);color:var(--suave);border-radius:var(--r-pilula);cursor:pointer;position:relative;z-index:1}
 .seg button[aria-pressed="true"]{color:var(--tinta)}
 .seg button:focus-visible{outline:2.5px solid var(--foco);outline-offset:-2px}
 .seg .pino{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--cartao);border-radius:var(--r-pilula);box-shadow:var(--s-cartao);transition:transform var(--d-curta) var(--mola)}
 .seg[data-v="1"] .pino{transform:translateX(100%)}
 .pessoas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.pessoas button{all:unset;cursor:pointer;min-height:60px;border-radius:var(--r-bloco);background:var(--cartao);box-shadow:inset 0 0 0 1.5px var(--linha);display:flex;align-items:center;gap:10px;padding:0 14px;
+.pessoas .banco{flex:1;min-width:0}
+.pessoas .banco small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pessoas button{all:unset;box-sizing:border-box;cursor:pointer;min-height:64px;border-radius:var(--r-bloco);background:var(--cartao);box-shadow:inset 0 0 0 1.5px var(--linha);display:flex;align-items:center;gap:10px;padding:0 14px;
   transition:transform var(--d-toque) var(--ease-saida),box-shadow var(--d-cor) var(--ease-saida),background-color var(--d-cor) var(--ease-saida)}
 .pessoas button:active{transform:scale(var(--aperto-toque))}
 .pessoas button:focus-visible{outline:2.5px solid var(--foco);outline-offset:2px}
@@ -387,7 +390,8 @@ h1,h2,h3,p{margin:0}
 .passos li.atual b{font-weight:700}
 .passos li.atual .bola{background:var(--acao);color:var(--no-acao);box-shadow:none}
 /* Ação fixa embaixo das telas sem barra (Lançar, Importar) */
-.rodape{position:sticky;bottom:0;margin:4px -16px -40px;padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(to bottom,transparent,var(--chao) 22%);z-index:3}
+.conteudo.sem-barra:has(> .rodape){padding-bottom:0}
+.rodape{position:sticky;bottom:0;margin:8px -16px 0;padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(to bottom,transparent,var(--chao) 22%);z-index:3}
 .resumo-ct{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--cartao);border-radius:var(--r-bloco);box-shadow:var(--s-cartao);padding:6px 6px 6px 14px}
 .resumo-ct p{display:flex;align-items:center;gap:8px;font:var(--t-apoio);color:var(--suave)}
 .resumo-ct b{color:var(--tinta);font-weight:700}
@@ -414,3 +418,25 @@ input[type="file"].escondido{position:absolute;width:1px;height:1px;opacity:0;po
 .toast-acao:focus-visible{outline:2px solid var(--acao-inverso)}
 .toast.toast-erro{background:var(--erro);color:var(--no-erro)}
 .redondo:disabled{opacity:.35;cursor:default}
+
+/* Opções (chips): pílula com o escolhido visível; o alvo de toque chega a 44 com a área invisível em volta */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{all:unset;box-sizing:border-box;position:relative;cursor:pointer;min-height:38px;padding:0 14px;border-radius:var(--r-pilula);background:var(--cartao);box-shadow:inset 0 0 0 1.5px var(--linha-forte);color:var(--tinta);
+  font:600 14px/1 var(--fonte);display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  transition:background-color var(--d-cor) var(--ease-saida),box-shadow var(--d-cor) var(--ease-saida),transform var(--d-toque) var(--ease-saida)}
+.chip::before{content:"";position:absolute;inset:-3px -2px}
+.chip:active{transform:scale(var(--aperto-toque))}
+.chip[aria-pressed="true"]{background:var(--acao-leve);box-shadow:inset 0 0 0 2px var(--acao-texto)}
+.chip:focus-visible{outline:2.5px solid var(--foco);outline-offset:2px}
+.chip .n{font-weight:700;color:var(--suave)}
+.chip svg{flex:none}
+
+/* Etiqueta sobre o cartão do banco: neutra, herda a cor do texto do cartão */
+.plastico .pil.sobre-plastico{background:rgba(255,255,255,.2);color:inherit;box-shadow:none}
+.plastico.bb .pil.sobre-plastico{background:rgba(0,56,130,.12)}
+.nome-banco{font:700 15px/1.25 var(--fonte);display:flex;flex-direction:column;gap:2px;min-width:0}
+.nome-banco small{font:500 13px/1.3 var(--fonte);color:var(--suave)}
+/* "Recomeçar" da faixa de demonstração com alvo de 44 */
+.faixa-demo button{position:relative}
+.faixa-demo button::before{content:"";position:absolute;inset:-6px -8px}
+.resumo-ct p svg{flex:none}
