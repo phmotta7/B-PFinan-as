@@ -1,0 +1,81 @@
+<title>Protótipo B&amp;P</title>
+<meta name="theme-color" content="#f1efeb">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800&display=swap">
+<style>
+/*TOKENS*/
+/*APPCSS*/
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-inicio" viewBox="0 0 24 24"><path d="M3.5 10.5 12 3.5l8.5 7V19a1.5 1.5 0 0 1-1.5 1.5h-4v-6H9v6H5A1.5 1.5 0 0 1 3.5 19z"/></symbol>
+    <symbol id="i-cartao" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></symbol>
+    <symbol id="i-importar" viewBox="0 0 24 24"><path d="M14 3H6.5A2 2 0 0 0 4.5 5v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8.5z"/><path d="M14 3v5.5h5.5M12 18v-6M9 14.5l3-3 3 3"/></symbol>
+    <symbol id="i-mais" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-fechamento" viewBox="0 0 24 24"><path d="M5 3.5h14v17l-2.5-1.5-2.5 1.5-2-1.5-2 1.5-2.5-1.5L5 20.5z"/><path d="M8.5 8h7M8.5 11.5h7M8.5 15h4"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.25"/><circle cx="12" cy="12" r="1.25"/><circle cx="18.5" cy="12" r="1.25"/></symbol>
+    <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></symbol>
+    <symbol id="i-voltar" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-seguir" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-fechar" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-ok" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-atencao" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></symbol>
+    <symbol id="i-mensagem" viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.1-4.2A8.5 8.5 0 1 1 20.5 12z"/></symbol>
+    <symbol id="i-copiar" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2"/><path d="M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5"/></symbol>
+    <symbol id="i-conferir" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2"/><path d="M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5"/></symbol>
+    <symbol id="i-desfazer" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+    <symbol id="i-lixo" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12.5A1.5 1.5 0 0 0 8.5 21h7a1.5 1.5 0 0 0 1.5-1.5L18 7M9 7V4h6v3"/></symbol>
+    <symbol id="i-calendario" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-parcelas" viewBox="0 0 24 24"><path d="m12 3.5 8.5 4.5-8.5 4.5L3.5 8z"/><path d="m3.5 12.5 8.5 4.5 8.5-4.5M3.5 16.5l8.5 4.5 8.5-4.5"/></symbol>
+    <symbol id="i-pessoa" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></symbol>
+  </defs>
+</svg>
+
+<div class="palco">
+  <aside class="demo" id="demo" aria-label="Painel de demonstração">
+    <details open>
+      <summary>Painel do protótipo</summary>
+      <div class="corpo">
+        <h1>Protótipo B&amp;P · Etapa 1</h1>
+        <p>Dados fictícios. "Hoje" é 03/11/2026, dia em que a fatura do Nubank fechou. Siga o caminho: Importar → Conferir → Marcar → Fechamentos → WhatsApp.</p>
+        <fieldset><legend>Ir para a tela</legend><div class="chips">
+          <button class="chip" data-d="tela" data-v="login">Login</button><button class="chip" data-d="tela" data-v="negado">Acesso negado</button>
+          <button class="chip" data-d="tela" data-v="inicio">Início</button><button class="chip" data-d="tela" data-v="cartoes">Cartões</button>
+          <button class="chip" data-d="tela" data-v="fatura">Fatura</button><button class="chip" data-d="tela" data-v="importar">Importar</button>
+          <button class="chip" data-d="tela" data-v="conciliacao">Conciliação</button><button class="chip" data-d="tela" data-v="lancar">Lançar</button>
+          <button class="chip" data-d="tela" data-v="fechamentos">Fechamentos</button><button class="chip" data-d="tela" data-v="mais">Configurações</button></div></fieldset>
+        <fieldset><legend>Estado da tela</legend><div class="chips">
+          <button class="chip" data-d="estado" data-v="normal">Normal</button><button class="chip" data-d="estado" data-v="vazio">Vazio</button>
+          <button class="chip" data-d="estado" data-v="carregando">Carregando</button><button class="chip" data-d="estado" data-v="erro">Erro</button></div></fieldset>
+        <fieldset><legend>Pular no tempo</legend><div class="chips">
+          <button class="chip" data-d="momento" data-v="antes">Antes de importar</button><button class="chip" data-d="momento" data-v="depois">Importada e conferida</button>
+          <button class="chip" data-d="momento" data-v="marcado">Tudo marcado</button></div></fieldset>
+        <fieldset><legend>Teste de volume</legend><div class="chips"><button class="chip" data-d="grande" data-v="1">Fatura com 247 linhas</button></div></fieldset>
+        <fieldset><legend>Tema</legend><div class="chips">
+          <button class="chip" data-d="tema" data-v="light">Claro</button><button class="chip" data-d="tema" data-v="dark">Escuro</button><button class="chip" data-d="tema" data-v="auto">Do aparelho</button></div></fieldset>
+      </div>
+    </details>
+  </aside>
+
+  <div class="celular">
+    <div class="tela" id="tela">
+      <div id="app" style="display:contents"></div>
+      <div class="veu" id="veu"></div>
+      <div class="folha" id="folha" role="dialog" aria-modal="true" aria-label="Folha"></div>
+      <div class="dialogo" id="dialogo" role="alertdialog" aria-modal="true" aria-labelledby="d-t" aria-describedby="d-p">
+        <h2 id="d-t"></h2><p id="d-p"></p>
+        <div class="acoes" style="margin-top:6px"><button class="bt secundario" id="d-nao" type="button">Manter</button><button class="bt perigo" id="d-sim" type="button">Excluir</button></div>
+      </div>
+      <div class="toast" id="toast" role="status" aria-live="polite"><p id="toast-t"></p><button type="button" id="desfazer"><svg class="ic" aria-hidden="true" style="width:18px;height:18px"><use href="#i-desfazer"/></svg>Desfazer</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/*DADOS*/
+const LOGOS = /*LOGOS*/;
+const MARCA = `/*MARCA*/`;
+const GOOGLE = '<svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8a10.1 10.1 0 0 1-4.4 6.6v5.5h7.1c4.2-3.8 6.6-9.5 6.6-16.1z"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.4l-7.1-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7A22 22 0 0 0 24 46z"/><path fill="#FBBC05" d="M11.8 28.2a13.2 13.2 0 0 1 0-8.4v-5.7H4.5a22 22 0 0 0 0 19.8z"/><path fill="#EA4335" d="M24 10.8c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3A22 22 0 0 0 4.5 14.1l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/></svg>';
+/*APPJS*/
+</script>

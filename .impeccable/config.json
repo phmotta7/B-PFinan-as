@@ -161,6 +161,114 @@
         ],
         "createdAt": "2026-10-29T01:25:38.729Z",
         "reason": "idem"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "design/prototipo.html"
+        ],
+        "createdAt": "2026-10-29T01:46:03.098Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "*",
+        "files": [
+          "design/prototipo.html"
+        ],
+        "createdAt": "2026-10-29T01:46:03.629Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "*",
+        "files": [
+          "design/prototipo.html"
+        ],
+        "createdAt": "2026-10-29T01:46:04.521Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "design/prototipo.html"
+        ],
+        "createdAt": "2026-10-29T01:46:05.372Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "design/prototipo/prototipo.tpl.html"
+        ],
+        "createdAt": "2026-10-29T01:46:05.772Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "*",
+        "files": [
+          "design/prototipo/prototipo.tpl.html"
+        ],
+        "createdAt": "2026-10-29T01:46:06.346Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "*",
+        "files": [
+          "design/prototipo/prototipo.tpl.html"
+        ],
+        "createdAt": "2026-10-29T01:46:06.779Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "design/prototipo/prototipo.tpl.html"
+        ],
+        "createdAt": "2026-10-29T01:46:07.191Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "design/prototipo/app.css"
+        ],
+        "createdAt": "2026-10-29T01:46:07.644Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "*",
+        "files": [
+          "design/prototipo/app.css"
+        ],
+        "createdAt": "2026-10-29T01:46:08.523Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "*",
+        "files": [
+          "design/prototipo/app.css"
+        ],
+        "createdAt": "2026-10-29T01:46:09.207Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "design/prototipo/app.css"
+        ],
+        "createdAt": "2026-10-29T01:46:09.722Z",
+        "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
       }
     ]
   }
