@@ -1,134 +1,164 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-29T01:25:37.361Z",
+  "generatedAt": "2026-10-29T13:18:18.871Z",
   "title": "Design System: B&P Finanças",
   "extensions": {
-    "source": "design/sistema/tokens.css (fonte da verdade, importado pelo app em globals.css); mostruário design/sistema.html",
+    "source": "design/sistema/tokens.css (fonte da verdade, repetido no começo de src/app/globals.css); mostruário design/sistema.html. Estilo \"Cofre\", escolhido em 29/10/2026.",
     "themes": {
       "light": ":root",
       "dark": "@media (prefers-color-scheme: dark) :root:not([data-theme=\"light\"]) e :root[data-theme=\"dark\"]",
       "reducedTransparency": "--vidro: var(--cartao)",
-      "moreContrast": "--linha: var(--linha-forte); --suave: var(--tinta)"
+      "moreContrast": "--linha: var(--linha-forte); --suave: var(--tinta)",
+      "darkValues": {
+        "chao": "#0d0f15",
+        "cartao": "#161922",
+        "elevado": "#1d212c",
+        "vidro": "rgba(16,18,26,.86)",
+        "linha": "#262b37",
+        "linha-forte": "#3a404e",
+        "veu": "rgba(0,0,0,.55)",
+        "cofre-1": "#232a4d",
+        "cofre-2": "#141936",
+        "tinta": "#eef0f5",
+        "suave": "#a5adbd",
+        "apagado": "#9aa2b2",
+        "acao": "#4d5fd6",
+        "acao-forte": "#3f50c0",
+        "acao-texto": "#a9b6ff",
+        "acao-leve": "#232945",
+        "foco": "#a9b6ff",
+        "ok": "#6fd3a6",
+        "ok-leve": "#173328",
+        "atencao": "#f2c46b",
+        "atencao-leve": "#3a2e15",
+        "erro": "#ff8f87",
+        "erro-leve": "#3d1c1a",
+        "no-erro": "#0d0f15",
+        "inverso": "#eef0f5",
+        "no-inverso": "#0d0f15",
+        "acao-inverso": "#2b3a8f",
+        "sem-dono": "#9aa2b2"
+      },
+      "darkNote": "Cofre à noite: chão quase preto azulado (nunca preto puro), camadas separadas por claridade."
     },
     "colorMeta": {
       "acao": {
         "role": "primary",
-        "displayName": "Azul B&P",
-        "canonical": "#2d47d6",
-        "oklch": "oklch(47.9% 0.219 268.2)",
+        "displayName": "Azul-marinho (botão principal)",
+        "canonical": "#1b2453",
+        "oklch": "oklch(28.2% 0.086 271.7)",
         "tonalRamp": [
-          "#05091d",
-          "#0c1369",
-          "#1a20b3",
-          "#304cdb",
-          "#4e73fe",
-          "#7fa0fe",
-          "#b3c8fe",
-          "#e8eefe"
+          "#05091f",
+          "#182046",
+          "#303c6d",
+          "#4f5d91",
+          "#6e7db4",
+          "#909fd1",
+          "#bbc6ea",
+          "#eaeefb"
         ],
-        "dark": "#3d57e6"
+        "dark": "#4d5fd6"
       },
       "acao-forte": {
         "role": "primary",
-        "displayName": "Azul pressionado",
-        "canonical": "#2338b0",
-        "oklch": "oklch(41.3% 0.190 268.3)",
+        "displayName": "Azul-marinho pressionado",
+        "canonical": "#121a40",
+        "oklch": "oklch(23.5% 0.073 270.9)",
         "tonalRamp": [
-          "#050a1b",
-          "#0e1960",
-          "#1c2ca5",
-          "#3552cb",
-          "#5376f3",
-          "#7fa0fe",
-          "#b3c8ff",
-          "#e8eefe"
+          "#06091c",
+          "#192141",
+          "#323d66",
+          "#515e8a",
+          "#707eac",
+          "#92a0ca",
+          "#bcc6e5",
+          "#ebeef9"
         ],
-        "dark": "#2f48cc"
+        "dark": "#3f50c0"
       },
       "acao-texto": {
         "role": "primary",
-        "displayName": "Azul de texto",
-        "canonical": "#2d47d6",
-        "oklch": "oklch(47.9% 0.219 268.2)",
+        "displayName": "Azul de tinta (links e seleção)",
+        "canonical": "#2b3a8f",
+        "oklch": "oklch(39.0% 0.141 270.8)",
         "tonalRamp": [
-          "#05091d",
-          "#0c1369",
-          "#1a20b3",
-          "#304cdb",
-          "#4e73fe",
-          "#7fa0fe",
-          "#b3c8fe",
-          "#e8eefe"
+          "#04052b",
+          "#12195b",
+          "#273488",
+          "#4458af",
+          "#6179d4",
+          "#859cef",
+          "#b3c5fe",
+          "#e9eefe"
         ],
-        "dark": "#8c9cff"
+        "dark": "#a9b6ff"
       },
       "acao-leve": {
         "role": "primary",
         "displayName": "Azul de seleção",
-        "canonical": "#e9ecfd",
-        "oklch": "oklch(94.6% 0.023 278.0)",
+        "canonical": "#e9ecf8",
+        "oklch": "oklch(94.4% 0.016 274.8)",
         "tonalRamp": [
-          "#0b0b0d",
-          "#23242d",
-          "#3f414e",
-          "#5e606f",
-          "#7f8190",
-          "#a1a4b4",
-          "#c6c8d3",
-          "#eeeef2"
+          "#0a0b0f",
+          "#22242b",
+          "#3d3f49",
+          "#5d606a",
+          "#7d808a",
+          "#9fa1ab",
+          "#c5c7ce",
+          "#eeeef1"
         ],
-        "dark": "#252b4d"
+        "dark": "#232945"
       },
       "foco": {
         "role": "primary",
         "displayName": "Anel de foco",
-        "canonical": "#2d47d6",
-        "oklch": "oklch(47.9% 0.219 268.2)",
+        "canonical": "#2b3a8f",
+        "oklch": "oklch(39.0% 0.141 270.8)",
         "tonalRamp": [
-          "#05091d",
-          "#0c1369",
-          "#1a20b3",
-          "#304cdb",
-          "#4e73fe",
-          "#7fa0fe",
-          "#b3c8fe",
-          "#e8eefe"
+          "#04052b",
+          "#12195b",
+          "#273488",
+          "#4458af",
+          "#6179d4",
+          "#859cef",
+          "#b3c5fe",
+          "#e9eefe"
         ],
-        "dark": "#8c9cff"
+        "dark": "#a9b6ff"
       },
       "no-acao": {
         "role": "primary",
-        "displayName": "Texto sobre o azul",
+        "displayName": "Texto sobre o azul-marinho",
         "canonical": "#ffffff",
         "oklch": "oklch(100.0% 0.000 89.9)",
         "tonalRamp": [
           "#0b0b0b",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#a5a5a5",
-          "#c9c9c9",
+          "#242424",
+          "#404040",
+          "#606060",
+          "#808080",
+          "#a1a1a1",
+          "#c7c7c7",
           "#eeeeee"
-        ],
-        "dark": "#ffffff"
+        ]
       },
       "chao": {
         "role": "neutral",
-        "displayName": "Chão de papel quente",
-        "canonical": "#f1efeb",
-        "oklch": "oklch(95.3% 0.006 84.6)",
+        "displayName": "Chão de porcelana fria",
+        "canonical": "#f2f3f6",
+        "oklch": "oklch(96.4% 0.004 271.4)",
         "tonalRamp": [
-          "#0b0b0b",
-          "#262523",
-          "#43423f",
-          "#63615e",
-          "#84827e",
-          "#a7a5a1",
-          "#cac9c6",
-          "#efeeed"
+          "#0b0b0c",
+          "#232426",
+          "#3f4042",
+          "#5f6063",
+          "#7f8083",
+          "#a0a1a4",
+          "#c7c7c9",
+          "#eeeeef"
         ],
-        "dark": "#141519"
+        "dark": "#0d0f15"
       },
       "cartao": {
         "role": "neutral",
@@ -137,15 +167,15 @@
         "oklch": "oklch(100.0% 0.000 89.9)",
         "tonalRamp": [
           "#0b0b0b",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#a5a5a5",
-          "#c9c9c9",
+          "#242424",
+          "#404040",
+          "#606060",
+          "#808080",
+          "#a1a1a1",
+          "#c7c7c7",
           "#eeeeee"
         ],
-        "dark": "#1e2025"
+        "dark": "#161922"
       },
       "elevado": {
         "role": "neutral",
@@ -154,112 +184,178 @@
         "oklch": "oklch(100.0% 0.000 89.9)",
         "tonalRamp": [
           "#0b0b0b",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#a5a5a5",
-          "#c9c9c9",
+          "#242424",
+          "#404040",
+          "#606060",
+          "#808080",
+          "#a1a1a1",
+          "#c7c7c7",
           "#eeeeee"
         ],
-        "dark": "#26282e"
+        "dark": "#1d212c"
       },
       "vidro": {
         "role": "neutral",
         "displayName": "Vidro da barra",
-        "canonical": "rgba(255,255,255,.82)",
-        "dark": "rgba(30,32,37,.82)"
+        "canonical": "rgba(246,247,250,.86)",
+        "dark": "rgba(16,18,26,.86)"
       },
       "linha": {
         "role": "neutral",
         "displayName": "Linha fina",
-        "canonical": "#e4e0d8",
-        "oklch": "oklch(90.8% 0.012 84.6)",
+        "canonical": "#e2e5eb",
+        "oklch": "oklch(92.1% 0.009 264.5)",
         "tonalRamp": [
-          "#0c0b0a",
-          "#272521",
-          "#45423b",
-          "#64615a",
-          "#85827b",
-          "#a8a59d",
-          "#cbc9c4",
-          "#efeeed"
+          "#0a0b0d",
+          "#222428",
+          "#3d4044",
+          "#5e6066",
+          "#7e8086",
+          "#9fa1a6",
+          "#c5c7cb",
+          "#eeeef0"
         ],
-        "dark": "#2e3036"
+        "dark": "#262b37"
       },
       "linha-forte": {
         "role": "neutral",
         "displayName": "Borda de campo",
-        "canonical": "#cfcac0",
-        "oklch": "oklch(84.0% 0.015 84.6)",
+        "canonical": "#c9ced8",
+        "oklch": "oklch(85.1% 0.015 264.5)",
         "tonalRamp": [
-          "#0c0b0a",
-          "#272520",
-          "#464139",
-          "#656158",
-          "#868279",
-          "#a9a49b",
-          "#ccc9c2",
-          "#efeeec"
+          "#090b0f",
+          "#21242a",
+          "#3c4048",
+          "#5c6069",
+          "#7c8089",
+          "#9da2aa",
+          "#c4c7cd",
+          "#edeef0"
         ],
-        "dark": "#43464e"
+        "dark": "#3a404e"
       },
       "veu": {
         "role": "neutral",
         "displayName": "Véu",
-        "canonical": "rgba(28,27,25,.32)",
-        "dark": "rgba(0,0,0,.5)"
+        "canonical": "rgba(17,20,28,.36)",
+        "dark": "rgba(0,0,0,.55)"
+      },
+      "cofre-1": {
+        "role": "tertiary",
+        "displayName": "Cofre, luz no alto",
+        "canonical": "#1d2446",
+        "oklch": "oklch(27.3% 0.064 272.8)",
+        "tonalRamp": [
+          "#070a1a",
+          "#1c223d",
+          "#353d61",
+          "#545e85",
+          "#737ea7",
+          "#95a0c5",
+          "#bfc6e1",
+          "#ebeef7"
+        ],
+        "dark": "#232a4d"
+      },
+      "cofre-2": {
+        "role": "tertiary",
+        "displayName": "Cofre, fundo",
+        "canonical": "#0f1328",
+        "oklch": "oklch(19.5% 0.043 273.7)",
+        "tonalRamp": [
+          "#080a15",
+          "#1f2335",
+          "#383e56",
+          "#585f79",
+          "#787f9a",
+          "#9aa0ba",
+          "#c2c7d9",
+          "#eceef4"
+        ],
+        "dark": "#141936"
+      },
+      "cofre-tinta": {
+        "role": "tertiary",
+        "displayName": "Texto no cofre",
+        "canonical": "#f3f5fb",
+        "oklch": "oklch(97.0% 0.008 271.3)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#232427",
+          "#3e4044",
+          "#5f6065",
+          "#7e8085",
+          "#a0a1a6",
+          "#c6c7cb",
+          "#eeeeef"
+        ]
+      },
+      "cofre-suave": {
+        "role": "tertiary",
+        "displayName": "Texto de apoio no cofre",
+        "canonical": "#aeb6cf",
+        "oklch": "oklch(77.8% 0.037 271.5)",
+        "tonalRamp": [
+          "#080b14",
+          "#1f2333",
+          "#393f53",
+          "#596076",
+          "#787f97",
+          "#9aa1b6",
+          "#c2c7d6",
+          "#eceef4"
+        ]
       },
       "tinta": {
         "role": "neutral",
         "displayName": "Tinta",
-        "canonical": "#1c1b19",
-        "oklch": "oklch(22.2% 0.004 84.6)",
+        "canonical": "#11141c",
+        "oklch": "oklch(19.2% 0.017 268.7)",
         "tonalRamp": [
-          "#0b0b0b",
-          "#262524",
-          "#434240",
-          "#62615f",
-          "#838280",
-          "#a6a5a2",
-          "#cac9c7",
-          "#efeeee"
+          "#090b0f",
+          "#21242b",
+          "#3c4049",
+          "#5c606a",
+          "#7c808b",
+          "#9da1ab",
+          "#c4c7ce",
+          "#edeef1"
         ],
-        "dark": "#eceae6"
+        "dark": "#eef0f5"
       },
       "suave": {
         "role": "neutral",
         "displayName": "Texto suave",
-        "canonical": "#5b574f",
-        "oklch": "oklch(45.8% 0.014 84.6)",
+        "canonical": "#565e6e",
+        "oklch": "oklch(48.1% 0.028 264.3)",
         "tonalRamp": [
-          "#0c0b0a",
-          "#272520",
-          "#45423a",
-          "#656159",
-          "#868279",
-          "#a9a49c",
-          "#ccc9c3",
-          "#efeeec"
+          "#080b12",
+          "#1e242f",
+          "#38404f",
+          "#596171",
+          "#788091",
+          "#9aa2b1",
+          "#c2c7d3",
+          "#eceef2"
         ],
-        "dark": "#aaa59c"
+        "dark": "#a5adbd"
       },
       "apagado": {
         "role": "neutral",
         "displayName": "Texto apagado",
-        "canonical": "#6e6962",
-        "oklch": "oklch(52.3% 0.012 76.5)",
+        "canonical": "#636b7b",
+        "oklch": "oklch(52.7% 0.027 264.3)",
         "tonalRamp": [
-          "#0c0b0a",
-          "#272521",
-          "#46413b",
-          "#656059",
-          "#87817a",
-          "#aaa49d",
-          "#ccc8c3",
-          "#efeeed"
+          "#080b11",
+          "#1f242f",
+          "#39404e",
+          "#596170",
+          "#788091",
+          "#9aa2b1",
+          "#c2c7d2",
+          "#edeef2"
         ],
-        "dark": "#9a958d"
+        "dark": "#9aa2b2"
       },
       "ok": {
         "role": "tertiary",
@@ -267,14 +363,14 @@
         "canonical": "#1f7a4d",
         "oklch": "oklch(51.5% 0.110 156.8)",
         "tonalRamp": [
-          "#040e08",
-          "#012e18",
-          "#00502e",
-          "#157347",
-          "#409667",
-          "#65ba89",
-          "#a3d8b6",
-          "#e3f3e9"
+          "#001005",
+          "#002d17",
+          "#014d2c",
+          "#137246",
+          "#3e9465",
+          "#6cb489",
+          "#a4d5b6",
+          "#e3f3e8"
         ],
         "dark": "#6fd3a6"
       },
@@ -284,13 +380,13 @@
         "canonical": "#e3f3ea",
         "oklch": "oklch(95.0% 0.021 161.5)",
         "tonalRamp": [
-          "#0a0c0b",
-          "#1f2723",
-          "#39463e",
-          "#57655d",
-          "#78867e",
-          "#9aa9a1",
-          "#c2ccc6",
+          "#070d0a",
+          "#1d2721",
+          "#36433c",
+          "#57645d",
+          "#76847c",
+          "#98a59e",
+          "#c1cac5",
           "#ecefed"
         ],
         "dark": "#173328"
@@ -301,13 +397,13 @@
         "canonical": "#8a5a00",
         "oklch": "oklch(50.8% 0.108 73.3)",
         "tonalRamp": [
-          "#110a03",
-          "#352001",
-          "#5b3a01",
-          "#845602",
-          "#a9772e",
-          "#ce9a53",
-          "#e6c396",
+          "#150800",
+          "#341f00",
+          "#593800",
+          "#835501",
+          "#a7752b",
+          "#c5985c",
+          "#e2c199",
           "#f8eddf"
         ],
         "dark": "#f2c46b"
@@ -318,13 +414,13 @@
         "canonical": "#fdf1d8",
         "oklch": "oklch(96.1% 0.035 85.4)",
         "tonalRamp": [
-          "#0c0b08",
-          "#2a2418",
-          "#4b412c",
-          "#6a604a",
-          "#8c816b",
-          "#afa48c",
-          "#d0c8b9",
+          "#0f0b03",
+          "#2a2313",
+          "#483f2a",
+          "#6a5f4a",
+          "#8a7f69",
+          "#aaa08c",
+          "#cec7b8",
           "#f1eee9"
         ],
         "dark": "#3a2e15"
@@ -335,14 +431,14 @@
         "canonical": "#b3261e",
         "oklch": "oklch(50.1% 0.178 28.7)",
         "tonalRamp": [
-          "#180504",
-          "#4d0101",
-          "#810103",
-          "#b0221b",
-          "#d84c3f",
-          "#ff7464",
-          "#feb3a8",
-          "#fee9e6"
+          "#200000",
+          "#4c0000",
+          "#7d0002",
+          "#af211a",
+          "#d64a3d",
+          "#f37667",
+          "#feb1a5",
+          "#fee9e5"
         ],
         "dark": "#ff8f87"
       },
@@ -352,16 +448,84 @@
         "canonical": "#fde8e6",
         "oklch": "oklch(94.7% 0.023 24.1)",
         "tonalRamp": [
-          "#0d0a0a",
-          "#2c2221",
-          "#4e3d3c",
-          "#6e5c5b",
-          "#907d7c",
-          "#b3a09e",
-          "#d3c6c4",
-          "#f1eded"
+          "#100909",
+          "#2d211f",
+          "#4b3b3a",
+          "#6d5c5a",
+          "#8e7b79",
+          "#ae9d9b",
+          "#d0c4c3",
+          "#f2eded"
         ],
         "dark": "#3d1c1a"
+      },
+      "no-erro": {
+        "role": "tertiary",
+        "displayName": "Texto sobre vermelho cheio",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#606060",
+          "#808080",
+          "#a1a1a1",
+          "#c7c7c7",
+          "#eeeeee"
+        ],
+        "dark": "#0d0f15"
+      },
+      "inverso": {
+        "role": "neutral",
+        "displayName": "Superfície invertida",
+        "canonical": "#11141c",
+        "oklch": "oklch(19.2% 0.017 268.7)",
+        "tonalRamp": [
+          "#090b0f",
+          "#21242b",
+          "#3c4049",
+          "#5c606a",
+          "#7c808b",
+          "#9da1ab",
+          "#c4c7ce",
+          "#edeef1"
+        ],
+        "dark": "#eef0f5"
+      },
+      "no-inverso": {
+        "role": "neutral",
+        "displayName": "Texto na superfície invertida",
+        "canonical": "#f3f5fb",
+        "oklch": "oklch(97.0% 0.008 271.3)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#232427",
+          "#3e4044",
+          "#5f6065",
+          "#7e8085",
+          "#a0a1a6",
+          "#c6c7cb",
+          "#eeeeef"
+        ],
+        "dark": "#0d0f15"
+      },
+      "acao-inverso": {
+        "role": "primary",
+        "displayName": "Ação na superfície invertida",
+        "canonical": "#aebaff",
+        "oklch": "oklch(80.5% 0.099 276.3)",
+        "tonalRamp": [
+          "#070721",
+          "#1b1e4a",
+          "#333972",
+          "#525a98",
+          "#717abb",
+          "#939dd8",
+          "#bcc5ef",
+          "#ebeefc"
+        ],
+        "dark": "#2b3a8f"
       },
       "pedro": {
         "role": "secondary",
@@ -369,14 +533,14 @@
         "canonical": "#56b4e9",
         "oklch": "oklch(73.5% 0.117 236.2)",
         "tonalRamp": [
-          "#030d14",
-          "#00293d",
-          "#014867",
-          "#036995",
-          "#278cbf",
-          "#52b0e5",
-          "#98d2f5",
-          "#e0f1fc"
+          "#000d19",
+          "#00283b",
+          "#024563",
+          "#016894",
+          "#248abd",
+          "#5cabd9",
+          "#9bcff0",
+          "#e0f1fd"
         ]
       },
       "pedro-tinta": {
@@ -385,13 +549,13 @@
         "canonical": "#1c1b19",
         "oklch": "oklch(22.2% 0.004 84.6)",
         "tonalRamp": [
-          "#0b0b0b",
-          "#262524",
-          "#434240",
-          "#62615f",
-          "#838280",
-          "#a6a5a2",
-          "#cac9c7",
+          "#0c0b0a",
+          "#252422",
+          "#41403d",
+          "#61605e",
+          "#81807d",
+          "#a2a19f",
+          "#c8c7c5",
           "#efeeee"
         ]
       },
@@ -401,14 +565,14 @@
         "canonical": "#bd4a87",
         "oklch": "oklch(58.0% 0.161 350.4)",
         "tonalRamp": [
-          "#15060d",
-          "#47022c",
-          "#78004d",
-          "#9f2e6d",
-          "#c6528f",
-          "#ee76b2",
-          "#feadd2",
-          "#fee7f1"
+          "#1e000f",
+          "#47002b",
+          "#75004a",
+          "#9f2d6c",
+          "#c4508d",
+          "#e27aad",
+          "#f8add0",
+          "#ffe7f1"
         ]
       },
       "bruna-tinta": {
@@ -418,12 +582,12 @@
         "oklch": "oklch(100.0% 0.000 89.9)",
         "tonalRamp": [
           "#0b0b0b",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#a5a5a5",
-          "#c9c9c9",
+          "#242424",
+          "#404040",
+          "#606060",
+          "#808080",
+          "#a1a1a1",
+          "#c7c7c7",
           "#eeeeee"
         ]
       },
@@ -433,13 +597,13 @@
         "canonical": "#054836",
         "oklch": "oklch(35.8% 0.069 168.7)",
         "tonalRamp": [
-          "#060d0a",
-          "#082c21",
-          "#0e4e3b",
-          "#346e5a",
-          "#56907b",
-          "#79b39d",
-          "#add3c4",
+          "#001009",
+          "#002c1f",
+          "#0b4b39",
+          "#336d59",
+          "#548e79",
+          "#7cae9b",
+          "#aed1c2",
           "#e6f2ed"
         ]
       },
@@ -450,12 +614,12 @@
         "oklch": "oklch(100.0% 0.000 89.9)",
         "tonalRamp": [
           "#0b0b0b",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#a5a5a5",
-          "#c9c9c9",
+          "#242424",
+          "#404040",
+          "#606060",
+          "#808080",
+          "#a1a1a1",
+          "#c7c7c7",
           "#eeeeee"
         ]
       },
@@ -465,14 +629,14 @@
         "canonical": "#e69f00",
         "oklch": "oklch(75.3% 0.158 76.8)",
         "tonalRamp": [
-          "#120900",
-          "#342100",
-          "#593b03",
-          "#815804",
-          "#ac7606",
-          "#d99608",
-          "#efc07a",
-          "#fbecd8"
+          "#140800",
+          "#332000",
+          "#563901",
+          "#805703",
+          "#aa7400",
+          "#d29424",
+          "#eac080",
+          "#fbecd7"
         ]
       },
       "lucimar-tinta": {
@@ -481,32 +645,32 @@
         "canonical": "#1c1b19",
         "oklch": "oklch(22.2% 0.004 84.6)",
         "tonalRamp": [
-          "#0b0b0b",
-          "#262524",
-          "#434240",
-          "#62615f",
-          "#838280",
-          "#a6a5a2",
-          "#cac9c7",
+          "#0c0b0a",
+          "#252422",
+          "#41403d",
+          "#61605e",
+          "#81807d",
+          "#a2a19f",
+          "#c8c7c5",
           "#efeeee"
         ]
       },
       "sem-dono": {
         "role": "secondary",
         "displayName": "Sem dono",
-        "canonical": "#6e6962",
-        "oklch": "oklch(52.3% 0.012 76.5)",
+        "canonical": "#636b7b",
+        "oklch": "oklch(52.7% 0.027 264.3)",
         "tonalRamp": [
-          "#0c0b0a",
-          "#272521",
-          "#46413b",
-          "#656059",
-          "#87817a",
-          "#aaa49d",
-          "#ccc8c3",
-          "#efeeed"
+          "#080b11",
+          "#1f242f",
+          "#39404e",
+          "#596170",
+          "#788091",
+          "#9aa2b1",
+          "#c2c7d2",
+          "#edeef2"
         ],
-        "dark": "#9a958d"
+        "dark": "#9aa2b2"
       },
       "nubank": {
         "role": "tertiary",
@@ -514,13 +678,13 @@
         "canonical": "#820ad1",
         "oklch": "oklch(49.2% 0.252 303.7)",
         "tonalRamp": [
-          "#10051c",
-          "#350059",
-          "#5a0294",
-          "#820bd1",
-          "#a545f9",
-          "#bd85ff",
-          "#d7b9ff",
+          "#140027",
+          "#330058",
+          "#570190",
+          "#8208d0",
+          "#a243f7",
+          "#bb7ffe",
+          "#d6b7ff",
           "#f2eaff"
         ]
       },
@@ -528,73 +692,33 @@
         "role": "tertiary",
         "displayName": "Amarelo BB",
         "canonical": "#fde100",
-        "oklch": "oklch(93.5% 0.199 106.0)",
+        "oklch": "oklch(90.5% 0.188 100.2)",
         "tonalRamp": [
-          "#0d0c00",
-          "#292601",
-          "#484402",
-          "#696405",
-          "#8d8601",
-          "#b2aa03",
-          "#d4ce62",
-          "#f1f1d2"
+          "#0f0b00",
+          "#2a2400",
+          "#494000",
+          "#6e6100",
+          "#928102",
+          "#b7a202",
+          "#d8c96f",
+          "#f4f0d3"
         ]
       },
       "bb-tinta": {
         "role": "tertiary",
         "displayName": "Azul BB",
         "canonical": "#003882",
-        "oklch": "oklch(38.9% 0.141 270.4)",
+        "oklch": "oklch(35.9% 0.136 258.5)",
         "tonalRamp": [
-          "#070a17",
-          "#151f51",
-          "#28378c",
-          "#4459b0",
-          "#627bd6",
-          "#839ffd",
-          "#b5c7ff",
-          "#e9eefe"
+          "#000828",
+          "#002054",
+          "#043b85",
+          "#2a5eac",
+          "#4a80d0",
+          "#72a3eb",
+          "#a7c9fd",
+          "#e5efff"
         ]
-      },
-      "marca-bojo": {
-        "role": "tertiary",
-        "displayName": "Bojo da marca (só logo)",
-        "canonical": "#bcc7ff",
-        "oklch": "oklch(84.1% 0.079 275.9)",
-        "tonalRamp": [
-          "#090b12",
-          "#1e223e",
-          "#373d6c",
-          "#555d8e",
-          "#757eb2",
-          "#97a1d7",
-          "#bfc7ec",
-          "#ebeef9"
-        ]
-      },
-      "no-erro": {
-        "role": "semantic",
-        "displayName": "Texto sobre vermelho cheio",
-        "canonical": "#ffffff",
-        "dark": "#141519"
-      },
-      "inverso": {
-        "role": "neutral",
-        "displayName": "Superfície invertida (aviso com Desfazer)",
-        "canonical": "#1c1b19",
-        "dark": "#eceae6"
-      },
-      "no-inverso": {
-        "role": "neutral",
-        "displayName": "Texto na superfície invertida",
-        "canonical": "#f4f2ee",
-        "dark": "#141519"
-      },
-      "acao-inverso": {
-        "role": "primary",
-        "displayName": "Ação na superfície invertida",
-        "canonical": "#aebaff",
-        "dark": "#2d47d6"
       }
     },
     "personColorTest": {
@@ -608,32 +732,41 @@
         "bruna",
         "eliete"
       ],
-      "semDono": "círculo tracejado em --atencao com \"?\", sem cor de pessoa"
+      "semDono": "círculo tracejado em --atencao com \"?\"; na régua, listras diagonais",
+      "anelPessoa": {
+        "light": "transparent",
+        "dark": "rgba(255,255,255,.22)",
+        "cofre": "rgba(255,255,255,.35)"
+      }
     },
     "typographyMeta": {
-      "t-mes": {
-        "displayName": "Mês",
-        "purpose": "Título da tela (\"Novembro\")."
+      "valor-gg": {
+        "displayName": "Total do cofre",
+        "purpose": "Só o total do mês no cofre; 56px no celular, 64px a partir de 1024px. \"R$\" a .42em e centavos a .5em, 600, cofre-suave, alinhados pelo alto."
       },
       "t-valor": {
         "displayName": "Valor",
-        "purpose": "Total da fatura e campo de valor; \"R$\" em 700/20px suave."
+        "purpose": "Valor em destaque fora do cofre e campo de valor (700)."
+      },
+      "t-mes": {
+        "displayName": "Mês",
+        "purpose": "Título da tela."
       },
       "t-titulo": {
         "displayName": "Título",
-        "purpose": "Título de folha, diálogo e bloco."
+        "purpose": "Título de folha, diálogo e cartão."
       },
       "t-forte": {
         "displayName": "Forte",
-        "purpose": "Nome do banco, título do vazio, valor por pessoa."
+        "purpose": "Nome do banco, título do vazio, marca no menu lateral."
       },
       "t-corpo": {
         "displayName": "Corpo",
-        "purpose": "Texto corrido e conteúdo de campo (nunca abaixo de 16px em campo)."
+        "purpose": "Texto corrido; campos em 500/16."
       },
       "t-apoio": {
         "displayName": "Apoio",
-        "purpose": "Vencimento, contagens, explicações, data da linha."
+        "purpose": "Vencimento, contagens, explicações; opções e menu lateral em 600/14."
       },
       "t-rotulo": {
         "displayName": "Rótulo",
@@ -641,13 +774,44 @@
       },
       "t-mini": {
         "displayName": "Mini",
-        "purpose": "Pílulas, nome no selo, parcela."
+        "purpose": "Pílulas, parcela, faixa de demonstração."
+      },
+      "rotulo-barra": {
+        "displayName": "Barra",
+        "purpose": "Nomes da barra de baixo."
+      }
+    },
+    "typeScale": {
+      "sizes": [
+        11,
+        12,
+        13,
+        14,
+        16,
+        17,
+        20,
+        28,
+        34,
+        "56 (64 no computador)"
+      ],
+      "weights": [
+        400,
+        500,
+        600,
+        700
+      ],
+      "family": "Geist (next/font, variável --geist)",
+      "tracking": {
+        "--aperto-grande": "-.03em",
+        "--aperto-medio": "-.015em"
       }
     },
     "money": {
       "format": "R$ 1.234,56",
       "numerals": "font-variant-numeric: tabular-nums lining-nums",
-      "currencyMark": "700 20px, --suave, margin-right 4px, letter-spacing 0 (nos valores grandes)"
+      "large": "reais 600 no tamanho cheio; \"R$\" .42em e centavos .5em, 600, cor suave (cofre-suave no cofre), alinhados pelo alto",
+      "small": "16px e abaixo: tudo no mesmo tamanho e peso",
+      "legacy": "o .total (34px, \"R$\" 700/20px suave, centavos inteiros) ainda aparece em Fechamentos e Importar"
     },
     "icons": {
       "style": "Lucide",
@@ -657,9 +821,11 @@
       "linejoin": "round",
       "sizes": {
         "barra": 24,
+        "lateral": 22,
         "botao": 20,
         "aviso": 20,
-        "toast": 18,
+        "redondo": 20,
+        "opcao": 16,
         "ajuda": 16,
         "pilula": "14 (traço 2,25)"
       }
@@ -667,38 +833,54 @@
     "shadows": [
       {
         "name": "s-cartao",
-        "value": "0 1px 2px rgba(40,30,10,.06), 0 0 0 1px rgba(40,30,10,.03)",
-        "dark": "0 1px 2px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.04)",
-        "purpose": "Cartões, listas e a peça escolhida do seletor, em repouso."
+        "value": "0 1px 2px rgba(17,20,40,.05), 0 8px 22px -14px rgba(17,20,40,.2)",
+        "dark": "0 1px 0 rgba(255,255,255,.04) inset, 0 8px 22px -14px rgba(0,0,0,.7)",
+        "purpose": "Cartões, listas, peça escolhida do seletor, item atual do menu lateral, botões redondos do topo."
       },
       {
         "name": "s-elevado",
-        "value": "0 10px 30px -10px rgba(40,30,10,.22), 0 2px 6px -2px rgba(40,30,10,.08)",
-        "dark": "0 12px 32px -10px rgba(0,0,0,.6)",
-        "purpose": "Diálogo e aviso com Desfazer."
-      },
-      {
-        "name": "s-folha",
-        "value": "0 -10px 40px -12px rgba(40,30,10,.28)",
-        "dark": "0 -10px 40px -12px rgba(0,0,0,.7)",
-        "purpose": "Folha que sobe de baixo."
+        "value": "0 2px 6px rgba(17,20,40,.06), 0 22px 48px -18px rgba(17,20,40,.32)",
+        "dark": "0 1px 0 rgba(255,255,255,.05) inset, 0 22px 48px -18px rgba(0,0,0,.8)",
+        "purpose": "Diálogo, aviso com Desfazer, barra de seleção em massa."
       },
       {
         "name": "s-acao",
-        "value": "0 6px 14px -6px rgba(45,71,214,.6)",
-        "dark": "0 6px 14px -6px rgba(0,0,0,.6)",
-        "purpose": "Botão principal e Lançar da barra."
+        "value": "0 1px 2px rgba(17,20,40,.2)",
+        "dark": "none",
+        "purpose": "Contato curto sob o botão principal; nenhuma no escuro."
+      },
+      {
+        "name": "s-painel",
+        "value": "inset 0 1px 0 rgba(255,255,255,.1), 0 18px 40px -20px rgba(15,19,40,.6)",
+        "dark": "inset 0 1px 0 rgba(255,255,255,.1), 0 18px 40px -20px rgba(15,19,40,.6) (igual no escuro)",
+        "purpose": "Só o cofre: fio de luz no alto e sombra azul-noite."
+      },
+      {
+        "name": "s-folha",
+        "value": "0 -10px 40px -12px rgba(17,20,40,.3)",
+        "dark": "0 -10px 40px -12px rgba(0,0,0,.75)",
+        "purpose": "Folha que sobe de baixo."
+      },
+      {
+        "name": "lancar-barra",
+        "value": "0 6px 16px -8px rgba(17,20,40,.5)",
+        "purpose": "Círculo do Lançar na barra de baixo (valor direto no CSS, não tokenizado)."
       },
       {
         "name": "anel-pessoa",
         "value": "0 0 0 1.5px var(--anel-pessoa)",
-        "dark": "rgba(255,255,255,.22) no escuro; transparente no claro",
-        "purpose": "Anel do círculo de pessoa, para não sumir no fundo escuro."
+        "dark": "rgba(255,255,255,.22) no escuro; transparente no claro; no cofre, branco a 35% nos dois temas",
+        "purpose": "Anel do círculo de pessoa."
       },
       {
         "name": "vidro",
         "value": "background: var(--vidro); backdrop-filter: blur(20px) saturate(170%)",
-        "purpose": "Barra de baixo e topo. Com prefers-reduced-transparency, vira a cor do cartão."
+        "purpose": "Barra de baixo. Com prefers-reduced-transparency, vira a cor do cartão."
+      },
+      {
+        "name": "cofre",
+        "value": "radial-gradient(120% 90% at 20% 0%, var(--cofre-1), var(--cofre-2))",
+        "purpose": "Fundo do cofre: luz no alto à esquerda."
       }
     ],
     "motion": [
@@ -710,7 +892,7 @@
       {
         "name": "ease-troca",
         "value": "cubic-bezier(.65,0,.35,1)",
-        "purpose": "Algo já na tela muda de lugar; pulsar do carregando."
+        "purpose": "Algo já na tela muda de tamanho ou lugar (fatias da régua); pulsar do esqueleto."
       },
       {
         "name": "d-toque",
@@ -725,22 +907,22 @@
       {
         "name": "d-curta",
         "value": "220ms",
-        "purpose": "Seletor, aviso com Desfazer, diálogo."
+        "purpose": "Seletor, aviso com Desfazer, diálogo, barra de seleção, troca de tela (12px)."
       },
       {
         "name": "d-folha",
         "value": "340ms",
-        "purpose": "Véu da folha; resposta da mola."
+        "purpose": "Véu da folha; resposta da mola; fatias da régua."
       },
       {
         "name": "mola",
         "value": "linear(0,.1407,.3776,.5855,.7374,.8391,.9037,.9434,.9672,.9812,.9893,.994,.9966,.9981,.999,.9994,1)",
-        "purpose": "Mola criticamente amortecida (0,34s) para CSS; o JS usa a mola de verdade."
+        "purpose": "Mola criticamente amortecida (0,34s) para CSS; o JS da folha usa a mola de verdade."
       },
       {
         "name": "aperto-toque",
         "value": ".97",
-        "purpose": "Escala do botão e do botão de pessoa pressionados."
+        "purpose": "Escala de botão, opção e botão de pessoa pressionados."
       },
       {
         "name": "mola-folha-js",
@@ -770,7 +952,7 @@
       {
         "name": "reduzir-movimento",
         "value": "opacity 150ms linear",
-        "purpose": "Com prefers-reduced-motion: sem deslocamento, escala ou mola."
+        "purpose": "Com prefers-reduced-motion: sem deslocamento, escala, mola nem régua deslizando."
       },
       {
         "name": "numeros",
@@ -778,23 +960,47 @@
         "purpose": "Números, totais e listas nunca animam."
       }
     ],
+    "breakpoints": [
+      {
+        "name": "celular",
+        "value": "375px",
+        "purpose": "Base de projeto; coluna até 480px."
+      },
+      {
+        "name": "coluna-centralizada",
+        "value": "520px",
+        "purpose": "Coluna de 480px centralizada sobre fundo linha, com sombra elevada."
+      },
+      {
+        "name": "computador",
+        "value": "1024px",
+        "purpose": "Menu lateral de 248px no lugar da barra; duas colunas 5fr/7fr com 32 de espaço; conteúdo até 1120px; total do cofre em 64px."
+      }
+    ],
     "layoutLimits": [
       {
         "name": "folha",
-        "value": "480px"
-      },
-      {
-        "name": "dialogo",
-        "value": "340px"
+        "value": "560px"
       },
       {
         "name": "aviso-desfazer",
-        "value": "380px"
+        "value": "min(380px, 100vw - 32px)"
       },
       {
-        "name": "base de projeto",
-        "value": "375px"
+        "name": "conteudo-computador",
+        "value": "1120px"
+      },
+      {
+        "name": "lateral",
+        "value": "248px"
       }
+    ],
+    "pending": [
+      "Cartões de plástico dos bancos (tela Cartões)",
+      "Estados vazios",
+      "Splash e ícone do app",
+      "Formas do esqueleto",
+      "Largura do diálogo no computador"
     ]
   },
   "components": [
@@ -802,25 +1008,33 @@
       "name": "Botão principal",
       "kind": "button",
       "refersTo": "button-principal",
-      "description": "A ação da tela (Lançar, Salvar, Mandar no WhatsApp); um por tela.",
-      "html": "<button class=\"ds-bt ds-principal\" type=\"button\"><svg class=\"ds-ic\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg>Lançar</button>",
-      "css": ".ds-bt{appearance:none;border:0;font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);font-weight:700;font-size:16px;line-height:1;min-height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform 100ms cubic-bezier(.22,1,.36,1),background-color 160ms cubic-bezier(.22,1,.36,1)} .ds-bt .ds-ic{fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;} .ds-bt:active{transform:scale(.97)} .ds-bt:focus-visible{outline:2.5px solid var(--foco,#2d47d6);outline-offset:2px} .ds-bt:disabled{cursor:not-allowed;background:var(--linha,#e4e0d8);color:var(--apagado,#6e6962);box-shadow:none;transform:none} @media (prefers-reduced-motion:reduce){.ds-bt{transition:background-color 160ms linear}.ds-bt:active{transform:none}} .ds-principal{background:var(--acao,#2d47d6);color:var(--no-acao,#fff);box-shadow:var(--s-acao,0 6px 14px -6px rgba(45,71,214,.6))} .ds-principal:active{background:var(--acao-forte,#2338b0)}"
+      "description": "A ação da tela, em azul-marinho; um por tela.",
+      "html": "<button class=\"ds-bt ds-principal\" type=\"button\"><svg class=\"ds-ic\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg>Lançar compra</button>",
+      "css": ".ds-bt{appearance:none;border:0;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);font-weight:700;font-size:16px;line-height:1;min-height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform 100ms cubic-bezier(.22,1,.36,1),background-color 160ms cubic-bezier(.22,1,.36,1)} .ds-bt:active{transform:scale(.97)} .ds-bt:focus-visible{outline:2.5px solid var(--foco,#2b3a8f);outline-offset:2px} .ds-bt:disabled{cursor:not-allowed;background:var(--linha,#e2e5eb);color:var(--apagado,#636b7b);box-shadow:none;transform:none} @media (prefers-reduced-motion:reduce){.ds-bt{transition:background-color 160ms linear}.ds-bt:active{transform:none}} .ds-ic{fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none} .ds-principal{background:var(--acao,#1b2453);color:var(--no-acao,#fff);box-shadow:var(--s-acao,0 1px 2px rgba(17,20,40,.2))} .ds-principal:active{background:var(--acao-forte,#121a40)}"
     },
     {
       "name": "Botão secundário",
       "kind": "button",
       "refersTo": "button-secundario",
-      "description": "Alternativa à ação principal (Copiar texto).",
-      "html": "<button class=\"ds-bt ds-secundario\" type=\"button\"><svg class=\"ds-ic\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"8.5\" y=\"8.5\" width=\"12\" height=\"12\" rx=\"2\"/><path d=\"M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5\"/></svg>Copiar texto</button>",
-      "css": ".ds-bt{appearance:none;border:0;font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);font-weight:700;font-size:16px;line-height:1;min-height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform 100ms cubic-bezier(.22,1,.36,1),background-color 160ms cubic-bezier(.22,1,.36,1)} .ds-bt .ds-ic{fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;} .ds-bt:active{transform:scale(.97)} .ds-bt:focus-visible{outline:2.5px solid var(--foco,#2d47d6);outline-offset:2px} .ds-bt:disabled{cursor:not-allowed;background:var(--linha,#e4e0d8);color:var(--apagado,#6e6962);box-shadow:none;transform:none} @media (prefers-reduced-motion:reduce){.ds-bt{transition:background-color 160ms linear}.ds-bt:active{transform:none}} .ds-secundario{background:var(--cartao,#fff);color:var(--tinta,#1c1b19);box-shadow:inset 0 0 0 1.5px var(--linha-forte,#cfcac0)}"
+      "description": "Alternativa à ação principal (Cancelar, Manter, Copiar texto).",
+      "html": "<button class=\"ds-bt ds-secundario\" type=\"button\">Cancelar</button>",
+      "css": ".ds-bt{appearance:none;border:0;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);font-weight:700;font-size:16px;line-height:1;min-height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform 100ms cubic-bezier(.22,1,.36,1),background-color 160ms cubic-bezier(.22,1,.36,1)} .ds-bt:active{transform:scale(.97)} .ds-bt:focus-visible{outline:2.5px solid var(--foco,#2b3a8f);outline-offset:2px} .ds-bt:disabled{cursor:not-allowed;background:var(--linha,#e2e5eb);color:var(--apagado,#636b7b);box-shadow:none;transform:none} @media (prefers-reduced-motion:reduce){.ds-bt{transition:background-color 160ms linear}.ds-bt:active{transform:none}} .ds-ic{fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none} .ds-secundario{background:var(--cartao,#fff);color:var(--tinta,#11141c);box-shadow:inset 0 0 0 1.5px var(--linha-forte,#c9ced8)}"
     },
     {
-      "name": "Botão destrutivo",
-      "kind": "button",
-      "refersTo": "button-destrutivo",
-      "description": "Excluir; sempre com confirmação ou Desfazer.",
-      "html": "<button class=\"ds-bt ds-destrutivo\" type=\"button\">Excluir importação</button>",
-      "css": ".ds-bt{appearance:none;border:0;font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);font-weight:700;font-size:16px;line-height:1;min-height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform 100ms cubic-bezier(.22,1,.36,1),background-color 160ms cubic-bezier(.22,1,.36,1)} .ds-bt .ds-ic{fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;} .ds-bt:active{transform:scale(.97)} .ds-bt:focus-visible{outline:2.5px solid var(--foco,#2d47d6);outline-offset:2px} .ds-bt:disabled{cursor:not-allowed;background:var(--linha,#e4e0d8);color:var(--apagado,#6e6962);box-shadow:none;transform:none} @media (prefers-reduced-motion:reduce){.ds-bt{transition:background-color 160ms linear}.ds-bt:active{transform:none}} .ds-destrutivo{background:var(--erro-leve,#fde8e6);color:var(--erro,#b3261e)}"
+      "name": "Opções (chips)",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Pílula de 38 com alvo invisível de 44; a escolhida ganha fundo de seleção e contorno azul de tinta.",
+      "html": "<div class=\"ds-chips\" role=\"group\" aria-label=\"Filtrar linhas\"><button class=\"ds-chip\" type=\"button\" aria-pressed=\"true\">Todas <span class=\"n\">47</span></button><button class=\"ds-chip\" type=\"button\" aria-pressed=\"false\">Sem dono <span class=\"n\">12</span></button><button class=\"ds-chip\" type=\"button\" aria-pressed=\"false\">Parcelas <span class=\"n\">6</span></button></div>",
+      "css": ".ds-chips{display:flex;flex-wrap:wrap;gap:8px} .ds-chip{all:unset;box-sizing:border-box;position:relative;cursor:pointer;min-height:38px;padding:0 14px;border-radius:999px;background:var(--cartao,#fff);box-shadow:inset 0 0 0 1.5px var(--linha-forte,#c9ced8);color:var(--tinta,#11141c);font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);font-weight:600;font-size:14px;line-height:1;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:background-color 160ms cubic-bezier(.22,1,.36,1),box-shadow 160ms cubic-bezier(.22,1,.36,1),transform 100ms cubic-bezier(.22,1,.36,1)} .ds-chip::before{content:\"\";position:absolute;inset:-3px -2px} .ds-chip:active{transform:scale(.97)} .ds-chip[aria-pressed=\"true\"]{background:var(--acao-leve,#e9ecf8);box-shadow:inset 0 0 0 2px var(--acao-texto,#2b3a8f)} .ds-chip:focus-visible{outline:2.5px solid var(--foco,#2b3a8f);outline-offset:2px} .ds-chip .n{font-weight:700;color:var(--suave,#565e6e)}"
+    },
+    {
+      "name": "O cofre (total e divisão)",
+      "kind": "custom",
+      "refersTo": "painel-cofre",
+      "description": "Painel escuro com luz no alto: total do mês, régua por pessoa com sem dono hachurado e legenda com nome e valor embaixo.",
+      "html": "<section class=\"ds-cofre\" aria-label=\"Total do mês e quem paga quanto\"><span class=\"ds-valor ds-gg\"><span class=\"m\">R$</span><span class=\"i\">2.184</span><span class=\"c\">,37</span></span><p class=\"ds-sub\">Na fatura que vence em 10/11</p><div class=\"ds-regua\" role=\"img\" aria-label=\"Divisão: Pedro R$ 640,30, Bruna R$ 1.050,17, Eliete R$ 154,00, Lucimar R$ 125,90, 12 sem dono R$ 214,00\"><span class=\"f p\" style=\"flex-grow:640\"></span><span class=\"f b\" style=\"flex-grow:1050\"></span><span class=\"f e\" style=\"flex-grow:154\"></span><span class=\"f l\" style=\"flex-grow:126\"></span><span class=\"f x\" style=\"flex-grow:214\"></span></div><ul class=\"ds-legenda\"><li><span class=\"ds-selo ds-p\"><b>P</b>Pedro</span><span class=\"v\">R$ 640,30</span></li><li><span class=\"ds-selo ds-b\"><b>B</b>Bruna</span><span class=\"v\">R$ 1.050,17</span></li><li><span class=\"ds-selo ds-e\"><b>E</b>Eliete</span><span class=\"v\">R$ 154,00</span></li><li><span class=\"ds-selo ds-l\"><b>L</b>Lucimar</span><span class=\"v\">R$ 125,90</span></li><li class=\"todo\"><span class=\"ds-selo ds-x\"><b>?</b>12 sem dono</span><span class=\"v\">R$ 214,00</span></li></ul></section>",
+      "css": ".ds-valor{display:inline-flex;align-items:baseline;white-space:nowrap;font-variant-numeric:tabular-nums lining-nums} .ds-valor .m{font-weight:600;font-size:.42em;align-self:flex-start;margin:.32em .18em 0 0} .ds-valor .i{font-weight:600} .ds-valor .c{font-weight:600;font-size:.5em;align-self:flex-start;margin:.22em 0 0 .04em} .ds-selo{display:inline-flex;align-items:center;gap:6px;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);font-weight:600;font-size:13px;line-height:1.3;white-space:nowrap;color:var(--tinta,#11141c)} .ds-selo b{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-weight:700;font-size:11px;line-height:1;box-shadow:0 0 0 1.5px var(--anel-pessoa,transparent);flex:none} .ds-p b{background:var(--pedro,#56b4e9);color:var(--pedro-tinta,#1c1b19)} .ds-b b{background:var(--bruna,#bd4a87);color:var(--bruna-tinta,#fff)} .ds-e b{background:var(--eliete,#054836);color:var(--eliete-tinta,#fff)} .ds-l b{background:var(--lucimar,#e69f00);color:var(--lucimar-tinta,#1c1b19)} .ds-x{color:var(--atencao,#8a5a00)} .ds-x b{background:transparent;border:1.5px dashed currentColor;color:currentColor;box-shadow:none} .ds-cofre{max-width:420px;display:flex;flex-direction:column;gap:12px;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);background-color:var(--cofre-2,#0f1328);background-image:radial-gradient(120% 90% at 20% 0%,var(--cofre-1,#1d2446),var(--cofre-2,#0f1328));color:var(--cofre-tinta,#f3f5fb);border-radius:24px;padding:22px 20px 14px;box-shadow:var(--s-painel,inset 0 1px 0 rgba(255,255,255,.1),0 18px 40px -20px rgba(15,19,40,.6))} .ds-gg{font-size:56px;line-height:1;letter-spacing:-.035em} .ds-cofre .ds-valor .m,.ds-cofre .ds-valor .c,.ds-sub{color:var(--cofre-suave,#aeb6cf)} .ds-sub{margin:0;font-weight:400;font-size:14px;line-height:1.45} .ds-regua{display:flex;gap:3px;height:14px;border-radius:999px;overflow:hidden;margin-top:6px} .ds-regua .f{min-width:6px;flex-basis:0;transition:flex-grow 340ms cubic-bezier(.65,0,.35,1)} .f.p{background:var(--pedro,#56b4e9)} .f.b{background:var(--bruna,#bd4a87)} .f.e{background:var(--eliete,#054836)} .f.l{background:var(--lucimar,#e69f00)} .f.x{background:repeating-linear-gradient(135deg,rgba(255,255,255,.12) 0 5px,rgba(255,255,255,.26) 5px 10px)} .ds-legenda{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 16px;font-variant-numeric:tabular-nums lining-nums} .ds-legenda li{min-height:52px;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:4px 0} .ds-legenda li.todo{grid-column:1/-1} .ds-legenda .v{padding-left:28px;font-weight:700;font-size:14px} .ds-cofre .ds-selo{color:var(--cofre-tinta,#f3f5fb)} .ds-cofre .ds-selo b{box-shadow:0 0 0 1.5px rgba(255,255,255,.35)} .ds-cofre .ds-selo.ds-x{color:#f6cd7a} .ds-cofre .ds-selo.ds-x b{box-shadow:none} @media (prefers-reduced-motion:reduce){.ds-regua .f{transition:none}}"
     },
     {
       "name": "Campo de valor",
@@ -828,23 +1042,23 @@
       "refersTo": "campo-valor",
       "description": "O maior campo da tela Lançar, com \"R$\" menor e teclado numérico.",
       "html": "<label class=\"ds-campo\"><span class=\"ds-rot\">Valor</span><span class=\"ds-entrada\"><span class=\"ds-rs\">R$</span><input inputmode=\"decimal\" value=\"300,00\"></span><span class=\"ds-ajuda\">Em 3 vezes: 100,00 + 100,00 + 100,00</span></label>",
-      "css": ".ds-campo{display:flex;flex-direction:column;gap:6px;font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);} .ds-rot{font-weight:700;font-size:13px;line-height:1.3;color:var(--suave,#5b574f)} .ds-entrada{min-height:64px;border-radius:14px;background:var(--cartao,#fff);box-shadow:inset 0 0 0 1.5px var(--linha-forte,#cfcac0);display:flex;align-items:center;gap:8px;padding:0 16px;color:var(--tinta,#1c1b19);font-weight:800;font-size:34px;line-height:1.05;letter-spacing:-.02em;font-variant-numeric:tabular-nums lining-nums;transition:box-shadow 160ms cubic-bezier(.22,1,.36,1)} .ds-entrada:focus-within{box-shadow:inset 0 0 0 2px var(--foco,#2d47d6)} .ds-entrada input{all:unset;flex:1;min-width:0;font:inherit;color:inherit} .ds-rs{font-weight:700;font-size:20px;line-height:1;letter-spacing:0;color:var(--suave,#5b574f)} .ds-ajuda{font-weight:500;font-size:13px;line-height:1.4;color:var(--suave,#5b574f)}"
+      "css": ".ds-campo{display:flex;flex-direction:column;gap:6px;max-width:380px;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);} .ds-rot{font-weight:600;font-size:13px;line-height:1.3;color:var(--suave,#565e6e)} .ds-entrada{min-height:72px;border-radius:12px;background:var(--cartao,#fff);box-shadow:inset 0 0 0 1.5px var(--linha-forte,#c9ced8);display:flex;align-items:center;gap:8px;padding:0 16px;color:var(--tinta,#11141c);transition:box-shadow 160ms cubic-bezier(.22,1,.36,1)} .ds-entrada:focus-within{box-shadow:inset 0 0 0 2px var(--foco,#2b3a8f)} .ds-entrada input{all:unset;flex:1;min-width:0;font-weight:700;font-size:34px;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums} .ds-rs{font-weight:700;font-size:20px;line-height:1;color:var(--suave,#565e6e)} .ds-ajuda{font-weight:400;font-size:13px;line-height:1.45;color:var(--suave,#565e6e)}"
     },
     {
       "name": "Seletor Pessoal / Casal",
       "kind": "custom",
       "refersTo": "segmentado",
-      "description": "Dois lados; a peça escolhida desliza com mola curta (0,22s).",
+      "description": "Dois lados; a peça branca desliza com mola curta (0,22s).",
       "html": "<div class=\"ds-seg\" role=\"group\" aria-label=\"Para quê\"><span class=\"ds-pino\"></span><button type=\"button\" aria-pressed=\"true\">Pessoal</button><button type=\"button\" aria-pressed=\"false\">Casal</button></div>",
-      "css": ".ds-seg{display:grid;grid-template-columns:1fr 1fr;background:var(--linha,#e4e0d8);border-radius:999px;padding:3px;position:relative;isolation:isolate;max-width:360px;font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);} .ds-seg button{all:unset;min-height:42px;display:grid;place-items:center;font-weight:700;font-size:15px;line-height:1;color:var(--suave,#5b574f);border-radius:999px;cursor:pointer;position:relative;z-index:1} .ds-seg button[aria-pressed=\"true\"]{color:var(--tinta,#1c1b19)} .ds-seg button:focus-visible{outline:2.5px solid var(--foco,#2d47d6);outline-offset:-2px} .ds-pino{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--cartao,#fff);border-radius:999px;box-shadow:var(--s-cartao,0 1px 2px rgba(40,30,10,.06),0 0 0 1px rgba(40,30,10,.03));transition:transform 220ms var(--mola,cubic-bezier(.22,1,.36,1))} .ds-seg:has(button:last-of-type[aria-pressed=\"true\"]) .ds-pino{transform:translateX(100%)}"
+      "css": ".ds-seg{display:grid;grid-template-columns:1fr 1fr;background:var(--linha,#e2e5eb);border-radius:999px;padding:3px;position:relative;isolation:isolate;max-width:360px;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);} .ds-seg button{all:unset;min-height:44px;display:grid;place-items:center;font-weight:700;font-size:14px;line-height:1;color:var(--suave,#565e6e);border-radius:999px;cursor:pointer;position:relative;z-index:1} .ds-seg button[aria-pressed=\"true\"]{color:var(--tinta,#11141c)} .ds-seg button:focus-visible{outline:2.5px solid var(--foco,#2b3a8f);outline-offset:-2px} .ds-pino{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--cartao,#fff);border-radius:999px;box-shadow:var(--s-cartao,0 1px 2px rgba(17,20,40,.05),0 8px 22px -14px rgba(17,20,40,.2));transition:transform 220ms var(--mola,cubic-bezier(.22,1,.36,1))} .ds-seg:has(button:last-of-type[aria-pressed=\"true\"]) .ds-pino{transform:translateX(100%)} @media (prefers-reduced-motion:reduce){.ds-pino{transition:none}}"
     },
     {
       "name": "Selo de pessoa",
       "kind": "chip",
       "refersTo": "pedro",
-      "description": "Cor fixa sempre com inicial e nome; sem dono tracejado.",
+      "description": "Cor fixa sempre com inicial e nome; sem dono tracejado em âmbar.",
       "html": "<div class=\"ds-fila\"><span class=\"ds-selo ds-p\"><b>P</b>Pedro</span><span class=\"ds-selo ds-b\"><b>B</b>Bruna</span><span class=\"ds-selo ds-e\"><b>E</b>Eliete</span><span class=\"ds-selo ds-l\"><b>L</b>Lucimar</span><span class=\"ds-selo ds-x\"><b>?</b>Sem dono</span></div>",
-      "css": ".ds-fila{display:flex;flex-wrap:wrap;gap:12px} .ds-selo{display:inline-flex;align-items:center;gap:6px;font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);font-weight:600;font-size:13px;line-height:1.3;white-space:nowrap;color:var(--tinta,#1c1b19)} .ds-selo b{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-weight:800;font-size:11px;line-height:1;box-shadow:0 0 0 1.5px var(--anel-pessoa,transparent)} .ds-p b{background:var(--pedro,#56b4e9);color:var(--pedro-tinta,#1c1b19)} .ds-b b{background:var(--bruna,#bd4a87);color:var(--bruna-tinta,#fff)} .ds-e b{background:var(--eliete,#054836);color:var(--eliete-tinta,#fff)} .ds-l b{background:var(--lucimar,#e69f00);color:var(--lucimar-tinta,#1c1b19)} .ds-x{color:var(--atencao,#8a5a00)} .ds-x b{background:transparent;border:1.5px dashed currentColor;color:currentColor;box-shadow:none}"
+      "css": ".ds-fila{display:flex;flex-wrap:wrap;gap:12px} .ds-selo{display:inline-flex;align-items:center;gap:6px;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);font-weight:600;font-size:13px;line-height:1.3;white-space:nowrap;color:var(--tinta,#11141c)} .ds-selo b{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-weight:700;font-size:11px;line-height:1;box-shadow:0 0 0 1.5px var(--anel-pessoa,transparent);flex:none} .ds-p b{background:var(--pedro,#56b4e9);color:var(--pedro-tinta,#1c1b19)} .ds-b b{background:var(--bruna,#bd4a87);color:var(--bruna-tinta,#fff)} .ds-e b{background:var(--eliete,#054836);color:var(--eliete-tinta,#fff)} .ds-l b{background:var(--lucimar,#e69f00);color:var(--lucimar-tinta,#1c1b19)} .ds-x{color:var(--atencao,#8a5a00)} .ds-x b{background:transparent;border:1.5px dashed currentColor;color:currentColor;box-shadow:none}"
     },
     {
       "name": "Pílulas de status",
@@ -852,53 +1066,58 @@
       "refersTo": "pilula-ok",
       "description": "Significado sempre com palavra e ícone.",
       "html": "<div class=\"ds-fila\"><span class=\"ds-pil ds-ok\"><svg class=\"ds-ic\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg>Pago</span><span class=\"ds-pil ds-at\"><svg class=\"ds-ic\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7.5v5.5M12 16.5h.01\"/></svg>Falta pagar</span><span class=\"ds-pil ds-er\"><svg class=\"ds-ic\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7.5v5.5M12 16.5h.01\"/></svg>Arquivo não lido</span><span class=\"ds-pil ds-ac\"><svg class=\"ds-ic\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"2\"/><path d=\"M3.5 10h17M8 3v4M16 3v4\"/></svg>Aberta</span></div>",
-      "css": ".ds-fila{display:flex;flex-wrap:wrap;gap:12px} .ds-pil{display:inline-flex;align-items:center;gap:5px;font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);font-weight:600;font-size:12px;line-height:1.3;padding:5px 10px 5px 8px;border-radius:999px;white-space:nowrap} .ds-pil .ds-ic{fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.25} .ds-ok{background:var(--ok-leve,#e3f3ea);color:var(--ok,#1f7a4d)} .ds-at{background:var(--atencao-leve,#fdf1d8);color:var(--atencao,#8a5a00)} .ds-er{background:var(--erro-leve,#fde8e6);color:var(--erro,#b3261e)} .ds-ac{background:var(--acao-leve,#e9ecfd);color:var(--acao-texto,#2d47d6)}"
-    },
-    {
-      "name": "Cartão da fatura",
-      "kind": "card",
-      "refersTo": "cartao-fatura",
-      "description": "Total e quem paga quanto, Bruna incluída, igual às outras pessoas.",
-      "html": "<div class=\"ds-cartao\"><div class=\"ds-topo\"><div class=\"ds-banco\"><i>nu</i><div>Nubank da Bruna<small>Vence 10/11</small></div></div></div><div class=\"ds-total\"><span>R$</span>2.184,37</div><div class=\"ds-quem\"><div><span class=\"ds-selo ds-p\"><b>P</b>Pedro</span><span class=\"ds-v\">R$ 640,30</span></div><div><span class=\"ds-selo ds-b\"><b>B</b>Bruna</span><span class=\"ds-v\">R$ 1.050,17</span></div><div><span class=\"ds-selo ds-e\"><b>E</b>Eliete</span><span class=\"ds-v\">R$ 154,00</span></div><div><span class=\"ds-selo ds-l\"><b>L</b>Lucimar</span><span class=\"ds-v\">R$ 125,90</span></div><div><span class=\"ds-selo ds-x\"><b>?</b>12 sem dono</span><span class=\"ds-v\">R$ 214,00</span></div></div></div>",
-      "css": ".ds-cartao{background:var(--cartao,#fff);border-radius:22px;box-shadow:var(--s-cartao,0 1px 2px rgba(40,30,10,.06),0 0 0 1px rgba(40,30,10,.03));padding:16px;display:flex;flex-direction:column;gap:12px;max-width:380px;color:var(--tinta,#1c1b19);font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);font-variant-numeric:tabular-nums lining-nums} .ds-banco{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;line-height:1.3} .ds-banco i{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12px;font-style:normal;background:var(--nubank,#820ad1);color:#fff} .ds-banco small{display:block;font-weight:500;font-size:14px;color:var(--suave,#5b574f)} .ds-total{font-weight:800;font-size:34px;line-height:1.05;letter-spacing:-.02em} .ds-total span{font-weight:700;font-size:20px;color:var(--suave,#5b574f);margin-right:4px;letter-spacing:0} .ds-quem>div{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:48px;border-top:1px solid var(--linha,#e4e0d8)} .ds-quem>div:first-child{border-top:0} .ds-v{font-weight:700;font-size:16px} .ds-selo{display:inline-flex;align-items:center;gap:6px;font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);font-weight:600;font-size:13px;line-height:1.3;white-space:nowrap;color:var(--tinta,#1c1b19)} .ds-selo b{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-weight:800;font-size:11px;line-height:1;box-shadow:0 0 0 1.5px var(--anel-pessoa,transparent)} .ds-p b{background:var(--pedro,#56b4e9);color:var(--pedro-tinta,#1c1b19)} .ds-b b{background:var(--bruna,#bd4a87);color:var(--bruna-tinta,#fff)} .ds-e b{background:var(--eliete,#054836);color:var(--eliete-tinta,#fff)} .ds-l b{background:var(--lucimar,#e69f00);color:var(--lucimar-tinta,#1c1b19)} .ds-x{color:var(--atencao,#8a5a00)} .ds-x b{background:transparent;border:1.5px dashed currentColor;color:currentColor;box-shadow:none}"
+      "css": ".ds-fila{display:flex;flex-wrap:wrap;gap:12px} .ds-ic{fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none} .ds-pil{display:inline-flex;align-items:center;gap:5px;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);font-weight:500;font-size:12px;line-height:1.3;padding:5px 10px 5px 8px;border-radius:999px;white-space:nowrap} .ds-pil .ds-ic{stroke-width:2.25} .ds-ok{background:var(--ok-leve,#e3f3ea);color:var(--ok,#1f7a4d)} .ds-at{background:var(--atencao-leve,#fdf1d8);color:var(--atencao,#8a5a00)} .ds-er{background:var(--erro-leve,#fde8e6);color:var(--erro,#b3261e)} .ds-ac{background:var(--acao-leve,#e9ecf8);color:var(--acao-texto,#2b3a8f)}"
     },
     {
       "name": "Linha da fatura",
       "kind": "custom",
       "refersTo": "linha-fatura",
       "description": "Logo da loja, descrição, parcela ou data, selo da pessoa e valor; toque longo marca.",
-      "html": "<div class=\"ds-lista\" role=\"listbox\" aria-multiselectable=\"true\"><div class=\"ds-lin\" role=\"option\" tabindex=\"0\" aria-selected=\"false\"><span class=\"ds-logo\">C</span><span class=\"ds-d\"><b>Centauro</b><small><span class=\"ds-parc\">1/3</span><span class=\"ds-selo ds-x\"><b>?</b>Sem dono</span></small></span><span class=\"ds-val\">R$ 33,34</span></div><div class=\"ds-lin\" role=\"option\" tabindex=\"0\" aria-selected=\"true\"><span class=\"ds-logo\">A</span><span class=\"ds-d\"><b>Amazon</b><small>06/10 <span class=\"ds-selo ds-b\"><b>B</b>Bruna</span></small></span><span class=\"ds-val\">R$ 128,40</span></div><div class=\"ds-lin ds-filho\" role=\"option\" tabindex=\"0\" aria-selected=\"false\"><span class=\"ds-logo\"></span><span class=\"ds-d\"><b>IOF Amazon</b><small>06/10 <span class=\"ds-selo ds-b\"><b>B</b>Bruna</span></small></span><span class=\"ds-val\">R$ 3,21</span></div></div>",
-      "css": ".ds-lista{background:var(--cartao,#fff);border-radius:22px;box-shadow:var(--s-cartao,0 1px 2px rgba(40,30,10,.06),0 0 0 1px rgba(40,30,10,.03));overflow:hidden;max-width:380px;color:var(--tinta,#1c1b19);font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);} .ds-lin{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 16px;min-height:64px;position:relative;cursor:pointer;transition:background-color 160ms cubic-bezier(.22,1,.36,1)} .ds-lin+.ds-lin::before{content:\"\";position:absolute;top:0;left:64px;right:0;height:1px;background:var(--linha,#e4e0d8)} .ds-lin:active{background:var(--chao,#f1efeb)} .ds-lin:focus-visible{outline:2.5px solid var(--foco,#2d47d6);outline-offset:-2.5px} .ds-lin[aria-selected=\"true\"]{background:var(--acao-leve,#e9ecfd)} .ds-logo{width:36px;height:36px;border-radius:50%;background:var(--chao,#f1efeb);box-shadow:inset 0 0 0 1px var(--linha,#e4e0d8);display:grid;place-items:center;font-weight:800;font-size:14px;color:var(--suave,#5b574f)} .ds-lin[aria-selected=\"true\"] .ds-logo{background:var(--acao,#2d47d6);color:var(--no-acao,#fff);box-shadow:none} .ds-d{min-width:0;display:flex;flex-direction:column;gap:3px} .ds-d b{font-weight:600;font-size:15px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .ds-d small{font-weight:500;font-size:13px;color:var(--suave,#5b574f);display:flex;gap:8px;align-items:center;flex-wrap:wrap} .ds-val{font-weight:700;font-size:15px;font-variant-numeric:tabular-nums lining-nums} .ds-parc{font-weight:600;font-size:12px;color:var(--suave,#5b574f);background:var(--chao,#f1efeb);border-radius:6px;padding:1px 6px} .ds-filho .ds-d b{font-weight:500;color:var(--suave,#5b574f)} .ds-filho .ds-logo{background:transparent;box-shadow:none} .ds-selo{display:inline-flex;align-items:center;gap:6px;font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);font-weight:600;font-size:13px;line-height:1.3;white-space:nowrap;color:var(--tinta,#1c1b19)} .ds-selo b{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-weight:800;font-size:11px;line-height:1;box-shadow:0 0 0 1.5px var(--anel-pessoa,transparent)} .ds-p b{background:var(--pedro,#56b4e9);color:var(--pedro-tinta,#1c1b19)} .ds-b b{background:var(--bruna,#bd4a87);color:var(--bruna-tinta,#fff)} .ds-e b{background:var(--eliete,#054836);color:var(--eliete-tinta,#fff)} .ds-l b{background:var(--lucimar,#e69f00);color:var(--lucimar-tinta,#1c1b19)} .ds-x{color:var(--atencao,#8a5a00)} .ds-x b{background:transparent;border:1.5px dashed currentColor;color:currentColor;box-shadow:none}"
+      "html": "<div class=\"ds-lista\"><button class=\"ds-lin\" type=\"button\" aria-pressed=\"false\"><span class=\"ds-logo\">C</span><span class=\"ds-d\"><b>Centauro</b><small><span class=\"ds-parc\">1/3</span><span class=\"ds-selo ds-x\"><b>?</b>Sem dono</span></small></span><span class=\"ds-v\">R$ 33,34</span></button><button class=\"ds-lin\" type=\"button\" aria-pressed=\"true\"><span class=\"ds-logo\">A</span><span class=\"ds-d\"><b>Amazon</b><small>06/10 <span class=\"ds-selo ds-b\"><b>B</b>Bruna</span></small></span><span class=\"ds-v\">R$ 128,40</span></button></div>",
+      "css": ".ds-selo{display:inline-flex;align-items:center;gap:6px;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);font-weight:600;font-size:13px;line-height:1.3;white-space:nowrap;color:var(--tinta,#11141c)} .ds-selo b{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-weight:700;font-size:11px;line-height:1;box-shadow:0 0 0 1.5px var(--anel-pessoa,transparent);flex:none} .ds-p b{background:var(--pedro,#56b4e9);color:var(--pedro-tinta,#1c1b19)} .ds-b b{background:var(--bruna,#bd4a87);color:var(--bruna-tinta,#fff)} .ds-e b{background:var(--eliete,#054836);color:var(--eliete-tinta,#fff)} .ds-l b{background:var(--lucimar,#e69f00);color:var(--lucimar-tinta,#1c1b19)} .ds-x{color:var(--atencao,#8a5a00)} .ds-x b{background:transparent;border:1.5px dashed currentColor;color:currentColor;box-shadow:none} .ds-lista{background:var(--cartao,#fff);border-radius:18px;box-shadow:var(--s-cartao,0 1px 2px rgba(17,20,40,.05),0 8px 22px -14px rgba(17,20,40,.2));overflow:hidden;max-width:420px;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);} .ds-lin{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 16px;min-height:64px;position:relative;cursor:pointer;width:100%;border:0;background:none;text-align:left;font:inherit;color:var(--tinta,#11141c);transition:background-color 160ms cubic-bezier(.22,1,.36,1)} .ds-lin+.ds-lin::before{content:\"\";position:absolute;top:0;left:64px;right:0;height:1px;background:var(--linha,#e2e5eb)} .ds-lin:active{background:var(--chao,#f2f3f6)} .ds-lin:focus-visible{outline:2.5px solid var(--foco,#2b3a8f);outline-offset:-2.5px} .ds-lin[aria-pressed=\"true\"]{background:var(--acao-leve,#e9ecf8)} .ds-logo{width:36px;height:36px;border-radius:50%;background:var(--chao,#f2f3f6);box-shadow:inset 0 0 0 1px var(--linha,#e2e5eb);display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--suave,#565e6e)} .ds-lin[aria-pressed=\"true\"] .ds-logo{background:var(--acao,#1b2453);color:var(--no-acao,#fff);box-shadow:none} .ds-d{min-width:0;display:flex;flex-direction:column;gap:3px} .ds-d b{font-weight:600;font-size:16px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .ds-d small{font-weight:400;font-size:13px;color:var(--suave,#565e6e);display:flex;gap:8px;align-items:center;flex-wrap:wrap} .ds-v{font-weight:700;font-size:16px;font-variant-numeric:tabular-nums lining-nums} .ds-parc{font-weight:500;font-size:12px;color:var(--suave,#565e6e);background:var(--chao,#f2f3f6);border-radius:8px;padding:1px 6px}"
     },
     {
       "name": "Barra de baixo",
       "kind": "nav",
       "refersTo": "barra-inferior",
-      "description": "Cinco lugares com nome, de vidro, Lançar elevado no centro.",
-      "html": "<nav class=\"ds-barra\" aria-label=\"Navegação principal\"><a href=\"#\" aria-current=\"page\"><svg class=\"ds-ic\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3.5 10.5 12 3.5l8.5 7V19a1.5 1.5 0 0 1-1.5 1.5h-4v-6H9v6H5A1.5 1.5 0 0 1 3.5 19z\"/></svg>Início</a><a href=\"#\"><svg class=\"ds-ic\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"2.5\" y=\"5\" width=\"19\" height=\"14\" rx=\"2.5\"/><path d=\"M2.5 10h19M6.5 15h4\"/></svg>Cartões</a><a href=\"#\" class=\"ds-lancar\" aria-label=\"Lançar compra\"><span><svg class=\"ds-ic\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg></span>Lançar</a><a href=\"#\"><svg class=\"ds-ic\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 3.5h14v17l-2.5-1.5-2.5 1.5-2-1.5-2 1.5-2.5-1.5L5 20.5z\"/><path d=\"M8.5 8h7M8.5 11.5h7M8.5 15h4\"/></svg>Fechamentos</a><a href=\"#\"><svg class=\"ds-ic\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1\"/><circle cx=\"15\" cy=\"7\" r=\"2\"/><circle cx=\"9\" cy=\"12\" r=\"2\"/><circle cx=\"17\" cy=\"17\" r=\"2\"/></svg>Ajustes</a></nav>",
-      "css": ".ds-barra{height:84px;max-width:400px;background:var(--vidro,rgba(255,255,255,.82));backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);box-shadow:inset 0 1px 0 var(--linha,#e4e0d8);display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px 20px;font-family:var(--fonte,\"Figtree\",\"Segoe UI\",system-ui,sans-serif);} .ds-barra a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-weight:600;font-size:11px;line-height:1;letter-spacing:-.01em;white-space:nowrap;color:var(--suave,#5b574f);text-decoration:none;min-height:44px;border-radius:12px} .ds-barra a:focus-visible{outline:2.5px solid var(--foco,#2d47d6)} .ds-barra .ds-ic{fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;} .ds-barra a[aria-current=\"page\"]{color:var(--acao-texto,#2d47d6)} .ds-lancar span{width:52px;height:52px;margin-top:-18px;border-radius:50%;background:var(--acao,#2d47d6);color:var(--no-acao,#fff);display:grid;place-items:center;box-shadow:var(--s-acao,0 6px 14px -6px rgba(45,71,214,.6));transition:transform 100ms cubic-bezier(.22,1,.36,1)} .ds-lancar:active span{transform:scale(.97)} @media (prefers-reduced-transparency:reduce){.ds-barra{background:var(--cartao,#fff);backdrop-filter:none;-webkit-backdrop-filter:none}}"
+      "description": "Celular: cinco lugares com nome, de vidro, Lançar azul-marinho de 48 no centro (D10).",
+      "html": "<nav class=\"ds-barra\" aria-label=\"Navegação\"><button type=\"button\" aria-current=\"page\"><svg class=\"ds-ic\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3.5 10.5 12 3.5l8.5 7V19a1.5 1.5 0 0 1-1.5 1.5h-4v-6H9v6H5A1.5 1.5 0 0 1 3.5 19z\"/></svg>Início</button><button type=\"button\"><svg class=\"ds-ic\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"2.5\" y=\"5\" width=\"19\" height=\"14\" rx=\"2.5\"/><path d=\"M2.5 10h19\"/></svg>Cartões</button><button type=\"button\" class=\"ds-lancar\"><span><svg class=\"ds-ic\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg></span>Lançar</button><button type=\"button\"><svg class=\"ds-ic\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 3.5h14v17l-2.5-1.5-2.5 1.5-2-1.5-2 1.5-2.5-1.5L5 20.5z\"/><path d=\"M8.5 8h7M8.5 11.5h7M8.5 15h4\"/></svg>Fechamentos</button><button type=\"button\"><svg class=\"ds-ic\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/></svg>Mais</button></nav>",
+      "css": ".ds-ic{fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none} .ds-barra{height:84px;max-width:420px;margin-top:24px;background:var(--vidro,rgba(246,247,250,.86));backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);box-shadow:inset 0 1px 0 var(--linha,#e2e5eb);display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px 20px;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);} .ds-barra button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;font-weight:600;font-size:11px;line-height:1;letter-spacing:-.01em;white-space:nowrap;color:var(--suave,#565e6e);min-height:44px;border-radius:8px} .ds-barra button[aria-current=\"page\"]{color:var(--acao-texto,#2b3a8f)} .ds-barra button:focus-visible{outline:2.5px solid var(--foco,#2b3a8f)} .ds-lancar span{width:48px;height:48px;margin-top:-20px;border-radius:50%;background:var(--acao,#1b2453);color:var(--no-acao,#fff);display:grid;place-items:center;box-shadow:0 6px 16px -8px rgba(17,20,40,.5);transition:transform 100ms cubic-bezier(.22,1,.36,1)} .ds-lancar:active span{transform:scale(.97)} @media (prefers-reduced-transparency:reduce){.ds-barra{background:var(--cartao,#fff);backdrop-filter:none;-webkit-backdrop-filter:none}} @media (prefers-reduced-motion:reduce){.ds-lancar:active span{transform:none}}"
+    },
+    {
+      "name": "Menu lateral",
+      "kind": "nav",
+      "refersTo": "lateral",
+      "description": "Computador (1024px ou mais): marca, Lançar compra e quatro lugares; substitui a barra de baixo.",
+      "html": "<nav class=\"ds-lateral\" aria-label=\"Navegação principal\"><div class=\"ds-marca\"><span class=\"ds-q\"></span><b>B&amp;P Finanças</b></div><button class=\"ds-bt ds-principal\" type=\"button\"><svg class=\"ds-ic\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg>Lançar compra</button><button class=\"ds-item\" type=\"button\" aria-current=\"page\"><svg class=\"ds-ic\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3.5 10.5 12 3.5l8.5 7V19a1.5 1.5 0 0 1-1.5 1.5h-4v-6H9v6H5A1.5 1.5 0 0 1 3.5 19z\"/></svg>Início</button><button class=\"ds-item\" type=\"button\"><svg class=\"ds-ic\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"2.5\" y=\"5\" width=\"19\" height=\"14\" rx=\"2.5\"/><path d=\"M2.5 10h19\"/></svg>Cartões</button><button class=\"ds-item\" type=\"button\"><svg class=\"ds-ic\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 3.5h14v17l-2.5-1.5-2.5 1.5-2-1.5-2 1.5-2.5-1.5L5 20.5z\"/><path d=\"M8.5 8h7M8.5 11.5h7M8.5 15h4\"/></svg>Fechamentos</button><button class=\"ds-item\" type=\"button\"><svg class=\"ds-ic\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/></svg>Mais</button></nav>",
+      "css": ".ds-bt{appearance:none;border:0;font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);font-weight:700;font-size:16px;line-height:1;min-height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform 100ms cubic-bezier(.22,1,.36,1),background-color 160ms cubic-bezier(.22,1,.36,1)} .ds-bt:active{transform:scale(.97)} .ds-bt:focus-visible{outline:2.5px solid var(--foco,#2b3a8f);outline-offset:2px} .ds-bt:disabled{cursor:not-allowed;background:var(--linha,#e2e5eb);color:var(--apagado,#636b7b);box-shadow:none;transform:none} @media (prefers-reduced-motion:reduce){.ds-bt{transition:background-color 160ms linear}.ds-bt:active{transform:none}} .ds-ic{fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none} .ds-principal{background:var(--acao,#1b2453);color:var(--no-acao,#fff);box-shadow:var(--s-acao,0 1px 2px rgba(17,20,40,.2));width:100%;margin-bottom:16px} .ds-principal:active{background:var(--acao-forte,#121a40)} .ds-lateral{display:flex;flex-direction:column;gap:4px;width:248px;padding:24px 16px;background:var(--chao,#f2f3f6);box-shadow:inset -1px 0 0 var(--linha,#e2e5eb);font-family:var(--fonte,\"Geist\",\"Segoe UI\",system-ui,sans-serif);} .ds-marca{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;line-height:1.3;color:var(--tinta,#11141c);padding:0 8px 18px} .ds-q{width:36px;height:36px;border-radius:8px;background:var(--acao,#1b2453)} .ds-item{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:12px;font-weight:600;font-size:14px;line-height:1;color:var(--suave,#565e6e)} .ds-item:hover{background:var(--cartao,#fff)} .ds-item[aria-current=\"page\"]{background:var(--cartao,#fff);color:var(--tinta,#11141c);box-shadow:var(--s-cartao,0 1px 2px rgba(17,20,40,.05),0 8px 22px -14px rgba(17,20,40,.2))} .ds-item:focus-visible{outline:2.5px solid var(--foco,#2b3a8f)}"
     }
   ],
   "narrative": {
-    "northStar": "Sala de estar",
-    "overview": "A fatura é tratada como a sala da família, não como a tela de um banco. O fundo é um papel quente, cada assunto mora num cartão branco de cantos bem redondos que quase encosta no chão, e cada pessoa (Pedro, Bruna, Eliete, Lucimar) aparece pelo nome, com a inicial num círculo da sua cor e o seu valor ao lado. A sensação procurada é a da marca: serena, exata, da casa, transparente. Nada de bronca, nada de alerta piscando.\n\nA tela é feita para o celular e para o polegar: uma coluna só, margem de 16 dos lados, ações na metade de baixo, o botão Lançar fixo no meio da barra inferior. A densidade é média: linhas de 64 de altura, valores grandes onde importam (o total da fatura, o campo de valor) e texto de apoio discreto no resto. Há uma única cor de interface, o azul da marca, e ela só aparece no que se pode tocar ou no que está escolhido. As outras cores são informação: verde, âmbar e vermelho com significado fixo, e as quatro cores de pessoa.\n\nO que este sistema recusa, por decisão confirmada no briefing: o painel azul-banco com gráfico e alerta vermelho, a cara de \"dashboard de IA\", gráficos sem pergunta, gamificação.",
+    "northStar": "Cofre",
+    "overview": "O dinheiro da família guardado com o cuidado de um banco de primeira linha, mas com o nome de cada pessoa escrito nele. O fundo é uma porcelana fria e clara; cada assunto mora num cartão branco; e o número do mês fica dentro de um painel escuro, o cofre, com uma luz suave no alto. Embaixo do total, uma régua divide o dinheiro pelas cores das pessoas (Pedro, Bruna, Eliete, Lucimar) e uma legenda escreve o nome e o valor de cada uma. A sensação continua a da marca: serena, exata, da casa, transparente. Nada de bronca, nada de alerta piscando.\n\nEstilo escolhido pelo Pedro em 29/10/2026, no lugar do \"Sala de estar\" (papel quente, Figtree). A estrutura do produto e as regras de negócio não mudaram. No celular, uma coluna só, margem de 16, ações na metade de baixo e a barra inferior com Lançar no centro. No computador (a partir de 1024px), um menu lateral à esquerda substitui a barra e a tela se abre em duas colunas: o cofre e o resumo à esquerda, o conteúdo à direita.\n\nHá duas cores de interface, ambas azuis: o azul-marinho do botão principal e o azul de tinta dos links, da seleção e do foco. O resto da cor é informação: verde, âmbar e vermelho com significado fixo, as quatro cores de pessoa e o próprio cofre. O que o sistema recusa, por compromisso da marca: vermelho de alerta para dinheiro, gráficos que não respondem a uma pergunta, cara de \"dashboard de IA\", gamificação.",
     "keyCharacteristics": [
-      "Chão de papel quente, cartões brancos com raio de 22 e sombra curta e macia.",
-      "Um azul só, reservado para toque e seleção.",
-      "Pessoas sempre com cor + inicial + nome; \"sem dono\" é um círculo tracejado com \"?\".",
-      "Uma fonte só (Figtree), números de largura igual, dinheiro com o \"R$\" menor e mais claro.",
-      "Escuro de verdade, mas sem preto puro: \"noite em casa\".",
+      "Chão de porcelana fria (`chao`), cartões brancos de raio 18 com sombra fria em duas camadas.",
+      "Um cofre por tela: o total do mês em 56px (64 no computador) num painel escuro de raio 24, com luz no alto.",
+      "A régua: o único gráfico do app, respondendo \"de quem é esse dinheiro?\".",
+      "Uma fonte só (Geist, 400 a 700), números de largura igual, \"R$\" e centavos menores e mais claros.",
+      "Escuro profundo, sem preto puro, com camadas separadas por claridade.",
       "Movimento curto e interrompível; números nunca animam."
     ],
     "rules": [
       {
-        "name": "The Cor Única Rule",
-        "body": "O azul é a única cor de interface. Só aparece no que se toca ou no que está escolhido; nunca como enfeite, faixa ou fundo de seção.",
+        "name": "The Dois Azuis Rule",
+        "body": "O azul-marinho é do botão principal; o azul de tinta é de link, seleção e foco. Só aparecem no que se toca ou no que está escolhido, nunca como enfeite, faixa ou fundo de seção.",
+        "section": "colors"
+      },
+      {
+        "name": "The Um Cofre Rule",
+        "body": "O painel escuro guarda o total do mês e a divisão por pessoa, e aparece no máximo uma vez por tela. Nenhum outro bloco usa as cores do cofre.",
         "section": "colors"
       },
       {
         "name": "The Nome Junto Rule",
-        "body": "Cor de pessoa nunca aparece sozinha: sempre com a inicial dentro do círculo e o nome ao lado. Status nunca aparece só por cor: sempre com palavra e ícone.",
+        "body": "Cor de pessoa nunca aparece sozinha: no selo, sempre com a inicial no círculo e o nome ao lado; na régua, sempre com a legenda logo abaixo. Status nunca aparece só por cor: sempre com palavra e ícone.",
         "section": "colors"
       },
       {
@@ -908,17 +1127,22 @@
       },
       {
         "name": "The Valor Manda Rule",
-        "body": "Dinheiro é sempre escrito \"R$ 1.234,56\". Nos valores grandes, o \"R$\" vem menor (700, 20px), na cor `suave` e sem aperto, com 4px de espaço; o número manda.",
+        "body": "Dinheiro é sempre escrito \"R$ 1.234,56\". Nos valores grandes, só os reais ficam no tamanho cheio (600); o \"R$\" (42% do tamanho) e os centavos (50%) vêm em 600, na cor suave, alinhados pelo alto. Em valores pequenos (16px e abaixo), tudo no mesmo tamanho e peso.",
         "section": "typography"
       },
       {
         "name": "The Coluna Reta Rule",
-        "body": "Todo número usa algarismos de largura igual (tabular-nums, lining-nums), para que os valores fiquem alinhados um embaixo do outro. O aperto de letra negativo só vale em 28px ou mais.",
+        "body": "Todo número usa algarismos de largura igual (tabular-nums, lining-nums), para que os valores fiquem alinhados um embaixo do outro. Aperto de letra negativo só em 28px ou mais.",
         "section": "typography"
       },
       {
+        "name": "The Uma Faixa Rule",
+        "body": "No máximo uma faixa de aviso por tela. Notas que explicam o total (parcial, sem dono) vão dentro do cofre, em texto pequeno `cofre-suave`, não em outra faixa.",
+        "section": "layout"
+      },
+      {
         "name": "The Encosta no Chão Rule",
-        "body": "Em repouso, cartões usam só a sombra de cartão. Sombra funda é para o que está por cima de outra coisa (folha, diálogo, aviso), nunca para destacar um cartão comum.",
+        "body": "Em repouso, cartões usam só a sombra de cartão. A sombra do painel é só do cofre; sombra elevada é para o que está por cima de outra coisa, nunca para destacar um cartão comum.",
         "section": "elevation"
       },
       {
@@ -928,23 +1152,26 @@
       }
     ],
     "dos": [
-      "**Do** usar `acao` só em botão, Lançar, seleção e foco; um botão principal por tela.",
+      "**Do** usar `acao` só no botão principal, no Lançar e no que está escolhido; um botão principal por tela.",
+      "**Do** colocar o total do mês num único cofre por tela, com a régua e a legenda logo abaixo.",
       "**Do** mostrar cada pessoa com círculo colorido + inicial + nome, com a inicial em tinta escura para Pedro e Lucimar e em branco para Bruna e Eliete.",
       "**Do** incluir Bruna em todo resumo, com selo e valor como as outras pessoas.",
-      "**Do** escrever dinheiro como \"R$ 1.234,56\", com algarismos de largura igual e o \"R$\" menor e suave nos valores grandes.",
+      "**Do** escrever dinheiro como \"R$ 1.234,56\", com algarismos de largura igual e o \"R$\" e os centavos menores e suaves nos valores grandes.",
       "**Do** acompanhar todo status de palavra e ícone, e todo erro de uma frase que diz como seguir.",
       "**Do** manter todo alvo de toque com 44 ou mais e as ações na metade de baixo da tela.",
-      "**Do** usar o logo real da loja no círculo de 36, guardado no app, com a inicial quando a loja não for conhecida.",
+      "**Do** usar no máximo uma faixa de aviso por tela e levar as notas do total para dentro do cofre.",
       "**Do** oferecer Desfazer ou confirmação em toda ação destrutiva.",
       "**Do** desligar deslocamento e mola quando o celular pede menos movimento, e a transparência quando pede menos transparência."
     ],
     "donts": [
-      "**Don't** montar o painel azul-banco com gráfico e alerta vermelho, nem a cara de \"dashboard de IA\", gráficos sem pergunta ou gamificação.",
-      "**Don't** usar cor de pessoa fora do selo da pessoa, nem dar cor de pessoa ao \"sem dono\".",
+      "**Don't** usar vermelho de alerta para dinheiro, gráfico que não responde a uma pergunta, cara de \"dashboard de IA\" ou gamificação; a régua é o único gráfico.",
+      "**Don't** usar as cores do cofre fora do painel do total, nem azul como enfeite ou fundo de seção.",
+      "**Don't** usar cor de pessoa fora do selo e da régua, nem dar cor de pessoa ao \"sem dono\".",
       "**Don't** pintar dívida, \"falta pagar\" ou \"sem dono\" de vermelho; isso é âmbar.",
       "**Don't** usar preto puro no tema escuro.",
+      "**Don't** usar outra fonte além da Geist, nem pesos acima de 700.",
       "**Don't** animar números, totais ou a entrada de listas.",
-      "**Don't** usar sombra dura ou sem desfoque, nem sombra funda em cartão em repouso.",
+      "**Don't** usar sombra dura ou sem desfoque, nem sombra elevada em cartão em repouso.",
       "**Don't** usar ícone sozinho quando o significado não for óbvio."
     ]
   }

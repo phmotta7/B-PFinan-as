@@ -273,6 +273,24 @@
         ],
         "createdAt": "2026-10-29T01:46:09.722Z",
         "reason": "tema escuro e moldura do celular do protótipo; contrastes conferidos nos tokens"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "64px",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-10-29T13:20:03.987Z",
+        "reason": "total do cofre no computador (valor-gg 56/64, documentado no DESIGN.md)"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "geist",
+        "files": [
+          "design/sistema/sistema.tpl.html"
+        ],
+        "createdAt": "2026-10-29T13:20:04.597Z",
+        "reason": "Geist é a fonte do sistema; o modelo carrega pelo Google Fonts porque é página estática"
       }
     ]
   }

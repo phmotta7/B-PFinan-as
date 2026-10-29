@@ -1,113 +1,119 @@
-/* B&P Finanças · tokens do design system (direção "Sala de estar")
-   Fonte da verdade para o app: o Next.js importa este arquivo em globals.css. */
+/* B&P Finanças · tokens do design system (estilo "Cofre", escolhido em 29/10/2026)
+   Fonte da verdade para o app: src/app/globals.css começa com este arquivo. */
 
 :root{
-  /* Superfícies */
-  --chao:#f1efeb;            /* fundo do app, papel quente */
-  --cartao:#ffffff;          /* cartões e linhas */
-  --elevado:#ffffff;         /* folhas e diálogos */
-  --vidro:rgba(255,255,255,.82);
-  --linha:#e4e0d8;           /* divisórias finas */
-  --linha-forte:#cfcac0;     /* bordas de campo */
-  --veu:rgba(28,27,25,.32);  /* escurece o fundo atrás de folha/diálogo */
+  /* Superfícies: porcelana fria, cartões brancos, o painel do total como um cofre escuro */
+  --chao:#f2f3f6;
+  --cartao:#ffffff;
+  --elevado:#ffffff;
+  --vidro:rgba(246,247,250,.86);
+  --linha:#e2e5eb;
+  --linha-forte:#c9ced8;
+  --veu:rgba(17,20,28,.36);
+  --cofre-1:#1d2446;          /* luz no alto do painel */
+  --cofre-2:#0f1328;          /* fundo do painel */
+  --cofre-tinta:#f3f5fb;
+  --cofre-suave:#aeb6cf;      /* 9:1 sobre o painel */
+  --cofre-atencao:#f6cd7a;    /* sem dono dentro do painel, 10:1 */
 
   /* Texto */
-  --tinta:#1c1b19;
-  --suave:#5b574f;           /* 7,2:1 no cartão, 6,3:1 no chão */
-  --apagado:#6e6962;         /* 4,8:1 no chão, 5,5:1 no cartão; só texto de apoio */
+  --tinta:#11141c;
+  --suave:#565e6e;            /* 5,9:1 no chão */
+  --apagado:#636b7b;          /* 4,8:1 no chão; só texto de apoio */
   --no-acao:#ffffff;
 
-  /* Ação: a única cor de interface */
-  --acao:#2d47d6;
-  --acao-forte:#2338b0;      /* pressionado */
-  --acao-texto:#2d47d6;      /* links e ícones ativos */
-  --acao-leve:#e9ecfd;       /* fundo de item selecionado */
-  --foco:#2d47d6;
+  /* Ação: azul-marinho no botão principal, azul de tinta em links e seleção */
+  --acao:#1b2453;
+  --acao-forte:#121a40;
+  --acao-texto:#2b3a8f;
+  --acao-leve:#e9ecf8;
+  --foco:#2b3a8f;
 
   /* Significado (sempre com palavra ou ícone junto) */
-  --ok:#1f7a4d;     --ok-leve:#e3f3ea;        /* pago, conferido */
-  --atencao:#8a5a00; --atencao-leve:#fdf1d8;  /* sem dono, falta pagar, parcial */
-  --erro:#b3261e;   --erro-leve:#fde8e6;      /* arquivo inválido, falha */
-  --no-erro:#ffffff;                          /* texto sobre o vermelho cheio */
+  --ok:#1f7a4d; --ok-leve:#e3f3ea;
+  --atencao:#8a5a00; --atencao-leve:#fdf1d8;
+  --erro:#b3261e; --erro-leve:#fde8e6; --no-erro:#ffffff;
 
   /* Superfície invertida: aviso com Desfazer */
-  --inverso:#1c1b19; --no-inverso:#f4f2ee; --acao-inverso:#aebaff;
+  --inverso:#11141c; --no-inverso:#f3f5fb; --acao-inverso:#aebaff;
 
-  /* Pessoas: cor fixa, sempre com inicial e nome. Testadas para daltonismo
-     (distância mínima ΔE 26 em protanopia, deuteranopia e tritanopia). */
+  /* Pessoas: cor fixa, sempre com inicial e nome (testadas para daltonismo, ΔE mínimo 26) */
   --pedro:#56b4e9;   --pedro-tinta:#1c1b19;
   --bruna:#bd4a87;   --bruna-tinta:#ffffff;
   --eliete:#054836;  --eliete-tinta:#ffffff;
   --lucimar:#e69f00; --lucimar-tinta:#1c1b19;
-  --sem-dono:#6e6962;
+  --sem-dono:#636b7b;
   --anel-pessoa:transparent;
 
-  /* Bancos (cor do cartão na tela de Cartões) */
+  /* Bancos */
   --nubank:#820ad1; --bb:#fde100; --bb-tinta:#003882;
 
-  /* Tipo */
-  --fonte:"Figtree", "Segoe UI", system-ui, sans-serif;
-  --t-mes:800 32px/1.1 var(--fonte);        /* título da tela */
-  --t-valor:800 34px/1.05 var(--fonte);     /* total da fatura */
-  --t-titulo:700 20px/1.25 var(--fonte);
-  --t-forte:700 17px/1.3 var(--fonte);
-  --t-corpo:500 16px/1.45 var(--fonte);
-  --t-apoio:500 14px/1.4 var(--fonte);
-  --t-rotulo:700 13px/1.3 var(--fonte);
-  --t-mini:600 12px/1.3 var(--fonte);
-  --aperto-grande:-.02em;                   /* só em 28px ou mais */
-  --aperto-medio:-.01em;
+  /* Tipo: uma família (Geist), escala curta; números de largura igual */
+  --fonte:var(--geist, "Geist"), "Geist", "Segoe UI", system-ui, sans-serif;
+  --t-mes:700 28px/1.15 var(--fonte);       /* título da tela */
+  --t-valor:600 34px/1.05 var(--fonte);     /* valor em destaque fora do painel */
+  --t-titulo:600 20px/1.25 var(--fonte);
+  --t-forte:600 17px/1.3 var(--fonte);
+  --t-corpo:400 16px/1.5 var(--fonte);
+  --t-apoio:400 14px/1.45 var(--fonte);
+  --t-rotulo:600 13px/1.3 var(--fonte);
+  --t-mini:500 12px/1.3 var(--fonte);
+  --aperto-grande:-.03em;                    /* 28 px ou mais */
+  --aperto-medio:-.015em;
 
   /* Espaço (base 4) */
   --e1:4px; --e2:8px; --e3:12px; --e4:16px; --e5:20px; --e6:24px; --e8:32px; --e10:40px;
-  --margem:16px;              /* margem lateral no celular */
-  --alvo:44px;                /* menor alvo de toque */
+  --margem:16px;
+  --alvo:44px;
 
-  /* Raios */
-  --r-pequeno:8px; --r-campo:14px; --r-bloco:16px; --r-cartao:22px; --r-folha:28px; --r-pilula:999px;
+  /* Cantos: quanto maior a superfície, mais redondo */
+  --r-pequeno:8px; --r-campo:12px; --r-bloco:14px; --r-cartao:18px; --r-painel:24px; --r-folha:28px; --r-pilula:999px;
 
-  /* Sombras (sempre com deslocamento e desfoque) */
-  --s-cartao:0 1px 2px rgba(40,30,10,.06), 0 0 0 1px rgba(40,30,10,.03);
-  --s-elevado:0 10px 30px -10px rgba(40,30,10,.22), 0 2px 6px -2px rgba(40,30,10,.08);
-  --s-folha:0 -10px 40px -12px rgba(40,30,10,.28);
-  --s-acao:0 6px 14px -6px rgba(45,71,214,.6);
+  /* Sombras: frias, em duas camadas; o painel tem luz no alto */
+  --s-cartao:0 1px 2px rgba(17,20,40,.05), 0 8px 22px -14px rgba(17,20,40,.2);
+  --s-elevado:0 2px 6px rgba(17,20,40,.06), 0 22px 48px -18px rgba(17,20,40,.32);
+  --s-acao:0 1px 2px rgba(17,20,40,.2);
+  --s-painel:inset 0 1px 0 rgba(255,255,255,.1), 0 18px 40px -20px rgba(15,19,40,.6);
+  --s-folha:0 -10px 40px -12px rgba(17,20,40,.3);
+  --s-lancar:0 6px 16px -8px rgba(17,20,40,.5);
 
   /* Movimento */
-  --ease-saida:cubic-bezier(.22,1,.36,1);   /* entrada de coisas; rápida no começo */
-  --ease-troca:cubic-bezier(.65,0,.35,1);   /* algo que já está na tela muda de lugar */
-  --d-toque:100ms;  --d-cor:160ms;  --d-curta:220ms;  --d-folha:340ms;
-  /* Mola criticamente amortecida (resposta 0,34s), para CSS; o JS usa a mola de verdade */
+  --ease-saida:cubic-bezier(.22,1,.36,1);
+  --ease-troca:cubic-bezier(.65,0,.35,1);
+  --d-toque:100ms; --d-cor:160ms; --d-curta:220ms; --d-folha:340ms;
   --mola:linear(0,.1407,.3776,.5855,.7374,.8391,.9037,.9434,.9672,.9812,.9893,.994,.9966,.9981,.999,.9994,1);
   --aperto-toque:.97;
 
   color-scheme:light;
 }
 
-/* Escuro: noite em casa, sem preto puro */
+/* Escuro: cofre à noite, camadas separadas por claridade */
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --chao:#141519; --cartao:#1e2025; --elevado:#26282e; --vidro:rgba(30,32,37,.82);
-    --linha:#2e3036; --linha-forte:#43464e; --veu:rgba(0,0,0,.5);
-    --tinta:#eceae6; --suave:#aaa59c; --apagado:#9a958d;
-    --acao:#3d57e6; --acao-forte:#2f48cc; --acao-texto:#8c9cff; --acao-leve:#252b4d; --foco:#8c9cff;
-    --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#3a2e15; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#141519; --inverso:#eceae6; --no-inverso:#141519; --acao-inverso:#2d47d6;
-    --sem-dono:#9a958d; --anel-pessoa:rgba(255,255,255,.22); --s-acao:0 6px 14px -6px rgba(0,0,0,.6);
-    --s-cartao:0 1px 2px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.04);
-    --s-elevado:0 12px 32px -10px rgba(0,0,0,.6);
-    --s-folha:0 -10px 40px -12px rgba(0,0,0,.7);
+    --chao:#0d0f15; --cartao:#161922; --elevado:#1d212c; --vidro:rgba(16,18,26,.86); --linha:#262b37; --linha-forte:#3a404e; --veu:rgba(0,0,0,.55);
+    --cofre-1:#232a4d; --cofre-2:#141936;
+    --tinta:#eef0f5; --suave:#a5adbd; --apagado:#9aa2b2;
+    --acao:#4d5fd6; --acao-forte:#3f50c0; --acao-texto:#a9b6ff; --acao-leve:#232945; --foco:#a9b6ff;
+    --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#3a2e15; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#0d0f15;
+    --inverso:#eef0f5; --no-inverso:#0d0f15; --acao-inverso:#2b3a8f;
+    --sem-dono:#9aa2b2; --anel-pessoa:rgba(255,255,255,.22);
+    --s-cartao:0 1px 0 rgba(255,255,255,.04) inset, 0 8px 22px -14px rgba(0,0,0,.7);
+    --s-elevado:0 1px 0 rgba(255,255,255,.05) inset, 0 22px 48px -18px rgba(0,0,0,.8);
+    --s-acao:none; --s-folha:0 -10px 40px -12px rgba(0,0,0,.75);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --chao:#141519; --cartao:#1e2025; --elevado:#26282e; --vidro:rgba(30,32,37,.82);
-  --linha:#2e3036; --linha-forte:#43464e; --veu:rgba(0,0,0,.5);
-  --tinta:#eceae6; --suave:#aaa59c; --apagado:#9a958d;
-  --acao:#3d57e6; --acao-forte:#2f48cc; --acao-texto:#8c9cff; --acao-leve:#252b4d; --foco:#8c9cff;
-  --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#3a2e15; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#141519; --inverso:#eceae6; --no-inverso:#141519; --acao-inverso:#2d47d6;
-  --sem-dono:#9a958d; --anel-pessoa:rgba(255,255,255,.22); --s-acao:0 6px 14px -6px rgba(0,0,0,.6);
-  --s-cartao:0 1px 2px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.04);
-  --s-elevado:0 12px 32px -10px rgba(0,0,0,.6);
-  --s-folha:0 -10px 40px -12px rgba(0,0,0,.7);
+  --chao:#0d0f15; --cartao:#161922; --elevado:#1d212c; --vidro:rgba(16,18,26,.86); --linha:#262b37; --linha-forte:#3a404e; --veu:rgba(0,0,0,.55);
+  --cofre-1:#232a4d; --cofre-2:#141936;
+  --tinta:#eef0f5; --suave:#a5adbd; --apagado:#9aa2b2;
+  --acao:#4d5fd6; --acao-forte:#3f50c0; --acao-texto:#a9b6ff; --acao-leve:#232945; --foco:#a9b6ff;
+  --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#3a2e15; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#0d0f15;
+  --inverso:#eef0f5; --no-inverso:#0d0f15; --acao-inverso:#2b3a8f;
+  --sem-dono:#9aa2b2; --anel-pessoa:rgba(255,255,255,.22);
+  --s-cartao:0 1px 0 rgba(255,255,255,.04) inset, 0 8px 22px -14px rgba(0,0,0,.7);
+  --s-elevado:0 1px 0 rgba(255,255,255,.05) inset, 0 22px 48px -18px rgba(0,0,0,.8);
+  --s-acao:none; --s-folha:0 -10px 40px -12px rgba(0,0,0,.75);
   color-scheme:dark;
 }
 

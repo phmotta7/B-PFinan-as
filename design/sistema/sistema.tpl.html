@@ -1,6 +1,6 @@
 <title>Design system B&amp;P</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap">
 <style>
 /*TOKENS*/
 
@@ -245,6 +245,21 @@ p{margin:0}
   .toast,.dialogo{transition:opacity 150ms linear}
   .toast{transform:translate(-50%,0)} .dialogo{transform:translate(-50%,-50%)}
 }
+
+/* Painel do total (estilo Cofre) */
+.heroi-ex{background-color:var(--cofre-2);background-image:radial-gradient(120% 90% at 20% 0%,var(--cofre-1),var(--cofre-2));color:var(--cofre-tinta);border-radius:var(--r-painel);padding:22px 20px 16px;box-shadow:var(--s-painel);display:flex;flex-direction:column;gap:12px}
+.heroi-ex .vx{display:inline-flex;align-items:baseline;font:600 56px/1 var(--fonte);letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.heroi-ex .vx .m{font-size:.42em;color:var(--cofre-suave);align-self:flex-start;margin:.32em .18em 0 0}
+.heroi-ex .vx .c{font-size:.5em;color:var(--cofre-suave);align-self:flex-start;margin-top:.22em}
+.heroi-ex .hs{color:var(--cofre-suave);font:var(--t-apoio)}
+.heroi-ex .rg{display:flex;gap:3px;height:14px;border-radius:var(--r-pilula);overflow:hidden}
+.heroi-ex .rg span{min-width:6px;flex-basis:0}
+.heroi-ex .rg .xx{background:repeating-linear-gradient(135deg,rgba(255,255,255,.12) 0 5px,rgba(255,255,255,.26) 5px 10px)}
+.heroi-ex .lg{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px}
+.heroi-ex .lg li{display:flex;flex-direction:column;gap:3px;font:600 14px/1.3 var(--fonte);font-variant-numeric:tabular-nums}
+.heroi-ex .lg li > span:last-child{padding-left:28px}
+.heroi-ex .selo{color:var(--cofre-tinta)}
+.heroi-ex .selo b{box-shadow:0 0 0 1.5px rgba(255,255,255,.35)}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -287,11 +302,28 @@ p{margin:0}
     <p>Cores, letras, espaços, ícones, componentes e movimento, cada um com seus estados. Tudo aqui é a peça de verdade que o app vai usar, não um desenho dela. Troque entre claro e escuro no alto da página, e toque nos exemplos marcados com "experimente".</p>
   </section>
 
+  <!-- PAINEL -->
+  <section class="sec" aria-labelledby="t-painel">
+    <div class="txt">
+      <h2 id="t-painel">O painel do total</h2>
+      <p>A peça que dá cara ao app: o total do mês num painel escuro, como um cartão de metal com luz suave no alto. Embaixo, a barra divide o total nas cores das pessoas; a parte listrada é o que ainda não tem dono.</p>
+      <p>Os reais mandam; o "R$" e os centavos ficam menores e mais claros.</p>
+    </div>
+    <div class="ex cel">
+      <section class="heroi-ex" aria-label="Exemplo do painel do total">
+        <span class="vx"><span class="m">R$</span><span class="i">2.824</span><span class="c">,57</span></span>
+        <p class="hs">Em 2 faturas, que vencem em 10/11 e 17/11</p>
+        <div class="rg" role="img" aria-label="Divisão de exemplo"><span style="flex-grow:17540;background:var(--pedro)"></span><span style="flex-grow:62080;background:var(--bruna)"></span><span style="flex-grow:16050;background:var(--lucimar)"></span><span style="flex-grow:186787" class="xx"></span></div>
+        <ul class="lg"><li><span class="selo p"><b>P</b>Pedro</span><span>R$ 175,40</span></li><li><span class="selo b"><b>B</b>Bruna</span><span>R$ 620,80</span></li><li><span class="selo e"><b>E</b>Eliete</span><span>R$ 0,00</span></li><li><span class="selo l"><b>L</b>Lucimar</span><span>R$ 160,50</span></li></ul>
+      </section>
+    </div>
+  </section>
+
   <!-- CORES -->
   <section class="sec" aria-labelledby="t1">
     <div class="txt">
       <h2 id="t1">Cores</h2>
-      <p>O chão é um papel quente e os cartões são brancos. O azul é a única cor de interface e só aparece no que dá para tocar ou no que está selecionado.</p>
+      <p>O chão é porcelana fria e os cartões são brancos. O azul-marinho é a cor do botão principal; o azul de tinta marca links e o que está escolhido. O painel do total é o único lugar escuro no tema claro.</p>
       <p>Verde, âmbar e vermelho têm significado fixo, e sempre vêm com palavra ou ícone junto. Nenhum texto fica abaixo do contraste exigido (4,5 para 1).</p>
     </div>
     <div class="ex">
@@ -349,7 +381,7 @@ p{margin:0}
   <section class="sec" aria-labelledby="t3">
     <div class="txt">
       <h2 id="t3">Letras e números</h2>
-      <p>Uma fonte só, a Figtree, que é redonda e calma. Os números usam algarismos de largura igual, para que os valores fiquem alinhados um embaixo do outro.</p>
+      <p>Uma fonte só, a Geist: precisa, de banco de primeira linha. Os números usam algarismos de largura igual, para que os valores fiquem alinhados um embaixo do outro. Dez tamanhos, cada um com um papel.</p>
       <p>Dinheiro é sempre <b>R$ 1.234,56</b>: o "R$" fica menor e mais claro, o valor manda.</p>
     </div>
     <div class="ex">
@@ -378,7 +410,7 @@ p{margin:0}
     <div class="txt">
       <h2 id="t4">Espaço, cantos e sombras</h2>
       <p>Os espaços crescem de 4 em 4. Margem lateral de 16 no celular. Nada que se toca tem menos de 44 de altura.</p>
-      <p>Cantos bem arredondados nos cartões (22) e nas folhas que sobem (28). Sombras curtas e macias: o cartão quase encosta no chão; só o que está por cima ganha sombra mais funda.</p>
+      <p>Cantos que crescem com a superfície: campos 12, blocos 14, cartões 18, o painel do total 24 e as folhas que sobem 28. Sombras curtas e macias: o cartão quase encosta no chão; só o que está por cima ganha sombra mais funda.</p>
       <p>A barra de baixo é de vidro: o conteúdo passa por trás dela. Quem pede menos transparência no celular recebe a barra sólida.</p>
     </div>
     <div class="ex">
@@ -392,8 +424,8 @@ p{margin:0}
       </div>
       <div class="caixas">
         <div style="border-radius:var(--r-pequeno);box-shadow:var(--s-cartao)">Pequeno 8</div>
-        <div style="border-radius:var(--r-campo);box-shadow:var(--s-cartao)">Campo 14</div>
-        <div style="border-radius:var(--r-cartao);box-shadow:var(--s-cartao)">Cartão 22</div>
+        <div style="border-radius:var(--r-campo);box-shadow:var(--s-cartao)">Campo 12</div>
+        <div style="border-radius:var(--r-cartao);box-shadow:var(--s-cartao)">Cartão 18</div>
         <div style="border-radius:var(--r-folha) var(--r-folha) 0 0;box-shadow:var(--s-elevado)">Folha 28, elevada</div>
       </div>
     </div>

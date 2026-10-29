@@ -35,7 +35,7 @@ export function Fechamentos() {
     <main className="conteudo">
       {naoImportadas.length && mes >= mesDeTrabalho ? <div className="aviso" role="status"><CircleAlert size={20} aria-hidden="true" /><div><p>{naoImportadas.map(c => c.apelido).join(' e ')}: fatura {mesCurto(mes)} ainda não importada. Os valores são parciais.</p>
         <button className="bt link" onClick={() => ir({ tela: 'importar', cartao: naoImportadas[0].id })}>Importar agora</button></div></div> : null}
-      {semDono ? <div className="aviso" role="status"><CircleAlert size={20} aria-hidden="true" /><div><p>{semDono} linhas desta fatura ainda sem dono, o total pode mudar.</p>
+      {semDono && !(naoImportadas.length && mes >= mesDeTrabalho) ? <div className="aviso" role="status"><CircleAlert size={20} aria-hidden="true" /><div><p>{semDono} linhas desta fatura ainda sem dono, o total pode mudar.</p>
         <button className="bt link" onClick={() => ir({ tela: 'fatura', cartao: linhas.find(l => !l.compra.pagador || l.pendente)?.compra.cartao, mes, filtro: 'sem' })}>Marcar agora</button></div></div> : null}
       {todosAvisados ? <div className="aviso ok" role="status"><Check size={20} aria-hidden="true" /><p>Todos avisados. Agora é registrar os Pix quando chegarem.</p></div> : null}
       {!comItens.length ? <div className="vazio"><h2>Nenhum fechamento em {mesLongo(mes).toLowerCase()}</h2><p>Os fechamentos aparecem quando alguém além da {credor?.nome ?? 'titular'} tem compras numa fatura que vence no mês.</p></div> : null}
