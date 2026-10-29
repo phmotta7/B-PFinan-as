@@ -1,0 +1,317 @@
+<title>Redesenho B&amp;P</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Gabarito:wght@600;700;800;900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: página de comparação; cada direção tem tese, a tela Fatura no computador (1200px reduzida para caber) e a mesma tela no celular. */
+:root{--bg:#eceff1;--fg:#16212a;--muted:#4a5a66;--line:#cfd8de;--panel:#fff;
+  --p:#56b4e9;--b:#bd4a87;--e:#054836;--l:#e69f00;--x:#7a8791}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#11171c;--fg:#e6ecef;--muted:#9aa9b3;--line:#2a353d;--panel:#182027;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11171c;--fg:#e6ecef;--muted:#9aa9b3;--line:#2a353d;--panel:#182027;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 "Schibsted Grotesk",system-ui,sans-serif;padding:40px 16px 80px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:72px}
+h1,h2,h3,p{margin:0}
+.intro{display:flex;flex-direction:column;gap:12px;max-width:68ch}
+.intro h1{font-size:clamp(30px,5vw,46px);font-weight:800;letter-spacing:-.025em;line-height:1.05}
+.intro p{color:var(--muted)}
+.dir{display:flex;flex-direction:column;gap:24px}
+.dir > header{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 40px;align-items:start}
+.dir > header h2{font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.dir > header .tese{font-size:18px}
+.dir > header dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:15px}
+.dir > header dt{font-weight:700}
+.dir > header dd{margin:0;color:var(--muted)}
+.chips{display:flex;gap:6px}.chips i{width:26px;height:26px;border-radius:6px;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.telas{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;align-items:start}
+.legenda{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.pc{width:100%;border-radius:14px;overflow:hidden;box-shadow:0 20px 50px -24px rgba(10,20,30,.45);background:#000}
+.pc .barra-janela{height:28px;background:#2b3238;display:flex;align-items:center;gap:6px;padding:0 12px}
+.pc .barra-janela i{width:10px;height:10px;border-radius:50%;background:#59636b}
+.pc .palco{width:1200px;height:740px;transform-origin:0 0;overflow:hidden}
+.cel{width:360px;height:740px;border-radius:44px;padding:9px;background:#0b0e10;box-shadow:0 20px 50px -24px rgba(10,20,30,.5)}
+.cel .tela{width:100%;height:100%;border-radius:36px;overflow:hidden;position:relative}
+.nota{max-width:70ch;color:var(--muted)}
+@media (max-width:980px){.dir > header,.telas{grid-template-columns:1fr}.cel{margin:0 auto}}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.logo{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:800;font-size:12px;background:#e9eef1;color:#4a5a66;overflow:hidden}
+.logo.d{background:#fff;color:#e32a3c;box-shadow:inset 0 0 0 1px #e4e9ec}
+.logo.u{background:#000;color:#fff}.logo.i{background:#ea1d2c;color:#fff}.logo.m{background:#fff;color:#0a6cff;box-shadow:inset 0 0 0 1px #e4e9ec}.logo.a{background:#fff;color:#111;box-shadow:inset 0 0 0 1px #e4e9ec}
+
+/* ================= A · RÉGUA DA FATURA ================= */
+.A{--tinta:#14202a;--papel:#f5f7f8;--folha:#ffffff;--linha:#dde4e8;--suave:#5a6873;--acao:#14202a;
+  font-family:"Schibsted Grotesk",system-ui,sans-serif;color:var(--tinta);background:var(--papel);height:100%;display:flex}
+.A .trilho{width:76px;background:var(--tinta);color:#c9d4db;display:flex;flex-direction:column;align-items:center;padding:18px 0;gap:6px;flex:none}
+.A .trilho .mk{width:40px;height:40px;border-radius:11px;background:#2d47d6;display:grid;place-items:center;color:#fff;font-weight:800;margin-bottom:14px}
+.A .trilho a{width:60px;padding:8px 0;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600}
+.A .trilho a.on{background:#25333e;color:#fff}
+.A .trilho a b{width:22px;height:22px;border-radius:6px;border:2px solid currentColor;display:block}
+.A .trilho .mais{margin-top:auto;width:48px;height:48px;border-radius:50%;background:#fff;color:var(--tinta);display:grid;place-items:center;font-size:26px;font-weight:500}
+.A .meio{flex:1;display:flex;flex-direction:column;min-width:0}
+.A .cab{padding:26px 32px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+.A .cab h1{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.A .cab h1 small{display:block;font-size:15px;font-weight:600;letter-spacing:0;color:var(--suave);margin-bottom:8px}
+.A .cab .total{text-align:right}
+.A .cab .total b{display:block;font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.A .cab .total span{font-size:14px;color:var(--suave);font-weight:600}
+/* A régua: o total da fatura dividido por pessoa, a peça memorável */
+.A .regua{margin:22px 32px 0;display:flex;height:56px;border-radius:10px;overflow:hidden;gap:3px}
+.A .regua > div{position:relative;display:flex;align-items:flex-end;padding:7px 9px;font-size:12px;font-weight:700;color:#fff;min-width:0}
+.A .regua > div span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.A .regua .p{background:var(--p);color:#0b2233}.A .regua .b{background:var(--b)}.A .regua .e{background:var(--e)}.A .regua .l{background:var(--l);color:#2a1a00}
+.A .regua .x{background:repeating-linear-gradient(135deg,#e7ecef 0 7px,#d3dbe0 7px 14px);color:var(--tinta)}
+.A .legregua{margin:10px 32px 0;display:flex;gap:22px;font-size:13px}
+.A .legregua div{display:flex;flex-direction:column}
+.A .legregua b{font-size:16px}
+.A .legregua span{color:var(--suave);font-weight:600;display:flex;align-items:center;gap:6px}
+.A .legregua i{width:10px;height:10px;border-radius:3px;display:block}
+.A .corpo{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0;margin-top:22px;border-top:1px solid var(--linha);min-height:0}
+.A .tabela{overflow:hidden;background:var(--folha)}
+.A .linhaT{display:grid;grid-template-columns:62px 34px minmax(0,1fr) 92px 172px;align-items:center;gap:12px;padding:0 24px 0 32px;height:50px;border-bottom:1px solid #edf1f3;font-size:15px}
+.A .linhaT.h{height:38px;font-size:12px;font-weight:700;color:var(--suave);background:var(--papel)}
+.A .linhaT .dt{color:var(--suave);font-weight:600;font-size:13px}
+.A .linhaT .v{text-align:right;font-weight:700}
+.A .linhaT .parc{font-size:12px;font-weight:700;color:var(--suave);background:#eef2f4;border-radius:6px;padding:1px 6px;margin-left:6px}
+.A .linhaT.sem{background:#fffbea}
+.A .quem{display:flex;gap:6px;justify-content:flex-end}
+.A .quem i{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;box-shadow:inset 0 0 0 1.5px #d3dbe0;color:var(--suave);background:#fff}
+.A .quem i.on.p{background:var(--p);color:#0b2233;box-shadow:none}.A .quem i.on.b{background:var(--b);color:#fff;box-shadow:none}
+.A .quem i.on.e{background:var(--e);color:#fff;box-shadow:none}.A .quem i.on.l{background:var(--l);color:#2a1a00;box-shadow:none}
+.A .quem i.foco{box-shadow:0 0 0 2px #2d47d6}
+.A .lado{background:var(--papel);border-left:1px solid var(--linha);padding:22px 24px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.A .lado h3{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.A .pessoa{display:grid;grid-template-columns:12px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--linha)}
+.A .pessoa i{width:12px;height:12px;border-radius:3px}
+.A .pessoa b{font-size:16px}
+.A .pessoa small{display:block;color:var(--suave);font-size:13px;font-weight:500}
+.A .pessoa .v{font-weight:800;font-size:17px}
+.A .bt{background:var(--acao);color:#fff;border-radius:10px;padding:13px 16px;font-weight:700;font-size:15px;text-align:center}
+.A .dica{font-size:13px;color:var(--suave)}
+/* A no celular */
+.Am{--tinta:#14202a;--papel:#f5f7f8;--linha:#dde4e8;--suave:#5a6873;font-family:"Schibsted Grotesk",system-ui,sans-serif;background:var(--papel);color:var(--tinta);height:100%;display:flex;flex-direction:column}
+.Am .cab{padding:46px 18px 0}
+.Am .cab small{font-size:14px;font-weight:600;color:var(--suave)}
+.Am .cab h1{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-top:4px}
+.Am .regua{margin:16px 18px 0;display:flex;height:40px;border-radius:9px;overflow:hidden;gap:2px}
+.Am .regua div{display:flex;align-items:flex-end;padding:5px 6px;font-size:11px;font-weight:800;color:#fff}
+.Am .legregua{margin:10px 18px 0;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:13px}
+.Am .legregua div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--linha);padding:5px 0}
+.Am .legregua span{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--suave)}
+.Am .legregua i{width:9px;height:9px;border-radius:2px;display:block}
+.Am .lista{margin-top:14px;background:#fff;flex:1;border-top:1px solid var(--linha)}
+.Am .lin{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:10px 18px;border-bottom:1px solid #edf1f3}
+.Am .lin b{font-size:15px;display:block}
+.Am .lin small{font-size:12px;color:var(--suave);font-weight:600}
+.Am .lin .v{font-weight:800;text-align:right;font-size:15px}
+.Am .lin .v em{display:block;font-style:normal;font-size:11px;font-weight:700;margin-top:2px}
+.Am .barra{position:absolute;left:0;right:0;bottom:0;height:78px;background:var(--tinta);display:grid;grid-template-columns:repeat(5,1fr);align-items:center;color:#c9d4db;font-size:11px;font-weight:600;text-align:center;padding-bottom:14px}
+.Am .barra .mais{width:50px;height:50px;border-radius:50%;background:#fff;color:var(--tinta);display:grid;place-items:center;font-size:26px;margin:-22px auto 0}
+
+/* ================= B · ENVELOPES ================= */
+.B{--chao:#e4e8ea;--tinta:#1d2228;--suave:#56606a;--papel:#fff;--kraft:#d9c2a0;
+  font-family:"Atkinson Hyperlegible",system-ui,sans-serif;color:var(--tinta);background:var(--chao);height:100%;display:flex;flex-direction:column}
+.B .topo{display:flex;align-items:center;gap:28px;padding:16px 32px;background:var(--papel);border-bottom:1px solid #d3d9dd}
+.B .topo .mk{width:36px;height:36px;border-radius:10px;background:#2d47d6;display:grid;place-items:center;color:#fff;font:800 18px "Gabarito"}
+.B .topo nav{display:flex;gap:4px;font-weight:700;font-size:15px}
+.B .topo nav a{padding:8px 14px;border-radius:999px;color:var(--suave)}
+.B .topo nav a.on{background:var(--tinta);color:#fff}
+.B .topo .lancar{margin-left:auto;background:#2d47d6;color:#fff;font-weight:700;border-radius:999px;padding:10px 18px}
+.B .cab{padding:24px 32px 0;display:flex;align-items:baseline;gap:18px}
+.B .cab h1{font:900 46px/1 "Gabarito";letter-spacing:-.02em}
+.B .cab p{color:var(--suave);font-weight:700}
+.B .envs{display:grid;grid-template-columns:repeat(4,1fr) 1.15fr;gap:16px;padding:22px 32px 0}
+/* O envelope: aba colorida no topo, corpo de papel; a peça memorável */
+.B .env{position:relative;background:var(--papel);border-radius:14px;padding:46px 16px 14px;box-shadow:0 2px 0 rgba(0,0,0,.06);overflow:hidden;min-height:132px}
+.B .env::before{content:"";position:absolute;inset:0 0 auto 0;height:58px;background:var(--c);clip-path:polygon(0 0,100% 0,100% 30%,50% 100%,0 30%)}
+.B .env .ini{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;background:#fff;color:var(--tinta);display:grid;place-items:center;font:900 16px "Gabarito";box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.B .env b{display:block;font:800 26px/1.1 "Gabarito";margin-top:6px}
+.B .env span{font-weight:700;font-size:15px}
+.B .env small{display:block;color:var(--suave);font-size:13px}
+.B .env.alvo{outline:3px dashed #2d47d6;outline-offset:3px}
+.B .env.pilha{background:repeating-linear-gradient(-4deg,#fff 0 22px,#f3f5f6 22px 24px);--c:transparent}
+.B .env.pilha::before{display:none}
+.B .env.pilha{padding-top:16px;box-shadow:inset 0 0 0 2px #e7b400}
+.B .corpo{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;padding:22px 32px 0;min-height:0}
+.B .tiras{display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.B .tira{display:grid;grid-template-columns:34px 1fr auto auto;gap:12px;align-items:center;background:var(--papel);border-radius:10px;padding:10px 14px;font-size:16px;box-shadow:0 1px 0 rgba(0,0,0,.05)}
+.B .tira b{font-weight:700}
+.B .tira small{display:block;color:var(--suave);font-size:13px}
+.B .tira .v{font:800 18px "Gabarito"}
+.B .tira .pega{color:#aab3ba;font-weight:900;letter-spacing:-2px;font-size:18px}
+.B .tira.arrasta{transform:rotate(-1.5deg) translate(40px,-6px);box-shadow:0 14px 30px -10px rgba(0,0,0,.35);outline:2px solid #2d47d6}
+.B .dia{font:800 15px "Gabarito";color:var(--suave);margin:6px 2px 0}
+.B .lado{background:var(--papel);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;align-self:start}
+.B .lado h3{font:800 20px "Gabarito"}
+.B .lado p{color:var(--suave);font-size:14px}
+.B .lado .bt{background:#2d47d6;color:#fff;border-radius:999px;padding:12px;font-weight:700;text-align:center}
+.Bm{--chao:#e4e8ea;--tinta:#1d2228;--suave:#56606a;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--chao);color:var(--tinta);height:100%;display:flex;flex-direction:column}
+.Bm .cab{padding:46px 16px 0}
+.Bm .cab h1{font:900 38px/1 "Gabarito";letter-spacing:-.02em}
+.Bm .cab p{color:var(--suave);font-weight:700;margin-top:4px}
+.Bm .envs{display:flex;gap:10px;padding:14px 16px 2px;overflow:hidden}
+.Bm .env{flex:none;width:104px;position:relative;background:#fff;border-radius:12px;padding:34px 10px 10px;overflow:hidden}
+.Bm .env::before{content:"";position:absolute;inset:0 0 auto 0;height:42px;background:var(--c);clip-path:polygon(0 0,100% 0,100% 30%,50% 100%,0 30%)}
+.Bm .env .ini{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:26px;height:26px;border-radius:50%;background:#fff;display:grid;place-items:center;font:900 13px "Gabarito";box-shadow:0 2px 5px rgba(0,0,0,.2)}
+.Bm .env b{display:block;font:800 18px "Gabarito";margin-top:4px}
+.Bm .env span{font-size:13px;font-weight:700}
+.Bm .tiras{padding:12px 16px;display:flex;flex-direction:column;gap:7px}
+.Bm .tira{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;background:#fff;border-radius:10px;padding:9px 12px}
+.Bm .tira b{display:block;font-size:15px}
+.Bm .tira small{font-size:12px;color:var(--suave)}
+.Bm .tira .v{font:800 16px "Gabarito"}
+.Bm .barra{position:absolute;left:10px;right:10px;bottom:12px;height:62px;background:var(--tinta);border-radius:22px;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;color:#c4ccd2;font-size:11px;font-weight:700;text-align:center}
+.Bm .barra .on{color:#fff}
+.Bm .barra .mais{width:46px;height:46px;border-radius:50%;background:#2d47d6;color:#fff;display:grid;place-items:center;font-size:24px;margin:0 auto}
+</style>
+
+<main class="wrap">
+  <section class="intro">
+    <h1>Dois caminhos para um B&amp;P menos genérico</h1>
+    <p>A versão atual usa a fórmula de quase todo app de finanças: cartões brancos arredondados, um azul de ação e a mesma letra de sempre. Os dois caminhos abaixo saem do próprio assunto do app, que é pegar uma fatura e repartir entre quatro pessoas.</p>
+    <p>Nos dois, o computador ganha uma tela própria: menu na lateral ou no topo, a lista de linhas no meio e o resumo por pessoa ao lado, sem precisar abrir e fechar folhas. A tela de exemplo é a Fatura, que é onde vocês passam mais tempo.</p>
+  </section>
+
+  <!-- ================= A ================= -->
+  <section class="dir" aria-labelledby="a">
+    <header>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <h2 id="a">A · A régua da fatura</h2>
+        <p class="tese">O total da fatura vira uma régua dividida nas cores das quatro pessoas. Cada linha marcada empurra a régua: a parte listrada (sem dono) encolhe até sumir. Dá para ver de longe quanto falta.</p>
+      </div>
+      <dl>
+        <dt>Cores</dt><dd><div class="chips"><i style="background:#14202a"></i><i style="background:#f5f7f8"></i><i style="background:#56b4e9"></i><i style="background:#bd4a87"></i><i style="background:#054836"></i><i style="background:#e69f00"></i></div></dd>
+        <dt>Letra</dt><dd>Schibsted Grotesk: firme, de jornal escandinavo, com números de largura igual.</dd>
+        <dt>Computador</dt><dd>Trilho escuro à esquerda, tabela no meio com as quatro iniciais em cada linha (um clique marca o dono), resumo por pessoa à direita.</dd>
+        <dt>Celular</dt><dd>A régua no alto, linhas embaixo; tocar na linha abre a folha de pessoa, como hoje.</dd>
+        <dt>Risco</dt><dd>Mais sóbrio e "ferramenta"; a graça fica concentrada na régua.</dd>
+      </dl>
+    </header>
+    <div class="telas">
+      <div><p class="legenda">Computador · Fatura Nubank Nov/26</p>
+        <div class="pc"><div class="barra-janela"><i></i><i></i><i></i></div><div class="palco" data-escala>
+          <div class="A">
+            <nav class="trilho" aria-hidden="true"><div class="mk">B</div><a><b></b>Início</a><a class="on"><b></b>Cartões</a><a><b></b>Fechar</a><a><b></b>Mais</a><span class="mais">+</span></nav>
+            <div class="meio">
+              <div class="cab"><h1><small>Nubank da Bruna · vence 10/11</small>Fatura de novembro</h1><div class="total num"><b>R$ 2.184,37</b><span>47 linhas · 12 sem dono</span></div></div>
+              <div class="regua num" role="img" aria-label="Divisão da fatura por pessoa">
+                <div class="p" style="flex:312"><span>Pedro</span></div><div class="b" style="flex:1286"><span>Bruna</span></div><div class="e" style="flex:154"><span>Eliete</span></div><div class="l" style="flex:126"><span>Lucimar</span></div><div class="x" style="flex:306"><span>Sem dono</span></div>
+              </div>
+              <div class="legregua num">
+                <div><span><i style="background:var(--p)"></i>Pedro</span><b>R$ 312,10</b></div><div><span><i style="background:var(--b)"></i>Bruna</span><b>R$ 1.286,47</b></div>
+                <div><span><i style="background:var(--e)"></i>Eliete</span><b>R$ 154,00</b></div><div><span><i style="background:var(--l)"></i>Lucimar</span><b>R$ 125,90</b></div>
+                <div><span><i style="background:repeating-linear-gradient(135deg,#e7ecef 0 3px,#c3ccd2 3px 6px)"></i>Sem dono</span><b>R$ 305,90</b></div>
+              </div>
+              <div class="corpo">
+                <div class="tabela num">
+                  <div class="linhaT h"><span>Data</span><span></span><span>Loja</span><span style="text-align:right">Valor</span><span style="text-align:right">De quem é</span></div>
+                  <div class="linhaT"><span class="dt">03/10</span><span class="logo d">✦</span><span>Drogasil</span><span class="v">R$ 54,90</span><span class="quem"><i class="p">P</i><i class="on b">B</i><i class="e">E</i><i class="l">L</i></span></div>
+                  <div class="linhaT"><span class="dt">04/10</span><span class="logo m">M</span><span>Magazine Luiza<span class="parc">3/10</span></span><span class="v">R$ 80,00</span><span class="quem"><i class="p">P</i><i class="b">B</i><i class="e">E</i><i class="on l">L</i></span></div>
+                  <div class="linhaT"><span class="dt">04/10</span><span class="logo">P</span><span>Pão de Açúcar</span><span class="v">R$ 98,37</span><span class="quem"><i class="p">P</i><i class="on b">B</i><i class="e">E</i><i class="l">L</i></span></div>
+                  <div class="linhaT sem"><span class="dt">05/10</span><span class="logo">F</span><span>Farmácia São João</span><span class="v">R$ 12,90</span><span class="quem"><i class="p">P</i><i class="b">B</i><i class="e foco">E</i><i class="l">L</i></span></div>
+                  <div class="linhaT"><span class="dt">05/10</span><span class="logo i">if</span><span>iFood</span><span class="v">R$ 38,90</span><span class="quem"><i class="p">P</i><i class="on b">B</i><i class="e">E</i><i class="l">L</i></span></div>
+                  <div class="linhaT"><span class="dt">06/10</span><span class="logo a">a</span><span>Amazon</span><span class="v">R$ 91,71</span><span class="quem"><i class="p">P</i><i class="on b">B</i><i class="e">E</i><i class="l">L</i></span></div>
+                  <div class="linhaT sem"><span class="dt">09/10</span><span class="logo d">✦</span><span>Drogasil</span><span class="v">R$ 62,40</span><span class="quem"><i class="p">P</i><i class="b">B</i><i class="e">E</i><i class="l">L</i></span></div>
+                  <div class="linhaT sem"><span class="dt">10/10</span><span class="logo">S</span><span>Shopee</span><span class="v">R$ 11,50</span><span class="quem"><i class="p">P</i><i class="b">B</i><i class="e">E</i><i class="l">L</i></span></div>
+                  <div class="linhaT"><span class="dt">12/10</span><span class="logo">C</span><span>Centauro<span class="parc">1/3</span></span><span class="v">R$ 100,00</span><span class="quem"><i class="on p">P</i><i class="b">B</i><i class="e">E</i><i class="l">L</i></span></div>
+                </div>
+                <aside class="lado num">
+                  <h3>Quem paga quanto</h3>
+                  <div class="pessoa"><i style="background:var(--p)"></i><div><b>Pedro</b><small>5 linhas + empréstimo e Shopee</small></div><span class="v">R$ 812,40</span></div>
+                  <div class="pessoa"><i style="background:var(--e)"></i><div><b>Eliete</b><small>3 linhas</small></div><span class="v">R$ 154,00</span></div>
+                  <div class="pessoa"><i style="background:var(--l)"></i><div><b>Lucimar</b><small>6 linhas + BB</small></div><span class="v">R$ 206,40</span></div>
+                  <div class="pessoa"><i style="background:var(--b)"></i><div><b>Bruna</b><small>dona do cartão</small></div><span class="v">R$ 1.286,47</span></div>
+                  <p class="dica">Teclas: P, B, E e L marcam a linha em foco; setas para cima e para baixo andam na lista.</p>
+                  <div class="bt">Mandar os resumos</div>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </div></div></div>
+      <div><p class="legenda">Celular · mesma tela</p>
+        <div class="cel"><div class="tela"><div class="Am num">
+          <div class="cab"><small>Nubank da Bruna · vence 10/11</small><h1>R$ 2.184,37</h1></div>
+          <div class="regua"><div style="flex:312;background:var(--p);color:#0b2233">P</div><div style="flex:1286;background:var(--b)">B</div><div style="flex:154;background:var(--e)">E</div><div style="flex:126;background:var(--l);color:#2a1a00">L</div><div style="flex:306;background:repeating-linear-gradient(135deg,#e7ecef 0 6px,#d3dbe0 6px 12px);color:#14202a">?</div></div>
+          <div class="legregua"><div><span><i style="background:var(--p)"></i>Pedro</span><b>312,10</b></div><div><span><i style="background:var(--b)"></i>Bruna</span><b>1.286,47</b></div><div><span><i style="background:var(--e)"></i>Eliete</span><b>154,00</b></div><div><span><i style="background:var(--l)"></i>Lucimar</span><b>125,90</b></div></div>
+          <div class="lista">
+            <div class="lin"><span class="logo">F</span><div><b>Farmácia São João</b><small>05/10 · sem dono</small></div><span class="v">R$ 12,90</span></div>
+            <div class="lin"><span class="logo d">✦</span><div><b>Drogasil</b><small>09/10 · sem dono</small></div><span class="v">R$ 62,40</span></div>
+            <div class="lin"><span class="logo m">M</span><div><b>Magazine Luiza</b><small>3/10 · Lucimar</small></div><span class="v">R$ 80,00</span></div>
+            <div class="lin"><span class="logo i">if</span><div><b>iFood</b><small>05/10 · Bruna, Casal</small></div><span class="v">R$ 38,90</span></div>
+          </div>
+          <div class="barra"><span>Início</span><span style="color:#fff">Cartões</span><span><span class="mais">+</span></span><span>Fechar</span><span>Mais</span></div>
+        </div></div></div></div>
+    </div>
+  </section>
+
+  <!-- ================= B ================= -->
+  <section class="dir" aria-labelledby="b">
+    <header>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <h2 id="b">B · Os envelopes</h2>
+        <p class="tese">Cada pessoa tem um envelope com a aba na cor dela, e as linhas da fatura são tiras de papel. No computador, arrasta a tira para o envelope (ou clica e aperta a letra); no celular, toca. O fim do mês é a pilha de sem dono vazia.</p>
+      </div>
+      <dl>
+        <dt>Cores</dt><dd><div class="chips"><i style="background:#e4e8ea"></i><i style="background:#1d2228"></i><i style="background:#2d47d6"></i><i style="background:#56b4e9"></i><i style="background:#bd4a87"></i><i style="background:#e69f00"></i></div></dd>
+        <dt>Letra</dt><dd>Gabarito nos números e títulos (encorpada, simpática); Atkinson Hyperlegible no texto, feita para leitura fácil.</dd>
+        <dt>Computador</dt><dd>Menu no topo, os quatro envelopes e a pilha de sem dono em fila, tiras embaixo, resumo do envelope escolhido ao lado.</dd>
+        <dt>Celular</dt><dd>Envelopes numa faixa que rola de lado, tiras embaixo, barra flutuante.</dd>
+        <dt>Risco</dt><dd>Mais lúdico; precisa de cuidado para não parecer brinquedo.</dd>
+      </dl>
+    </header>
+    <div class="telas">
+      <div><p class="legenda">Computador · Fatura Nubank Nov/26</p>
+        <div class="pc"><div class="barra-janela"><i></i><i></i><i></i></div><div class="palco" data-escala>
+          <div class="B num">
+            <div class="topo" aria-hidden="true"><div class="mk">B</div><nav><a>Início</a><a class="on">Cartões</a><a>Fechamentos</a><a>Mais</a></nav><span class="lancar">+ Lançar compra</span></div>
+            <div class="cab"><h1>Nubank · novembro</h1><p>R$ 2.184,37 em 47 linhas, vence 10/11</p></div>
+            <div class="envs">
+              <div class="env" style="--c:var(--p)"><span class="ini">P</span><span>Pedro</span><b>R$ 312,10</b><small>5 tiras</small></div>
+              <div class="env" style="--c:var(--b)"><span class="ini">B</span><span>Bruna</span><b>R$ 1.286,47</b><small>21 tiras</small></div>
+              <div class="env alvo" style="--c:var(--e)"><span class="ini">E</span><span>Eliete</span><b>R$ 91,60</b><small>solte aqui</small></div>
+              <div class="env" style="--c:var(--l)"><span class="ini">L</span><span>Lucimar</span><b>R$ 125,90</b><small>6 tiras</small></div>
+              <div class="env pilha"><span>Sem dono</span><b>R$ 305,90</b><small>12 tiras para separar</small></div>
+            </div>
+            <div class="corpo">
+              <div class="tiras">
+                <p class="dia">Sexta, 9 de outubro</p>
+                <div class="tira arrasta"><span class="logo d">✦</span><div><b>Drogasil</b><small>09/10</small></div><span class="v">R$ 62,40</span><span class="pega">⋮⋮</span></div>
+                <div class="tira"><span class="logo">S</span><div><b>Shopee</b><small>10/10</small></div><span class="v">R$ 11,50</span><span class="pega">⋮⋮</span></div>
+                <p class="dia">Sexta, 16 de outubro</p>
+                <div class="tira"><span class="logo">F</span><div><b>Farmácia Pague Menos</b><small>16/10</small></div><span class="v">R$ 41,60</span><span class="pega">⋮⋮</span></div>
+                <div class="tira"><span class="logo i">if</span><div><b>iFood</b><small>16/10</small></div><span class="v">R$ 52,30</span><span class="pega">⋮⋮</span></div>
+                <div class="tira"><span class="logo u">U</span><div><b>Uber *Trip</b><small>18/10</small></div><span class="v">R$ 7,60</span><span class="pega">⋮⋮</span></div>
+              </div>
+              <aside class="lado"><h3>Envelope da Eliete</h3><p>Drogasil, Farmácia Pague Menos e Cacau Show até agora. Quando a pilha de sem dono esvaziar, o resumo dela fica pronto para o WhatsApp.</p><div class="bt">Ver o resumo da Eliete</div></aside>
+            </div>
+          </div>
+        </div></div></div>
+      <div><p class="legenda">Celular · mesma tela</p>
+        <div class="cel"><div class="tela"><div class="Bm num">
+          <div class="cab"><h1>Nubank · nov</h1><p>R$ 2.184,37 · 12 sem dono</p></div>
+          <div class="envs">
+            <div class="env" style="--c:var(--p)"><span class="ini">P</span><span>Pedro</span><b>312,10</b></div>
+            <div class="env" style="--c:var(--b)"><span class="ini">B</span><span>Bruna</span><b>1.286,47</b></div>
+            <div class="env" style="--c:var(--e)"><span class="ini">E</span><span>Eliete</span><b>91,60</b></div>
+            <div class="env" style="--c:var(--l)"><span class="ini">L</span><span>Lucimar</span><b>125,90</b></div>
+          </div>
+          <div class="tiras">
+            <div class="tira"><span class="logo d">✦</span><div><b>Drogasil</b><small>09/10 · sem dono</small></div><span class="v">62,40</span></div>
+            <div class="tira"><span class="logo">S</span><div><b>Shopee</b><small>10/10 · sem dono</small></div><span class="v">11,50</span></div>
+            <div class="tira"><span class="logo">F</span><div><b>Farmácia Pague Menos</b><small>16/10 · sem dono</small></div><span class="v">41,60</span></div>
+            <div class="tira"><span class="logo i">if</span><div><b>iFood</b><small>16/10 · sem dono</small></div><span class="v">52,30</span></div>
+          </div>
+          <div class="barra"><span>Início</span><span class="on">Cartões</span><span><span class="mais">+</span></span><span>Fechar</span><span>Mais</span></div>
+        </div></div></div></div>
+    </div>
+  </section>
+
+  <section class="dir" aria-labelledby="c">
+    <h2 id="c" style="font-size:26px;font-weight:800">E o shadcn?</h2>
+    <p class="nota">O shadcn é uma coleção de peças prontas (folha de baixo, diálogo, menu, busca) com boa acessibilidade. Ele já está ligado ao projeto, e eu usaria só as peças em que ele ajuda de verdade, pintadas com o visual escolhido. A aparência continua sendo a da direção que você escolher: o shadcn sozinho é justamente um dos visuais mais genéricos da internet.</p>
+  </section>
+</main>
+
+<script>
+// Reduz as telas de computador (1200px) para caber na largura disponível
+function escalar(){ document.querySelectorAll('[data-escala]').forEach(p => { const w = p.parentElement.clientWidth, k = Math.min(1, w / 1200); p.style.transform = `scale(${k})`; p.parentElement.style.height = (28 + 740 * k) + 'px'; }); }
+addEventListener('resize', escalar); escalar();
+</script>
