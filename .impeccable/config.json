@@ -7,7 +7,8 @@
       "design/logo.html",
       "design/marca.html",
       "design/marca/marca.tpl.html",
-      "design/redesenho.html"
+      "design/redesenho.html",
+      "design/premium/antes.html"
     ],
     "ignoreValues": [
       {

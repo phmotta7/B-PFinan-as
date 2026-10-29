@@ -1,7 +1,9 @@
 // Onde os dados moram: neste aparelho (modo demonstração) ou no Supabase. As duas formas recebem o mesmo pacote de mudança.
 import { ORDEM_TABELAS, type Mudanca, type Retrato, type Tabela } from './tipos';
 import { aplicar } from './mudanca';
-import { retratoCenario } from './cenario';
+import { retratoCenario, IDS, ARQUIVO_NUBANK_NOV } from './cenario';
+import { importarFatura, confirmarDuplicidade, escolherCandidata, marcar } from './operacoes';
+import { lerNubank } from '@/dominio/leitores';
 import { supabaseNavegador } from '@/lib/supabase';
 
 export interface Repositorio {
@@ -18,7 +20,25 @@ export class RepoDemo implements Repositorio {
   private r: Retrato | null = null;
   async carregar() {
     try { const s = localStorage.getItem(CHAVE); if (s) return (this.r = JSON.parse(s) as Retrato); } catch { /* sem armazenamento: segue com o cenário */ }
-    return (this.r = retratoCenario());
+    return (this.r = RepoDemo.inicio());
+  }
+  /** Começo da demonstração; ?cenario=importado ou ?cenario=marcado pula para depois da importação (capturas e testes visuais). */
+  static inicio(): Retrato {
+    let r = retratoCenario();
+    const etapa = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('cenario') : null;
+    if (etapa === 'importado' || etapa === 'marcado') {
+      r = aplicar(r, importarFatura(r, { cartao: IDS.nubank, mes: '2026-11', leitura: lerNubank(ARQUIVO_NUBANK_NOV, IDS.nubank), formato: 'nubank_csv', arquivoNome: 'Nubank_2026-11-03.csv', hoje: '2026-11-03' }).mudanca);
+      if (etapa === 'marcado') {
+        for (const c of r.compra.filter(x => x.pendencia?.tipo === 'duplicidade')) r = aplicar(r, confirmarDuplicidade(r, c.id));
+        for (const c of r.compra.filter(x => x.pendencia?.tipo === 'ambigua')) r = aplicar(r, escolherCandidata(r, c.id, IDS.ifoodPedro));
+        for (const c of r.compra.filter(x => !x.pagador && !x.pendencia)) {
+          const valor = r.parcela_cartao.find(p => p.compra === c.id)?.valor ?? c.valorTotal;
+          const alvo = IDS.alvos[`${c.descricao}|${valor}`];
+          if (alvo) r = aplicar(r, marcar(r, [c.id], { pagador: alvo.pagador, escopo: alvo.escopo ?? null, categoria: alvo.categoria ?? null }));
+        }
+      }
+    }
+    return r;
   }
   async gravar(m: Mudanca) {
     this.r = aplicar(this.r ?? (await this.carregar()), m);
