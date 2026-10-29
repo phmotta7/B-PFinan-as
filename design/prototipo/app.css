@@ -159,8 +159,8 @@ h1,h2,h3,p{margin:0}
   transition:background-color var(--d-cor) var(--ease-saida);content-visibility:auto;contain-intrinsic-size:auto 64px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .lin + .lin::before{content:"";position:absolute;top:0;left:64px;right:0;height:1px;background:var(--linha)}
 .lin:active{background:var(--chao)}
-.lin[aria-checked="true"]{background:var(--acao-leve)}
-.lin[aria-checked="true"] .logo{background:var(--acao);color:var(--no-acao);box-shadow:none}
+.lin[aria-pressed="true"]{background:var(--acao-leve)}
+.lin[aria-pressed="true"] .logo{background:var(--acao);color:var(--no-acao);box-shadow:none}
 .lin .d{min-width:0;display:flex;flex-direction:column;gap:3px}
 .lin .d b{font:600 16px/1.3 var(--fonte);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lin .d small{font:var(--t-apoio);font-size:13px;color:var(--suave);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -285,3 +285,22 @@ h1,h2,h3,p{margin:0}
   .toast,.dialogo,.massa{transition:opacity 150ms linear;transform:none}
   .dialogo{transform:translateY(-50%)}
 }
+
+/* Passos do mês */
+.passos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.passos li{display:flex;align-items:flex-start;gap:12px;padding:8px 0;color:var(--suave)}
+.passos li b{font:600 15px/1.3 var(--fonte);display:block}
+.passos li small{font:var(--t-apoio);font-size:13px;color:var(--suave);display:block;margin-top:2px}
+.passos .bola{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font:700 13px/1 var(--fonte);background:var(--chao);box-shadow:inset 0 0 0 1.5px var(--linha-forte);color:var(--suave)}
+.passos li.feito{color:var(--apagado)}
+.passos li.feito b{font-weight:500;text-decoration:line-through;text-decoration-color:var(--linha-forte)}
+.passos li.feito .bola{background:var(--ok-leve);color:var(--ok);box-shadow:none}
+.passos li.atual{color:var(--tinta)}
+.passos li.atual b{font-weight:700}
+.passos li.atual .bola{background:var(--acao);color:var(--no-acao);box-shadow:none}
+/* Ação fixa embaixo das telas sem barra (Lançar, Importar) */
+.rodape{position:sticky;bottom:0;margin:4px -16px -40px;padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(to bottom,transparent,var(--chao) 22%);z-index:3}
+.resumo-ct{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--cartao);border-radius:var(--r-bloco);box-shadow:var(--s-cartao);padding:6px 6px 6px 14px}
+.resumo-ct p{display:flex;align-items:center;gap:8px;font:var(--t-apoio);color:var(--suave)}
+.resumo-ct b{color:var(--tinta);font-weight:700}
+.topo .chip .ic{width:16px;height:16px}

@@ -59,7 +59,6 @@ function linhasDe(c, m) {
   if (c === 'nu' && m === '2026-11') ls = S.nu === 'fechada' ? S.manuaisNu.filter(l => l.id !== 'm8') : S.faturas['nu-2026-11'].linhas;
   else ls = (S.faturas[chaveFat(c, m)] || {}).linhas || [];
   ls = ls.concat(prevSeries(c, m)).concat(S.extras.filter(x => x.cartao === c && x.mes === m));
-  if (S.grande && c === 'nu' && m === '2026-11') ls = ls.concat(linhasGrandes());
   return ls;
 }
 // Parcelas futuras previstas (RN-CO-02): mês seguinte das séries conhecidas
@@ -177,7 +176,7 @@ const erroCaixa = (msg, bt = 'Tentar de novo') => `<div class="aviso er" role="a
 const T = {};
 T.login = () => {
   const neg = S.login === 'negado', car = S.login === 'carregando';
-  return `<div class="login entra"><div class="marca">${MARCA}<h1>B&amp;P Finanças</h1><p>As contas da casa de Pedro e Bruna.</p></div>
+  return `<div class="login entra"><div class="marca">${MARCA}<h1>B&amp;P Finanças</h1><p>A fatura do mês dividida por pessoa, pronta para mandar no WhatsApp.</p></div>
     <div style="display:flex;flex-direction:column;gap:12px">
       ${neg ? `<div class="aviso er" role="alert">${ic('atencao')}<div><p>O e-mail visitante@exemplo.com não está na lista da casa. Peça para o Pedro ou a Bruna incluir você em Configurações.</p></div></div>` : ''}
       <button class="bt google cheio" data-a="entrar" ${car ? 'aria-busy="true" disabled' : ''}>${car ? '<span class="giro" aria-hidden="true"></span>Entrando' : GOOGLE + 'Entrar com Google'}</button>
@@ -190,27 +189,37 @@ T.inicio = () => {
   if (S.estado === 'erro') return topo(mesLongo(m), `Olá, ${nome}`) + `<main class="conteudo">${erroCaixa('Não consegui carregar os dados agora. Verifique a internet; nada do que você marcou se perdeu.')}</main>`;
   if (S.estado === 'vazio') return topo('Boas-vindas', `Olá, ${nome}`) + `<main class="conteudo"><div class="vazio">${ic('cartao')}<h2>Vamos começar pelos cartões</h2><p>Cadastre o Nubank e o BB da Bruna com o dia de fechamento e de vencimento. Depois é só lançar compras ou importar a fatura.</p><button class="bt principal" data-a="ir" data-t="cfg-cartoes">${ic('mais')}Cadastrar cartões</button></div></main>`;
   const todos = CARTOES.flatMap(c => linhasDe(c.id, m)), t = totais(todos);
-  const sd = semDonoMes(m), pc = concAbertas();
-  const pend = [];
-  if (S.nu === 'fechada') pend.push(['importar', 'importar', 'A fatura Nubank Nov/26 fechou', 'Importe o arquivo para conferir as 47 linhas', 'at']);
-  if (pc) pend.push(['conciliacao', 'conferir', `${pc} ${pc > 1 ? 'itens' : 'item'} para conferir na importação`, 'Duplicidades e parcelas esperadas', 'at']);
-  if (sd) pend.push(['fatura', 'pessoa', `${sd} linhas sem dono`, 'Fatura Nubank Nov/26', 'at', 'nu']);
+  const sd = semDonoMes(m), pc = concAbertas(), pm = pendMes(m), rec = aReceber();
+  const passos = passosMes(m), atual = passos.find(p => !p.feito);
   const abertos = ['P', 'E', 'L'].map(k => [k, fech(k, m)]).filter(([, f]) => f.status !== 'Pago' && f.total > 0);
-  if (abertos.length) pend.push(['fechamentos', 'fechamento', `Fechamentos de novembro: ${abertos.length} em aberto`, abertos.map(([k]) => PESSOAS[k].nome).join(', '), 'n']);
-  const rec = aReceber();
-  return topo(mesLongo(m), `Olá, ${nome}`) + `<main class="conteudo entra-alvo">
+  return topo(mesLongo(m), atual ? `Olá, ${nome}. ${passos.filter(p => !p.feito).length === 1 ? 'Falta 1 passo' : 'Faltam ' + passos.filter(p => !p.feito).length + ' passos'} para fechar o mês.` : `Olá, ${nome}. Os resumos de novembro já foram enviados.`) + `<main class="conteudo">
+    <section class="cartao" aria-labelledby="h-passos"><div class="linha-topo"><h3 id="h-passos">Fechamento de novembro</h3><span class="mini num">${passos.filter(p => p.feito).length} de 4</span></div>
+      <ol class="passos">${passos.map(p => `<li class="${p.feito ? 'feito' : p === atual ? 'atual' : ''}"><span class="bola" aria-hidden="true">${p.feito ? ic('ok', 'pp') : passos.indexOf(p) + 1}</span><span><b>${p.nome}</b>${p === atual ? `<small>${p.dica}</small>` : ''}</span><span class="sr">${p.feito ? 'feito' : p === atual ? 'próximo passo' : 'depois'}</span></li>`).join('')}</ol>
+      ${atual ? `<button class="bt principal cheio" data-a="${atual.a}" data-t="${atual.t || ''}" data-c="nu" data-m="${m}" data-f="sem">${ic(atual.i)}${atual.bt}</button>`
+        : `<div class="aviso ok">${ic('ok')}<p>Tudo marcado e todos avisados. ${abertos.length ? 'Agora é registrar os Pix quando chegarem.' : 'Todos já pagaram.'}</p></div>`}
+    </section>
+    ${rec.length ? `<section class="cartao" aria-labelledby="h-rec"><h3 id="h-rec">A receber de meses anteriores</h3><div class="quem num">${rec.map(r => `<button data-a="pagar" data-k="${r.k}" data-m="${r.m}">${selo(r.k, ` <span class="mini">· ${mesCurto(r.m)}</span>`)}<span class="v">${brl(r.aberto)}</span></button>`).join('')}</div></section>` : ''}
+    <section class="cartao" aria-labelledby="h-quem"><h3 id="h-quem">Quem paga quanto em novembro</h3>
+      <div class="quem num">${PESSOA_ORDEM.map(k => `<div>${selo(k)}<span class="v">${brl(t[k])}</span></div>`).join('')}
+      ${t.x ? `<div>${selo(null, `${sd + pm} sem dono`)}<span class="v">${brl(t.x)}</span></div>` : ''}</div></section>
     <section class="cartao" aria-labelledby="h-fat"><h3 id="h-fat">Faturas que vencem em novembro</h3>
       <div class="quem num">${CARTOES.map(c => { const fi = fatInfo(c.id, m), v = linhasDe(c.id, m).reduce((s, l) => s + l.v, 0);
         return `<button data-a="fatura" data-c="${c.id}" data-m="${m}"><span class="banco">${logoBanco(c.banco)}<span>${c.apelido}<small>${fi.status === 'Aberta' ? 'Parcial · fecha ' + dm(fi.fecha) : fi.status + ' · vence ' + dm(fi.vence)}</small></span></span><span class="v">${brl(v)}</span></button>`; }).join('')}</div></section>
-    <section class="cartao" aria-labelledby="h-quem"><h3 id="h-quem">Quem paga quanto em novembro</h3>
-      <div class="quem num">${PESSOA_ORDEM.map(k => `<div>${selo(k)}<span class="v">${brl(t[k])}</span></div>`).join('')}
-      ${t.x ? `<div>${selo(null, `${sd + pendMes(m)} sem dono`)}<span class="v">${brl(t.x)}</span></div>` : ''}</div></section>
-    ${pend.length ? `<section class="cartao" aria-labelledby="h-pend"><h3 id="h-pend">Para fazer</h3><div>${pend.map(([t2, i, a, b, cl, c]) => `<button class="pend" data-a="ir" data-t="${t2}" ${c ? `data-c="${c}"` : ''}><span class="ico ${cl}">${ic(i, 'p')}</span><span class="t"><b>${a}</b><small>${b}</small></span>${ic('seguir', 'p')}</button>`).join('')}</div></section>`
-      : `<div class="aviso ok">${ic('ok')}<p>Tudo em dia por aqui.</p></div>`}
-    ${rec.length ? `<section class="cartao" aria-labelledby="h-rec"><h3 id="h-rec">A receber de meses anteriores</h3><div class="quem num">${rec.map(r => `<button data-a="pagar" data-k="${r.k}" data-m="${r.m}">${selo(r.k, ` <span class="mini">· ${mesCurto(r.m)}</span>`)}<span class="v">${brl(r.aberto)}</span></button>`).join('')}</div></section>` : ''}
   </main>`;
 };
+// Os 4 passos do mês, só para mostrar onde a família está (Zeigarnik); não muda nenhuma regra
+function passosMes(m) {
+  const imp = S.nu === 'importada', sd = semDonoMes(m), pc = concAbertas();
+  const quem = ['P', 'E', 'L'].filter(k => fech(k, m).total > 0), env = quem.filter(k => fech(k, m).enviado);
+  return [
+    { nome: 'Importar a fatura do Nubank', feito: imp, dica: 'A fatura fechou em 03/11. Traga o arquivo CSV.', bt: 'Importar fatura do Nubank', a: 'ir', t: 'importar', i: 'importar' },
+    { nome: 'Conferir o que o app encontrou', feito: imp && !pc, dica: `${pc} ${pc === 1 ? 'item' : 'itens'}: duplicidades e parcelas.`, bt: `Conferir ${pc} ${pc === 1 ? 'item' : 'itens'}`, a: 'ir', t: 'conciliacao', i: 'conferir' },
+    { nome: 'Dizer de quem é cada linha', feito: imp && !pc && !sd, dica: `${sd} linhas sem dono na fatura do Nubank.`, bt: `Marcar ${sd} linhas`, a: 'fatura', i: 'pessoa' },
+    { nome: 'Mandar os resumos no WhatsApp', feito: imp && !pc && !sd && quem.length > 0 && env.length === quem.length, dica: `${quem.length - env.length} de ${quem.length} ainda sem aviso.`, bt: 'Mandar os resumos', a: 'ir', t: 'fechamentos', i: 'mensagem' },
+  ];
+}
 function aReceber() {
+
   return Object.keys(S.fech).filter(m => m < '2026-11').flatMap(m => ['P', 'E', 'L'].map(k => ({ k, m, ...fech(k, m) }))).filter(r => r.aberto > 0);
 }
 
@@ -236,10 +245,11 @@ T.fatura = () => {
   const c = S.p.c || 'nu', m = S.p.m || '2026-11', ca = cartao(c), fi = fatInfo(c, m);
   const head = topo(ca.curto, `Fatura ${mesCurto(m)} · vence ${dm(fi.vence)}`, { voltar: S.pilha.length > 0,
     direita: `<div class="mes"><button class="redondo" data-a="mes" data-k="-1" aria-label="Fatura anterior" ${m <= '2026-11' ? 'disabled style="opacity:.35"' : ''}><span>${ic('voltar', 'p')}</span></button><b>${mesCurto(m)}</b><button class="redondo" data-a="mes" data-k="1" aria-label="Próxima fatura" ${m >= '2026-12' ? 'disabled style="opacity:.35"' : ''}><span>${ic('seguir', 'p')}</span></button>
-    <button class="redondo" data-a="ir" data-t="importar" data-c="${c}" aria-label="Importar fatura"><span>${ic('importar', 'p')}</span></button></div>` });
+    <button class="chip" data-a="ir" data-t="importar" data-c="${c}">${ic('importar', 'pp')}Importar</button></div>` });
   if (S.estado === 'carregando') return head + `<main class="conteudo">${esqueleto(2)}${esqueleto(6)}</main>`;
   if (S.estado === 'erro') return head + `<main class="conteudo">${erroCaixa('Não consegui abrir esta fatura agora. As marcações já feitas estão guardadas.')}</main>`;
-  const ls = S.estado === 'vazio' ? [] : linhasDe(c, m);
+  const teste = S.grande && c === 'nu' && m === '2026-11';
+  const ls = S.estado === 'vazio' ? [] : linhasDe(c, m).concat(teste ? linhasGrandes() : []);
   if (!ls.length) return head + `<main class="conteudo"><div class="vazio">${ic('importar')}<h2>Nenhuma linha nesta fatura ainda</h2><p>Quando a fatura ${mesCurto(m)} do ${ca.curto} fechar, baixe o arquivo no app do banco e traga para cá. Compras lançadas no app também aparecem aqui.</p>
     <div class="acoes"><button class="bt principal medio" data-a="ir" data-t="importar" data-c="${c}">${ic('importar')}Importar</button><button class="bt secundario medio" data-a="ir" data-t="lancar">${ic('mais')}Lançar</button></div></div></main>`;
   const t = totais(ls);
@@ -253,12 +263,14 @@ T.fatura = () => {
       <div class="quem num">${PESSOA_ORDEM.map(k => `<button data-a="filtro" data-f="${k}" aria-label="Ver só ${PESSOAS[k].nome}">${selo(k)}<span class="v">${brl(t[k])}</span></button>`).join('')}
       ${t.nx ? `<button data-a="filtro" data-f="sem">${selo(null, `${t.nx} sem dono`)}<span class="v">${brl(ls.filter(l => !l.dono && !l.pend).reduce((s, l) => s + l.v, 0))}</span></button>` : ''}
       ${t.pend ? `<button data-a="ir" data-t="conciliacao">${selo(null, `${t.pend} para conferir`)}<span class="v">${brl(ls.filter(l => l.pend).reduce((s, l) => s + l.v, 0))}</span></button>` : ''}</div></section>
+    ${!t.nx && !t.pend && fi.status === 'Importada' && c === 'nu' ? `<div class="aviso ok" role="status">${ic('ok')}<div><p>Todas as linhas têm dono. Os fechamentos de novembro estão prontos.</p><button class="bt link" data-a="ir" data-t="fechamentos">Ver fechamentos e mandar resumos</button></div></div>` : ''}
+    ${teste ? `<div class="aviso info" role="status">${ic('atencao')}<p>Teste de volume: 200 linhas fictícias a mais, só nesta tela. Elas não entram no Início nem nos fechamentos.</p></div>` : ''}
     ${t.nx ? `<div class="aviso" role="status">${ic('atencao')}<p>${t.nx} ${t.nx > 1 ? 'linhas' : 'linha'} desta fatura ainda sem dono, o total pode mudar.</p></div>` : ''}
     ${t.pend ? `<button class="aviso info" data-a="ir" data-t="conciliacao" style="border:0;text-align:left;cursor:pointer;font:inherit">${ic('copiar')}<div><p>${t.pend} ${t.pend > 1 ? 'linhas esperam' : 'linha espera'} você conferir a importação.</p><span class="bt link" style="min-height:0">Conferir agora</span></div></button>` : ''}
     ${fi.status === 'Aberta' || fi.status === 'Fechada' ? `<p class="mini">Esta é a parcial com o que foi lançado no app e as parcelas previstas. Ao importar a fatura do banco, ela vira a palavra final.</p>` : ''}
     <div class="filtros" role="group" aria-label="Filtrar linhas">${filtros.filter(([, , n], i) => n || i < 2).map(([k, n, q]) => `<button class="chip" data-a="filtro" data-f="${k}" aria-pressed="${f === k}">${n} <span class="n">${q}</span></button>`).join('')}</div>
     <p class="mini" aria-live="polite">${t.nx} de ${t.n} linhas sem dono${S.selModo ? '' : ' · toque longo para marcar várias'}</p>
-    ${vis.length ? `<div class="lista" role="list">${Object.entries(grupos).map(([d, g]) => `<div class="dia" role="presentation">${diaLongo(d)}</div>${g.map(linhaHTML).join('')}`).join('')}</div>`
+    ${vis.length ? `<div class="lista">${Object.entries(grupos).map(([d, g]) => `<div class="dia">${diaLongo(d)}</div>${g.map(linhaHTML).join('')}`).join('')}</div>`
       : `<div class="vazio"><h2>Nada neste filtro</h2><p>${f === 'sem' ? 'Todas as linhas já têm dono.' : 'Nenhuma linha combina com este filtro.'}</p><button class="bt secundario medio" data-a="filtro" data-f="todas">Ver todas</button></div>`}
   </main>
   <div class="massa ${S.selModo ? 'on' : ''}" role="region" aria-label="Seleção"><button class="redondo" data-a="sair-sel" aria-label="Cancelar seleção">${ic('fechar', 'p')}</button><p class="num">${S.sel.size} ${S.sel.size === 1 ? 'selecionada' : 'selecionadas'}</p><button class="bt claro" data-a="atribuir-sel" ${S.sel.size ? '' : 'disabled'}>Atribuir a…</button></div>`;
@@ -267,7 +279,7 @@ function linhaHTML(l) {
   const tag = l.pend ? `<span class="pil at" style="padding:2px 8px">${ic('copiar')}Conferir</span>` : l.dono ? selo(l.dono, l.esc === 'Casal' ? ' · Casal' : '') : selo(null);
   const sub = `${l.parc ? `<span class="parc num">${l.parc}</span>` : dm(l.d)}${l.prev ? ' <span class="mini">prevista</span>' : ''} ${tag}`;
   const nome = `${l.loja}, ${brl(l.v)}, ${l.parc ? 'parcela ' + l.parc + ', ' : ''}${l.pend ? 'para conferir' : l.dono ? PESSOAS[l.dono].nome : 'sem dono'}`;
-  return `<button class="lin${l.tipo === 'iof' ? ' filho' : ''}" role="listitem" data-l="${l.id}" ${S.selModo ? `aria-checked="${S.sel.has(l.id)}"` : ''} aria-label="${esc(nome)}">
+  return `<button class="lin${l.tipo === 'iof' ? ' filho' : ''}" data-l="${l.id}" ${S.selModo ? `aria-pressed="${S.sel.has(l.id)}"` : ''} aria-label="${esc(nome)}">
     ${logo(l.loja, l.tipo === 'iof')}<span class="d"><b>${esc(l.loja)}</b><small>${sub}</small></span><span class="r"><span class="v num">${brl(l.v)}</span></span></button>`;
 }
 
@@ -301,7 +313,7 @@ T.importar = () => {
     ${jaImp ? `<div class="aviso info" role="status">${ic('ok')}<div><p>Este arquivo já foi importado em 03/11. As ${ls.length} linhas são iguais às que já estão no app, então nada novo será gravado.</p></div></div>` : ''}
     <div class="lista">${I.cartao === 'nu' ? `<div class="lin" style="cursor:default" aria-label="Pagamento recebido, ignorado"><span class="logo" aria-hidden="true">${ic('ok', 'pp')}</span><span class="d"><b>Pagamento recebido</b><small>02/11 <span class="pil neutra" style="padding:2px 8px">Ignorada: é o pagamento da fatura</span></small></span><span class="r"><span class="v num" style="color:var(--suave)">-${brl(195040)}</span></span></div>` : ''}
       ${ls.slice().sort((a, b) => a.d.localeCompare(b.d)).map(l => `<div class="lin${l.tipo === 'iof' ? ' filho' : ''}" style="cursor:default">${logo(l.loja, l.tipo === 'iof')}<span class="d"><b>${esc(l.loja)}</b><small>${l.parc ? `<span class="parc num">${l.parc}</span>` : dm(l.d)} <span class="pil ${jaImp ? 'neutra' : 'acao'}" style="padding:2px 8px">${jaImp ? 'Já importada' : l.tipo === 'iof' ? 'IOF' : l.tipo === 'anuidade' ? 'Anuidade' : l.parc ? 'Parcela' : 'Compra'}</span></small></span><span class="r"><span class="v num">${brl(l.v)}</span></span></div>`).join('')}</div>
-    <div class="acoes"><button class="bt secundario" data-a="imp-cancelar">Cancelar</button><button class="bt principal" data-a="imp-gravar" ${jaImp ? 'disabled' : ''}>${jaImp ? 'Nada novo' : 'Gravar ' + ls.length + ' linhas'}</button></div>
+    <div class="rodape acoes"><button class="bt secundario" data-a="imp-cancelar">Cancelar</button><button class="bt principal" data-a="imp-gravar" ${jaImp ? 'disabled' : ''}>${jaImp ? 'Nada novo' : 'Gravar ' + ls.length + ' linhas'}</button></div>
   </main>`;
 };
 const BB_ARQ = [['2026-10-12', 'PADARIA PAO QUENTE', 1800, ''], ['2026-10-14', 'POSTO IPIRANGA', 7540, ''], ['2026-10-15', 'PAO DE ACUCAR', 21030, ''], ['2026-10-20', 'RENNER PARC 01/04', 6250, '1/4'], ['2026-10-22', 'DROGASIL', 3990, ''], ['2026-10-25', 'MAGAZINE LUIZA PARC 02/05', 23410, '2/5']];
@@ -349,20 +361,30 @@ T.lancar = () => {
   const parts = dividir(F.valor, F.n);
   const pb = F.dono === 'P' || F.dono === 'B';
   const err = F.tentou ? validar(F) : {};
+  const cats = catsVisiveis(F.dono, F.cat, F.todasCats);
   return topo('Lançar compra', 'No cartão', { voltar: S.pilha.length > 0 }) + `<main class="conteudo sem-barra">
-    <div class="campo"><label for="f-valor">Valor</label><div class="entrada valor ${err.valor ? 'erro' : ''}"><span>R$</span><input id="f-valor" inputmode="decimal" placeholder="0,00" value="${F.valorTxt}" data-in="valor" autocomplete="off" ${err.valor ? 'aria-invalid="true" aria-describedby="e-valor"' : ''}></div>${err.valor ? `<p class="ajuda erro" id="e-valor">${ic('atencao')}${err.valor}</p>` : ''}</div>
-    <div class="campo"><label for="f-desc">Descrição</label><div class="entrada ${err.desc ? 'erro' : ''}"><input id="f-desc" placeholder="Ex.: Tênis Centauro" value="${esc(F.desc)}" data-in="desc" autocomplete="off" enterkeyhint="next"></div>${err.desc ? `<p class="ajuda erro">${ic('atencao')}${err.desc}</p>` : ''}</div>
+    <div class="campo"><label for="f-valor">Valor</label><div class="entrada valor ${err.valor ? 'erro' : ''}"><span>R$</span><input id="f-valor" inputmode="decimal" placeholder="0,00" value="${F.valorTxt}" data-in="valor" autocomplete="off" ${err.valor ? 'aria-invalid="true" aria-describedby="e-valor"' : ''}></div>${err.valor ? `<p class="ajuda erro" id="e-valor">${ic('atencao')}${err.valor}</p>` : ''}
+      <div class="linha-topo"><p class="ajuda num" id="f-parts">${F.n > 1 && F.valor ? `${F.n}x: ${parts.slice(0, 3).map(p => brl(p).slice(3)).join(' + ')}${F.n > 3 ? ' + …' : ''}` : 'À vista'}</p>
+      <div class="passo" role="group" aria-label="Parcelas"><button class="redondo" data-a="f-n" data-k="-1" aria-label="Menos uma parcela"><span>−</span></button><b class="num" aria-live="polite">${F.n}x</b><button class="redondo" data-a="f-n" data-k="1" aria-label="Mais uma parcela"><span>+</span></button></div></div></div>
+    <div class="campo"><label for="f-desc">Descrição</label><div class="entrada ${err.desc ? 'erro' : ''}"><input id="f-desc" placeholder="Ex.: Tênis Centauro" value="${esc(F.desc)}" data-in="desc" autocomplete="off" enterkeyhint="done"></div>${err.desc ? `<p class="ajuda erro">${ic('atencao')}${err.desc}</p>` : ''}</div>
     <div class="campo"><span class="rot" id="r-pg">De quem é</span><div class="pessoas" role="group" aria-labelledby="r-pg">${PESSOA_ORDEM.map(k => `<button data-a="f-dono" data-k="${k}" aria-pressed="${F.dono === k}">${selo(k, '', true)}</button>`).join('')}</div></div>
     ${pb ? `<div class="campo"><span class="rot" id="r-esc">Para quê</span><div class="seg" data-v="${F.esc === 'Casal' ? 1 : 0}" role="group" aria-labelledby="r-esc"><span class="pino" aria-hidden="true"></span><button data-a="f-esc" data-v="Pessoal" aria-pressed="${F.esc !== 'Casal'}">Pessoal</button><button data-a="f-esc" data-v="Casal" aria-pressed="${F.esc === 'Casal'}">Casal</button></div></div>` : ''}
-    <div class="campo"><span class="rot" id="r-cat">Categoria${pb ? '' : ' (opcional)'}</span><div class="cats" role="group" aria-labelledby="r-cat">${CATEGORIAS.map(c => `<button class="chip" data-a="f-cat" data-v="${c}" aria-pressed="${F.cat === c}">${c}</button>`).join('')}</div>${err.cat ? `<p class="ajuda erro">${ic('atencao')}${err.cat}</p>` : ''}</div>
-    <div class="campo"><span class="rot">Parcelas</span><div class="linha-topo"><div class="passo"><button class="redondo" data-a="f-n" data-k="-1" aria-label="Menos uma parcela"><span>−</span></button><b class="num" aria-live="polite">${F.n}x</b><button class="redondo" data-a="f-n" data-k="1" aria-label="Mais uma parcela"><span>+</span></button></div></div>
-      <p class="ajuda num">${F.n > 1 && F.valor ? `${F.n}x: ${parts.slice(0, 3).map(p => brl(p).slice(3)).join(' + ')}${F.n > 3 ? ' + …' : ''}` : 'À vista'}</p></div>
-    <div class="campo"><span class="rot" id="r-ct">Cartão</span><div class="chips" role="group" aria-labelledby="r-ct">${CARTOES.map(c => `<button class="chip" data-a="f-cartao" data-c="${c.id}" aria-pressed="${F.cartao === c.id}">${c.curto}</button>`).join('')}</div></div>
-    <div class="campo"><span class="rot" id="r-dt">Data da compra</span><div class="chips" role="group" aria-labelledby="r-dt">${[['2026-11-03', 'Hoje, 03/11'], ['2026-11-02', 'Ontem, 02/11'], ['2026-11-01', 'Sábado, 01/11']].map(([d, n]) => `<button class="chip" data-a="f-data" data-v="${d}" aria-pressed="${F.data === d}">${n}</button>`).join('')}</div>
-      <p class="ajuda">${ic('calendario')}Entra na fatura ${mesCurto(dest)} do ${ca.curto}${F.data >= fatInfo(F.cartao, '2026-11').fecha && dest === '2026-12' ? ', porque o cartão fecha hoje' : ''}.</p></div>
-    <button class="bt principal cheio" data-a="f-salvar">Lançar ${F.valor ? brl(F.valor) : ''}</button>
+    <div class="campo"><span class="rot" id="r-cat">Categoria${pb ? '' : ' (opcional)'}</span><div class="cats" role="group" aria-labelledby="r-cat">${cats.map(c => `<button class="chip" data-a="f-cat" data-v="${c}" aria-pressed="${F.cat === c}">${c}</button>`).join('')}${F.todasCats ? '' : `<button class="chip" data-a="f-todas">Outras…</button>`}</div>${err.cat ? `<p class="ajuda erro">${ic('atencao')}${err.cat}</p>` : ''}</div>
+    ${F.abreCartao ? `<div class="campo"><span class="rot" id="r-ct">Cartão</span><div class="chips" role="group" aria-labelledby="r-ct">${CARTOES.map(c => `<button class="chip" data-a="f-cartao" data-c="${c.id}" aria-pressed="${F.cartao === c.id}">${c.curto}</button>`).join('')}</div></div>
+    <div class="campo"><span class="rot" id="r-dt">Data da compra</span><div class="chips" role="group" aria-labelledby="r-dt">${[['2026-11-03', 'Hoje, 03/11'], ['2026-11-02', 'Ontem, 02/11'], ['2026-11-01', 'Sábado, 01/11']].map(([d, n]) => `<button class="chip" data-a="f-data" data-v="${d}" aria-pressed="${F.data === d}">${n}</button>`).join('')}</div></div>` : ''}
+    <div class="resumo-ct"><p>${ic('calendario', 'p')}<span><b>${ca.curto} · ${F.data === '2026-11-03' ? 'hoje' : dm(F.data)}</b> · entra na fatura ${mesCurto(dest)}${F.data >= fatInfo(F.cartao, '2026-11').fecha && dest === '2026-12' ? ', porque o cartão fecha hoje' : ''}</span></p>${F.abreCartao ? '' : '<button class="bt discreto" data-a="f-abre">Alterar</button>'}</div>
+    <div class="rodape"><button class="bt principal cheio" data-a="f-salvar">Lançar ${F.valor ? brl(F.valor) : ''}</button></div>
   </main>`;
 };
+// Categorias: primeiro as 5 mais usadas pela pessoa (Hick); "Outras…" mostra as 13
+const RECENTES = { P: ['Transporte', 'Alimentação fora', 'Compras pessoais', 'Mercado', 'Lazer'], B: ['Mercado', 'Saúde', 'Compras pessoais', 'Alimentação fora', 'Assinaturas'],
+  E: ['Saúde', 'Mercado', 'Compras pessoais', 'Presentes e doações', 'Outros'], L: ['Saúde', 'Compras pessoais', 'Mercado', 'Presentes e doações', 'Outros'] };
+function catsVisiveis(k, atual, todas) {
+  if (todas) return CATEGORIAS;
+  const r = (RECENTES[k] || RECENTES.B).slice(0, 5);
+  return atual && !r.includes(atual) ? [atual, ...r.slice(0, 4)] : r;
+}
+function usou(k, c) { if (!c || !RECENTES[k]) return; RECENTES[k] = [c, ...RECENTES[k].filter(x => x !== c)].slice(0, 5); }
 function novoForm() { const d = S.ultimo.dono; return { valor: 0, valorTxt: '', desc: '', dono: d, esc: S.ultimo.esc[d] || 'Pessoal', cat: '', n: 1, cartao: S.ultimo.cartao, data: '2026-11-03', tentou: false }; }
 function dividir(v, n) { const b = Math.floor(v / n), r = v - b * n; return Array.from({ length: n }, (_, i) => b + (i === 0 ? r : 0)); }
 function destino(F) { const fi = fatInfo(F.cartao, '2026-11'); return F.data >= fi.fecha ? '2026-12' : '2026-11'; }
@@ -382,6 +404,7 @@ T.fechamentos = () => {
   return head + `<main class="conteudo">
     ${naoImp ? `<div class="aviso" role="status">${ic('atencao')}<div><p>A fatura Nubank Nov/26 ainda não foi importada. Os valores abaixo são parciais.</p><button class="bt link" data-a="ir" data-t="importar">Importar agora</button></div></div>` : ''}
     ${sd ? `<div class="aviso" role="status">${ic('atencao')}<div><p>${sd} linhas desta fatura ainda sem dono, o total pode mudar.</p><button class="bt link" data-a="fatura" data-c="nu" data-m="${m}" data-f="sem">Marcar agora</button></div></div>` : ''}
+    ${(() => { const q = ['P', 'E', 'L'].filter(k => fech(k, m).total > 0); return m === '2026-11' && !sd && !naoImp && q.length && q.every(k => fech(k, m).enviado) ? `<div class="aviso ok" role="status">${ic('ok')}<p>Todos avisados. Agora é registrar os Pix quando chegarem.</p></div>` : ''; })()}
     ${['P', 'E', 'L'].map(k => cardFech(k, m)).join('')}
     <section class="cartao"><div class="linha-topo">${selo('B')}<b class="num" style="font:var(--t-forte)">${brl(bruna)}</b></div><p class="mini">Gastos da Bruna nas faturas que vencem em ${mesLongo(m).toLowerCase()}. Ela é a dona dos cartões, então não tem cobrança.</p></section>
     ${rec.length ? `<p class="secao">A receber de meses anteriores</p><div class="cartao"><div class="quem num">${rec.map(r => `<button data-a="pagar" data-k="${r.k}" data-m="${r.m}">${selo(r.k, ` <span class="mini">· ${mesCurto(r.m)}, ${r.status.toLowerCase()}</span>`)}<span class="v">${brl(r.aberto)}</span></button>`).join('')}</div></div>` : ''}
@@ -498,19 +521,19 @@ $('#d-nao').addEventListener('click', fechaDialogo);
 $('#d-sim').addEventListener('click', () => { const f = dSim; fechaDialogo(); if (f) f(); });
 
 // ---------- Marcação ----------
-const achaLinha = id => CARTOES.flatMap(c => ['2026-11', '2026-12'].flatMap(m => linhasDe(c.id, m))).find(l => l.id === id);
+const achaLinha = id => CARTOES.flatMap(c => ['2026-11', '2026-12'].flatMap(m => linhasDe(c.id, m))).concat(S.grande ? linhasGrandes() : []).find(l => l.id === id);
 function folhaPessoa(ids) {
   const ls = ids.map(achaLinha).filter(Boolean); if (!ls.length) return;
   const um = ls.length === 1 ? ls[0] : null;
   const titulo = um ? 'De quem é?' : `De quem são as ${ls.length}?`;
   const sub = um ? `${um.loja}${um.parc ? ' · ' + um.parc : ''} · ${brl(um.v)}` : brl(ls.reduce((s, l) => s + l.v, 0));
-  let escolha = um && um.dono, escopo = um && um.esc ? um.esc : null, cat = um && um.cat;
+  let escolha = um && um.dono, escopo = um && um.esc ? um.esc : null, cat = um && um.cat, todas = false;
   const desenha = () => {
     const pb = escolha === 'P' || escolha === 'B';
     const e = escopo || S.ultimo.esc[escolha] || 'Pessoal';
     $('.corpo', folha).innerHTML = `<div class="pessoas" role="group" aria-label="Pessoa">${PESSOA_ORDEM.map(k => `<button data-fp="${k}" aria-pressed="${escolha === k}">${selo(k, '', true)}</button>`).join('')}</div>
       ${pb ? `<div class="campo"><span class="rot">Para quê</span><div class="seg" data-v="${e === 'Casal' ? 1 : 0}" role="group" aria-label="Para quê"><span class="pino" aria-hidden="true"></span><button data-fe="Pessoal" aria-pressed="${e !== 'Casal'}">Pessoal</button><button data-fe="Casal" aria-pressed="${e === 'Casal'}">Casal</button></div></div>
-      <div class="campo"><span class="rot">Categoria · toque para salvar</span><div class="cats">${CATEGORIAS.map(c => `<button class="chip" data-fc="${c}" aria-pressed="${cat === c}">${c}</button>`).join('')}</div></div>` : ''}`;
+      <div class="campo"><span class="rot">Categoria · toque para salvar</span><div class="cats">${catsVisiveis(escolha, cat, todas).map(c => `<button class="chip" data-fc="${c}" aria-pressed="${cat === c}">${c}</button>`).join('')}${todas ? '' : '<button class="chip" data-ft="1">Outras…</button>'}</div></div>` : ''}`;
   };
   abreFolha(`<div class="cab"><h2>${titulo}</h2><p class="num">${esc(sub)}</p></div><div class="corpo"></div>`, null, null);
   desenha(); $('.corpo button', folha).focus({ preventScroll: true });
@@ -518,11 +541,15 @@ function folhaPessoa(ids) {
     const antes = ls.map(l => ({ l, dono: l.dono, esc: l.esc, cat: l.cat }));
     ls.forEach(l => { l.dono = k; l.esc = k === 'P' || k === 'B' ? e : ''; if (c) l.cat = c; });
     if (k === 'P' || k === 'B') S.ultimo.esc[k] = e;
+    if (c) usou(k, c);
+    const restam = semDonoMes('2026-11') + pendMes('2026-11');
     sairSelecao(true); fechaFolha(); render();
+    if (!restam && S.nu === 'importada') return avisa('Última linha marcada. Os fechamentos de novembro estão prontos para mandar.', () => antes.forEach(a => Object.assign(a.l, { dono: a.dono, esc: a.esc, cat: a.cat })));
     avisa(um ? `${um.loja} agora é de ${PESSOAS[k].nome}${k === 'P' || k === 'B' ? ' · ' + e : ''}` : `${ls.length} linhas agora são de ${PESSOAS[k].nome}`, () => antes.forEach(a => Object.assign(a.l, { dono: a.dono, esc: a.esc, cat: a.cat })));
   };
   folha.onclick = ev => {
     const p = ev.target.closest('[data-fp]'), e2 = ev.target.closest('[data-fe]'), c = ev.target.closest('[data-fc]');
+    if (ev.target.closest('[data-ft]')) { todas = true; desenha(); return; }
     if (p) { escolha = p.dataset.fp; if (escolha === 'E' || escolha === 'L') return setTimeout(() => salva(escolha, '', ''), reduz() ? 0 : 90);
       escopo = null; desenha(); if (cat) {/* mantém */} $('.corpo [data-fe]', folha) && $(`[data-fp="${escolha}"]`, folha).focus(); return; }
     if (e2) { escopo = e2.dataset.fe; const seg = $('.seg', folha); seg.dataset.v = escopo === 'Casal' ? 1 : 0; $$('[data-fe]', folha).forEach(b => b.setAttribute('aria-pressed', String(b === e2))); return; }
@@ -634,6 +661,8 @@ A['nao-excluir'] = d => { const n = S.conc.naoEncontradas.find(x => x.id === d.i
 A['f-dono'] = d => { const F = S.form; F.dono = d.k; F.esc = S.ultimo.esc[d.k] || 'Pessoal'; render(); };
 A['f-esc'] = d => { S.form.esc = d.v; render(); };
 A['f-cat'] = d => { S.form.cat = S.form.cat === d.v ? '' : d.v; render(); };
+A['f-todas'] = () => { S.form.todasCats = true; render(); };
+A['f-abre'] = () => { S.form.abreCartao = true; render(); };
 A['f-n'] = d => { S.form.n = Math.min(48, Math.max(1, S.form.n + +d.k)); render(); };
 A['f-cartao'] = d => { S.form.cartao = d.c; render(); };
 A['f-data'] = d => { S.form.data = d.v; render(); };
@@ -642,7 +671,7 @@ A['f-salvar'] = () => {
   const dest = destino(F), parts = dividir(F.valor, F.n), id = 'x' + Date.now();
   const novas = parts.map((v, i) => ({ id: id + i, cartao: F.cartao, mes: somaMes(dest, i), d: F.data, loja: F.desc.trim(), v, dono: F.dono, esc: F.dono === 'P' || F.dono === 'B' ? F.esc : '', cat: F.cat,
     parc: F.n > 1 ? `${i + 1}/${F.n}` : '', compra: F.data, prev: F.n > 1, manual: true }));
-  S.extras.push(...novas); S.ultimo = { ...S.ultimo, cartao: F.cartao, dono: F.dono, esc: { ...S.ultimo.esc, ...(F.dono === 'P' || F.dono === 'B' ? { [F.dono]: F.esc } : {}) } };
+  usou(F.dono, F.cat); S.extras.push(...novas); S.ultimo = { ...S.ultimo, cartao: F.cartao, dono: F.dono, esc: { ...S.ultimo.esc, ...(F.dono === 'P' || F.dono === 'B' ? { [F.dono]: F.esc } : {}) } };
   S.form = null; voltar();
   avisa(`Lançado: ${F.desc.trim()}, ${brl(F.valor)}${F.n > 1 ? ` em ${F.n}x` : ''}, fatura ${mesCurto(dest)}.`, () => { S.extras = S.extras.filter(x => !x.id.startsWith(id)); });
 };
@@ -664,7 +693,7 @@ raiz.addEventListener('click', e => {
 });
 raiz.addEventListener('input', e => {
   const k = e.target.dataset.in; if (!k || !S.form) return;
-  if (k === 'valor') { const v = e.target.value.replace(/[^\d,]/g, ''); S.form.valorTxt = v; S.form.valor = centavos(v); const p = $('.ajuda.num', raiz), bt = $('[data-a="f-salvar"]', raiz);
+  if (k === 'valor') { const v = e.target.value.replace(/[^\d,]/g, ''); S.form.valorTxt = v; S.form.valor = centavos(v); const p = $('#f-parts', raiz), bt = $('[data-a="f-salvar"]', raiz);
     if (p) { const parts = dividir(S.form.valor, S.form.n); p.textContent = S.form.n > 1 && S.form.valor ? `${S.form.n}x: ${parts.slice(0, 3).map(x => brl(x).slice(3)).join(' + ')}${S.form.n > 3 ? ' + …' : ''}` : 'À vista'; }
     if (bt) bt.textContent = 'Lançar ' + (S.form.valor ? brl(S.form.valor) : ''); }
   if (k === 'desc') S.form.desc = e.target.value;
