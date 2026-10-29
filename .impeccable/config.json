@@ -13,7 +13,8 @@
       "design/premium/propostas.html",
       "design/prototipo/prototipo.tpl.html",
       "design/prototipo.html",
-      "design/premium/inicio-fatura.html"
+      "design/premium/inicio-fatura.html",
+      "design/premium/demais-telas.html"
     ],
     "ignoreValues": [
       {

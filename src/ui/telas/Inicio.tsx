@@ -2,7 +2,7 @@
 // Início (T2, Etapa 1: cartões e pendências) e Cartões (T3).
 import { Check, FileUp, Copy, User, MessageCircle, Plus } from 'lucide-react';
 import { useApp } from '../estado';
-import { Divisao, Esqueleto, LogoBanco, Selo, Topo, ddmm, mesLongo, reais } from '../comum';
+import { Divisao, Esqueleto, LogoBanco, Selo, Topo, Valor, ddmm, mesLongo, reais } from '../comum';
 import { aReceberAntesDe, faturaDe, fechamentosDoMes, linhasDaFatura, parcelasNaoEncontradas, situacaoDaFatura, totaisDaFatura } from '@/dados/consultas';
 import { mesCurto } from '@/dominio/mensagem';
 import { datasDaFatura, somarMeses, type Mes } from '@/dominio/ciclo';
@@ -98,17 +98,19 @@ export function Cartoes() {
   if (!r.cartao.length) return (<><Topo titulo="Cartões" /><main className="conteudo"><div className="vazio"><h2>Nenhum cartão cadastrado</h2><p>Cadastre o cartão com o apelido, o banco e os dias de fechamento e vencimento.</p><button className="bt principal" onClick={() => ir({ tela: 'cfg-cartoes' })}>Cadastrar cartão</button></div></main></>);
   return (<>
     <Topo titulo="Cartões" sub={`Faturas que vencem em ${mesLongo(m).toLowerCase()}`} />
-    <main className="conteudo">{r.cartao.filter(c => c.ativo).map(c => {
+    <main className="conteudo"><div className="grade-cartoes">{r.cartao.filter(c => c.ativo).map(c => {
       const f = faturaDe(r, c.id, m), d = datasDaFatura(c, m), v = f ? totaisDaFatura(linhasDaFatura(r, f.id)).total : 0;
       const prox = faturaDe(r, c.id, somarMeses(m, 1)); const vp = prox ? totaisDaFatura(linhasDaFatura(r, prox.id)).total : 0;
       const s = f ? situacaoDaFatura(f, hoje) : hoje >= d.fechamento ? 'fechada' : 'aberta';
       return (
-        <button key={c.id} className="cartao toque" onClick={() => ir({ tela: 'fatura', cartao: c.id, mes: m })} aria-label={`${c.apelido}, fatura ${mesCurto(m)}, ${reais(v)}`}>
-          <div className={`plastico ${c.banco}`}><div className="t"><span>{c.apelido}</span><span className="pil sobre-plastico">{s[0].toUpperCase() + s.slice(1)}</span></div>
-            <div className="v num">{reais(v)}</div>
-            <div className="s">{s === 'aberta' ? 'Parcial da fatura ' : 'Fatura '}{mesCurto(m)} · fecha {ddmm(d.fechamento)} · vence {ddmm(d.vencimento)}</div></div>
-          <div className="linha-topo"><span className="mini">Próxima fatura ({mesCurto(somarMeses(m, 1))}), já prevista</span><b className="num">{reais(vp)}</b></div>
-        </button>);
-    })}</main>
+        <div key={c.id} className="cartao-banco">
+          <button className={`plastico ${c.banco}`} onClick={() => ir({ tela: 'fatura', cartao: c.id, mes: m })} aria-label={`${c.apelido}, fatura ${mesCurto(m)}, ${reais(v)}, ${s}`}>
+            <span className="t"><span className="nome"><LogoBanco banco={c.banco} />{c.apelido}</span><span className="pil sobre-plastico">{s[0].toUpperCase() + s.slice(1)}</span></span>
+            <Valor c={v} tamanho="g" />
+            <span className="s">{s === 'aberta' ? 'Parcial · fecha ' + ddmm(d.fechamento) : 'Fechou ' + ddmm(d.fechamento)} · vence {ddmm(d.vencimento)}</span>
+          </button>
+          <p className="proxima num"><span>Próxima fatura, {mesCurto(somarMeses(m, 1))}, já prevista</span><b>{reais(vp)}</b></p>
+        </div>);
+    })}</div></main>
   </>);
 }

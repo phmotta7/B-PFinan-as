@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { FileUp, Check } from 'lucide-react';
 import { useApp } from '../estado';
-import { Aviso, Esqueleto, Logo, LogoBanco, Topo, ddmm, reais } from '../comum';
+import { Aviso, Esqueleto, Logo, LogoBanco, Topo, Valor, ddmm, reais } from '../comum';
 import { lerCsvGenerico, lerNubank, ErroDeLeitura, type Leitura, type MapaDeColunas, type FormatoData } from '@/dominio/leitores';
 import { datasDaFatura, somarMeses, sugerirFatura, type Mes } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
@@ -88,7 +88,7 @@ function Previa({ passo, cartaoId, mudarMes, cancelar, gravar }: { passo: Extrac
   return (<>
     <div className="cartao">
       <div className="banco"><LogoBanco banco={cartao.banco} /><span>{passo.nome}<small>{leitura.linhas.length + leitura.ignoradas.length} linhas lidas</small></span></div>
-      <div className="total num"><span>R$</span>{reais(total).slice(3)}</div>
+      <Valor c={total} tamanho="g" />
       <p className="mini">{conta('compra')} compras · {conta('parcela')} parcelas · {conta('iof')} IOF · {conta('estorno')} estornos · {conta('anuidade') + conta('juros')} encargos{leitura.ignoradas.length ? ` · ${leitura.ignoradas.length} ignorada${leitura.ignoradas.length > 1 ? 's' : ''}` : ''}</p>
     </div>
     <div className="campo"><span className="rot" id="r-fat">Este arquivo é de qual fatura?</span>

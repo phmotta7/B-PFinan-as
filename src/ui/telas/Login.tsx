@@ -5,10 +5,11 @@ export function Login({ negado, entrar }: { negado?: string; entrar: () => Promi
   const [entrando, setEntrando] = useState(false);
   return (
     <div className="login">
-      <div className="marca">
-        <img src="/marca.svg" alt="" width={72} height={72} />
+      <div className="login-cofre">
+        <img src="/marca.svg" alt="" width={64} height={64} />
         <h1>B&amp;P Finanças</h1>
         <p>A fatura do mês dividida por pessoa, pronta para mandar no WhatsApp.</p>
+        <div className="login-regua" aria-hidden="true"><i className="p" /><i className="b" /><i className="e" /><i className="l" /></div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {negado ? (

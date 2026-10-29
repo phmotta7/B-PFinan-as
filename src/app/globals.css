@@ -548,3 +548,48 @@ input[type="file"].escondido{position:absolute;width:1px;height:1px;opacity:0;po
 .esq-heroi i{display:block;border-radius:var(--r-pequeno);background:rgba(255,255,255,.12);animation:respira 1.6s var(--ease-troca) infinite alternate}
 .esq-heroi .t{height:48px;width:62%}.esq-heroi .s{height:12px;width:54%}.esq-heroi .r{height:14px;border-radius:var(--r-pilula)}
 .esq-heroi .l{display:grid;grid-template-columns:1fr 1fr;gap:12px}.esq-heroi .l i{height:30px}
+
+/* ================= Demais telas no Cofre ================= */
+/* Lançar: o valor digitado é o protagonista, sem caixa pesada */
+.entrada.valor{min-height:76px;background:transparent;box-shadow:inset 0 -2px 0 var(--linha-forte);border-radius:0;padding:0 2px}
+.entrada.valor:focus-within{box-shadow:inset 0 -2px 0 var(--foco)}
+.entrada.valor.erro{box-shadow:inset 0 -2px 0 var(--erro)}
+.entrada.valor input{font:600 44px/1 var(--fonte);letter-spacing:-.035em}
+.entrada.valor span{font:600 20px/1 var(--fonte);color:var(--suave);align-self:center}
+.entrada.valor input::placeholder{color:var(--linha-forte)}
+
+/* Cartões: o cartão do banco com material (tom do banco, luz no alto, borda de luz), sem caixa em volta */
+.grade-cartoes{display:grid;gap:20px}
+@media (min-width:1024px){.grade-cartoes{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}}
+.cartao-banco{display:flex;flex-direction:column;gap:10px}
+.cartao-banco .plastico{all:unset;box-sizing:border-box;cursor:pointer;position:relative;overflow:hidden;aspect-ratio:1.586;border-radius:var(--r-cartao);padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;
+  color:#fff;background-color:var(--nubank);background-image:linear-gradient(155deg,rgba(255,255,255,.22),rgba(255,255,255,0) 42%),linear-gradient(330deg,rgba(0,0,0,.28),rgba(0,0,0,0) 55%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 0 1px rgba(255,255,255,.08),var(--s-elevado);transition:transform var(--d-toque) var(--ease-saida)}
+.cartao-banco .plastico.bb{background-color:var(--bb);color:var(--bb-tinta);background-image:linear-gradient(155deg,rgba(255,255,255,.4),rgba(255,255,255,0) 42%),linear-gradient(330deg,rgba(0,40,100,.14),rgba(0,0,0,0) 55%)}
+.cartao-banco .plastico:active{transform:scale(.985)}
+.cartao-banco .plastico:focus-visible{outline:3px solid var(--foco);outline-offset:3px}
+.cartao-banco .t{display:flex;justify-content:space-between;align-items:center;gap:10px;font:600 16px/1.2 var(--fonte)}
+.cartao-banco .nome{display:flex;align-items:center;gap:10px}
+.cartao-banco .nome .logo{width:32px;height:32px;box-shadow:0 0 0 1.5px rgba(255,255,255,.5)}
+.cartao-banco .valor,.cartao-banco .valor .valor-moeda,.cartao-banco .valor .valor-cent{color:inherit}
+.cartao-banco .valor .valor-moeda,.cartao-banco .valor .valor-cent{opacity:.8}
+.cartao-banco .s{font:500 13px/1.35 var(--fonte);opacity:.92}
+.cartao-banco .proxima{display:flex;justify-content:space-between;gap:12px;font:var(--t-apoio);color:var(--suave);padding:0 4px}
+.cartao-banco .proxima b{color:var(--tinta);font-weight:600}
+@media (prefers-reduced-motion: reduce){.cartao-banco .plastico:active{transform:none}}
+
+/* Vazios com a marca da casa */
+.vazio::before{content:"";width:44px;height:44px;border-radius:var(--r-bloco);background:url(/marca.svg) center/cover;box-shadow:var(--s-cartao);margin-bottom:4px}
+.vazio h2{font:var(--t-titulo)}
+
+/* Entrada: a marca no cofre, a régua das quatro pessoas, o botão na metade de baixo */
+.login{padding:0;justify-content:space-between;gap:0;min-height:100dvh}
+.login-cofre{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:14px;padding:calc(env(safe-area-inset-top,0px) + 48px) 24px 36px;color:var(--cofre-tinta);
+  background-color:var(--cofre-2);background-image:radial-gradient(120% 80% at 20% 0%,var(--cofre-1),var(--cofre-2));border-radius:0 0 var(--r-folha) var(--r-folha);box-shadow:var(--s-painel)}
+.login-cofre img{border-radius:var(--r-bloco);box-shadow:0 8px 24px -10px rgba(0,0,0,.6)}
+.login-cofre h1{font:700 34px/1.1 var(--fonte);letter-spacing:-.03em;color:var(--cofre-tinta)}
+.login-cofre p{color:var(--cofre-suave);max-width:30ch}
+.login-regua{display:flex;gap:3px;height:10px;border-radius:var(--r-pilula);overflow:hidden;max-width:220px;margin-top:6px}
+.login-regua i{flex:1}.login-regua .p{background:var(--pedro)}.login-regua .b{background:var(--bruna);flex:2}.login-regua .e{background:var(--eliete)}.login-regua .l{background:var(--lucimar)}
+.login > div:last-child{padding:28px 24px calc(env(safe-area-inset-bottom,0px) + 32px)}
+@media (min-width:1024px){.login{max-width:480px;margin:auto;height:auto;min-height:620px;border-radius:var(--r-folha);overflow:hidden;box-shadow:var(--s-elevado);background:var(--cartao)}}

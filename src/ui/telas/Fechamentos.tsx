@@ -1,10 +1,10 @@
 'use client';
 // Fechamentos (T8, §5): uma linha por pessoa com total, pago, em aberto, situação; WhatsApp, Copiar, Registrar pagamento.
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, MessageCircle, Copy, Check, CircleAlert } from 'lucide-react';
+import { MessageCircle, Copy, Check, CircleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { useApp } from '../estado';
-import { Folha, Selo, Topo, ddmm, mesLongo, reais } from '../comum';
+import { Folha, SeletorMes, Selo, Topo, Valor, ddmm, mesLongo, reais } from '../comum';
 import { aReceberAntesDe, faturaDe, fechamentosDoMes, gastosDaTitularNoMes, linhasDaFatura, mensagemDe } from '@/dados/consultas';
 import { marcarEnviado, registrarPagamento } from '@/dados/operacoes';
 import { linkWhatsApp, mesCurto } from '@/dominio/mensagem';
@@ -29,9 +29,7 @@ export function Fechamentos() {
   const nav = (k: number) => { setAberto(null); ir({ tela: 'fechamentos', mes: somarMeses(mes, k) }); };
 
   return (<>
-    <Topo titulo="Fechamentos" sub={`Quanto cada pessoa deve à ${credor?.nome ?? 'titular'}`} direita={<div className="mes">
-      <button className="redondo" onClick={() => nav(-1)} aria-label="Mês anterior"><span><ChevronLeft size={20} strokeWidth={1.75} /></span></button><b>{mesCurto(mes)}</b>
-      <button className="redondo" onClick={() => nav(1)} aria-label="Próximo mês"><span><ChevronRight size={20} strokeWidth={1.75} /></span></button></div>} />
+    <Topo titulo="Fechamentos" sub={`Quanto cada pessoa deve à ${credor?.nome ?? 'titular'}`} abaixo={<SeletorMes mes={mes} mudar={nav} rotulo="Mês dos fechamentos" />} />
     <main className="conteudo">
       {naoImportadas.length && mes >= mesDeTrabalho ? <div className="aviso" role="status"><CircleAlert size={20} aria-hidden="true" /><div><p>{naoImportadas.map(c => c.apelido).join(' e ')}: fatura {mesCurto(mes)} ainda não importada. Os valores são parciais.</p>
         <button className="bt link" onClick={() => ir({ tela: 'importar', cartao: naoImportadas[0].id })}>Importar agora</button></div></div> : null}
@@ -46,7 +44,7 @@ export function Fechamentos() {
           <section key={f.pessoa.id} className="cartao" aria-label={`Fechamento de ${f.pessoa.nome}`}>
             <button onClick={() => setAberto(aberta ? null : f.pessoa.id)} aria-expanded={aberta} style={{ all: 'unset', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, minHeight: 44 }}>
               <Selo pessoa={f.pessoa} grande /><span className={`pil ${pil}`}>{f.situacao === 'Pago' ? <Check size={14} strokeWidth={2.25} aria-hidden="true" /> : <CircleAlert size={14} strokeWidth={2.25} aria-hidden="true" />}{f.situacao}</span></button>
-            <div className="total num"><span>R$</span>{reais(f.total).slice(3)}</div>
+            <Valor c={f.total} tamanho="g" />
             <p className="mini num">{f.pago ? `Pago ${reais(f.pago)} · falta ${reais(f.emAberto)}` : 'Nada pago ainda'}{f.enviadoEm ? ` · resumo enviado em ${ddmm(f.enviadoEm)}` : ''}</p>
             {aberta ? <div className="msg" aria-label="Detalhe do fechamento">{mensagemDe(r, f.pessoa, mes, titular)}</div>
               : <button className="bt link" onClick={() => setAberto(f.pessoa.id)} style={{ color: 'var(--acao-texto)', alignSelf: 'flex-start' }}>Ver o detalhe</button>}

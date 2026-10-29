@@ -45,7 +45,12 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
 
   // Sessão: no modo demonstração entra direto; no Supabase confere o login Google e a lista da casa
   useEffect(() => {
-    if (repo.modo === 'demo') { setSessao({ situacao: 'dentro', email: 'bruna@exemplo.com' }); recarregar(); return; }
+    if (repo.modo === 'demo') {
+      // ?entrar=1 mostra a tela de entrada no modo demonstração (capturas); ?entrar=negado mostra o acesso negado
+      const entrar = new URLSearchParams(location.search).get('entrar');
+      if (entrar) { setSessao(entrar === 'negado' ? { situacao: 'negado', email: 'visitante@exemplo.com' } : { situacao: 'fora' }); return; }
+      setSessao({ situacao: 'dentro', email: 'bruna@exemplo.com' }); recarregar(); return;
+    }
     const sb = supabaseNavegador();
     const conferir = async () => {
       const { data } = await sb.auth.getUser();
@@ -89,9 +94,10 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
   }, [repo]);
 
   const entrar = useCallback(async () => {
+    if (repo.modo === 'demo') { setSessao({ situacao: 'dentro', email: 'bruna@exemplo.com' }); await recarregar(); return; }
     const sb = supabaseNavegador();
     await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${location.origin}/auth/callback` } });
-  }, []);
+  }, [repo, recarregar]);
   const sair = useCallback(async () => {
     if (repo.modo === 'supabase') await supabaseNavegador().auth.signOut();
     setR(null); setSessao({ situacao: 'fora' });
