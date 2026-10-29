@@ -38,8 +38,8 @@ colors:
   lucimar-tinta: "#1c1b19"
   sem-dono: "#6e6962"
   nubank: "#820ad1"
-  bb: "#fcf000"
-  bb-tinta: "#2a3a8f"
+  bb: "#fde100"
+  bb-tinta: "#003882"
   marca-bojo: "#bcc7ff"
 typography:
   t-mes:

@@ -527,7 +527,7 @@
       "bb": {
         "role": "tertiary",
         "displayName": "Amarelo BB",
-        "canonical": "#fcf000",
+        "canonical": "#fde100",
         "oklch": "oklch(93.5% 0.199 106.0)",
         "tonalRamp": [
           "#0d0c00",
@@ -543,7 +543,7 @@
       "bb-tinta": {
         "role": "tertiary",
         "displayName": "Azul BB",
-        "canonical": "#2a3a8f",
+        "canonical": "#003882",
         "oklch": "oklch(38.9% 0.141 270.4)",
         "tonalRamp": [
           "#070a17",
