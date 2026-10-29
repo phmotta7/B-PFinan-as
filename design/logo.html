@@ -1,0 +1,182 @@
+<title>Logo B&amp;P</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800&display=swap">
+<style>
+/* Layout: página de comparação; cada conceito é uma faixa: marca grande, versões (horizontal, claro, escuro, mono) e o ícone pequeno numa tela inicial de celular */
+:root{
+  --bg:#f1efeb; --fg:#1c1b19; --muted:#5b574f; --line:#dedad2; --card:#ffffff;
+  --act:#2d47d6; --act-soft:#bcc7ff; --warm:#ff9466;
+  --ui:"Figtree", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#17181c;--fg:#eceae6;--muted:#aaa59c;--line:#2e3036;--card:#202227;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17181c;--fg:#eceae6;--muted:#aaa59c;--line:#2e3036;--card:#202227;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--ui);margin:0;padding:40px 16px 80px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2{margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(30px,5vw,42px);font-weight:800;letter-spacing:-.02em}
+.intro{display:flex;flex-direction:column;gap:12px;max-width:66ch}
+.intro p,.note{margin:0;color:var(--muted)}
+.concept{display:flex;flex-direction:column;gap:20px;border-top:1px solid var(--line);padding-top:32px}
+.head{display:flex;flex-direction:column;gap:6px;max-width:66ch}
+.head h2{font-size:28px;font-weight:800;letter-spacing:-.015em}
+.head p{margin:0}
+.head .why{color:var(--muted)}
+.pick{align-self:flex-start;font-size:13px;font-weight:700;padding:4px 12px;border-radius:99px;background:var(--act);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.tile{background:var(--card);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px;min-height:220px}
+.tile.dark{background:#17181c;color:#eceae6;box-shadow:inset 0 0 0 1px #2e3036}
+.tile.light{background:#ffffff;color:#1c1b19}
+.tile .lab{font-size:13px;font-weight:700;color:var(--muted)}
+.tile.dark .lab{color:#aaa59c}
+.tile.light .lab{color:#5b574f}
+.stage{flex:1;display:grid;place-items:center}
+.big svg{width:150px;height:150px}
+.lock{display:flex;align-items:center;gap:12px}
+.lock svg{width:44px;height:44px;flex:none}
+.word{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1;white-space:nowrap}
+.word span{font-weight:500}
+.mono{color:inherit}
+.sizes{display:flex;align-items:flex-end;gap:16px}
+.sizes svg{display:block}
+/* Phone home screen */
+.home{width:100%;max-width:300px;margin:0 auto;border-radius:28px;padding:22px 14px 26px;
+  background:linear-gradient(160deg,#34405a,#5e5040 60%,#4a3a30);display:grid;grid-template-columns:repeat(4,1fr);gap:14px 8px;align-content:start}
+.app{min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px}
+.app i{width:100%;max-width:52px;aspect-ratio:1;border-radius:24%;display:block;background:rgba(255,255,255,.4)}
+.app svg{width:100%;max-width:52px;height:auto;aspect-ratio:1;border-radius:24%;display:block;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.app small{font-size:11px;font-weight:600;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);white-space:nowrap}
+.tab{display:flex;align-items:center;gap:8px;background:#e7e4de;color:#1c1b19;border-radius:10px 10px 0 0;padding:8px 12px;font-size:13px;font-weight:600;max-width:220px}
+.tab svg{width:16px;height:16px;flex:none}
+.end{border-top:1px solid var(--line);padding-top:28px;display:flex;flex-direction:column;gap:10px;max-width:66ch}
+.end h2{font-size:22px;font-weight:800}
+.end ul{margin:0;padding-left:1.1em;color:var(--muted)}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- 1 · Um B que são dois: b e p dividindo a mesma haste -->
+    <symbol id="m1" viewBox="0 0 100 100">
+      <rect width="100" height="100" rx="23" fill="#2d47d6"/>
+      <path d="M38 27 H53 a11.5 11.5 0 0 1 0 23 H38" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M38 50 H56 a12.5 12.5 0 0 1 0 25 H38" fill="none" stroke="#bcc7ff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M38 27 V75" stroke="#fff" stroke-width="11" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="m1-mono" viewBox="0 0 100 100">
+      <path d="M38 27 H53 a11.5 11.5 0 0 1 0 23 H38" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M38 50 H56 a12.5 12.5 0 0 1 0 25 H38" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
+      <path d="M38 27 V75" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
+    </symbol>
+    <!-- 2 · Dois cartões: o cartão da Bruna com as compras de todos por cima -->
+    <symbol id="m2" viewBox="0 0 100 100">
+      <rect width="100" height="100" rx="23" fill="#f1efeb"/>
+      <g transform="rotate(-12 50 50)"><rect x="20" y="28" width="56" height="38" rx="9" fill="#2d47d6"/></g>
+      <g transform="rotate(6 50 50)"><rect x="26" y="38" width="56" height="38" rx="9" fill="#ff9466"/>
+        <rect x="34" y="62" width="18" height="6" rx="3" fill="#1c1b19" opacity=".55"/></g>
+    </symbol>
+    <symbol id="m2-mono" viewBox="0 0 100 100">
+      <g transform="rotate(-12 50 50)"><rect x="20" y="28" width="56" height="38" rx="9" fill="none" stroke="currentColor" stroke-width="6"/></g>
+      <g transform="rotate(6 50 50)"><rect x="26" y="38" width="56" height="38" rx="9" fill="currentColor"/></g>
+    </symbol>
+    <!-- 3 · O & da casa: o "e" que junta os dois nomes, sob um telhado -->
+    <symbol id="m3" viewBox="0 0 100 100">
+      <rect width="100" height="100" rx="23" fill="#ffffff"/>
+      <path d="M26 38 L50 20 L74 38" fill="none" stroke="#2d47d6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="50" y="82" text-anchor="middle" font-family="Figtree" font-weight="800" font-size="50" fill="#1c1b19">&amp;</text>
+    </symbol>
+    <symbol id="m3-mono" viewBox="0 0 100 100">
+      <path d="M26 38 L50 20 L74 38" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="50" y="82" text-anchor="middle" font-family="Figtree" font-weight="800" font-size="50" fill="currentColor">&amp;</text>
+    </symbol>
+  </defs>
+</svg>
+
+<main class="wrap">
+  <header class="intro">
+    <h1>Logo do B&amp;P Finanças</h1>
+    <p>Três ideias no estilo da Sala de estar. Em cada uma: a marca grande, a versão com nome, no claro e no escuro, a versão de uma cor só, os tamanhos pequenos e o ícone na tela inicial de um celular, do tamanho que vai ficar de verdade.</p>
+    <p>Depois da escolha eu faço o pacote completo: ícone do app (com versões para Android e iPhone), ícone da aba do navegador, versões horizontal e de uma cor, claro e escuro.</p>
+  </header>
+
+  <!-- ===== 1 ===== -->
+  <section class="concept" aria-labelledby="c1">
+    <div class="head">
+      <span class="pick">Minha preferida</span>
+      <h2 id="c1">1 · Um B que são dois</h2>
+      <p>Um B maiúsculo é uma haste com duas barrigas. A de cima, com a haste, forma um <b>p</b>; a de baixo forma um <b>b</b>. Pedro e Bruna dividindo a mesma haste, que é a casa.</p>
+      <p class="why">Funciona bem pequeno, é só traço grosso. Risco: quem não ouvir a história vê só um B.</p>
+    </div>
+    <div class="grid">
+      <div class="tile"><span class="lab">Marca</span><div class="stage big"><svg role="img" aria-label="Logo conceito 1"><use href="#m1"/></svg></div></div>
+      <div class="tile light"><span class="lab">Com nome, fundo claro</span><div class="stage"><div class="lock"><svg aria-hidden="true"><use href="#m1"/></svg><div class="word">B&amp;P <span>Finanças</span></div></div></div></div>
+      <div class="tile dark"><span class="lab">Com nome, fundo escuro</span><div class="stage"><div class="lock"><svg aria-hidden="true"><use href="#m1"/></svg><div class="word">B&amp;P <span>Finanças</span></div></div></div></div>
+      <div class="tile"><span class="lab">Uma cor só e tamanhos pequenos</span><div class="stage"><div class="sizes">
+        <svg width="56" height="56" class="mono" aria-hidden="true"><use href="#m1-mono"/></svg>
+        <svg width="40" height="40" aria-hidden="true"><use href="#m1"/></svg>
+        <svg width="24" height="24" aria-hidden="true"><use href="#m1"/></svg>
+        <svg width="16" height="16" aria-hidden="true"><use href="#m1"/></svg></div></div>
+        <div class="tab"><svg aria-hidden="true"><use href="#m1"/></svg>B&amp;P Finanças</div></div>
+      <div class="tile"><span class="lab">Na tela inicial</span><div class="home" aria-hidden="true">
+        <div class="app"><i></i><small>Fotos</small></div><div class="app"><i></i><small>Mapas</small></div><div class="app"><i></i><small>Clima</small></div><div class="app"><i></i><small>Notas</small></div>
+        <div class="app"><i></i><small>Nubank</small></div><div class="app"><svg><use href="#m1"/></svg><small>B&amp;P</small></div><div class="app"><i></i><small>WhatsApp</small></div><div class="app"><i></i><small>Câmera</small></div>
+        <div class="app"><i></i><small>Música</small></div><div class="app"><i></i><small>Relógio</small></div><div class="app"><i></i><small>Ajustes</small></div><div class="app"><i></i><small>BB</small></div></div></div>
+    </div>
+  </section>
+
+  <!-- ===== 2 ===== -->
+  <section class="concept" aria-labelledby="c2">
+    <div class="head">
+      <h2 id="c2">2 · Dois cartões</h2>
+      <p>Dois cartões um sobre o outro, um azul e um laranja: o cartão da Bruna e a vida de todo mundo passando por ele. Fala direto do que o app faz.</p>
+      <p class="why">O mais fácil de reconhecer de longe. Risco: cartões empilhados são comuns em apps de finanças, então é o menos nosso dos três.</p>
+    </div>
+    <div class="grid">
+      <div class="tile"><span class="lab">Marca</span><div class="stage big"><svg role="img" aria-label="Logo conceito 2"><use href="#m2"/></svg></div></div>
+      <div class="tile light"><span class="lab">Com nome, fundo claro</span><div class="stage"><div class="lock"><svg aria-hidden="true"><use href="#m2"/></svg><div class="word">B&amp;P <span>Finanças</span></div></div></div></div>
+      <div class="tile dark"><span class="lab">Com nome, fundo escuro</span><div class="stage"><div class="lock"><svg aria-hidden="true"><use href="#m2"/></svg><div class="word">B&amp;P <span>Finanças</span></div></div></div></div>
+      <div class="tile"><span class="lab">Uma cor só e tamanhos pequenos</span><div class="stage"><div class="sizes">
+        <svg width="56" height="56" class="mono" aria-hidden="true"><use href="#m2-mono"/></svg>
+        <svg width="40" height="40" aria-hidden="true"><use href="#m2"/></svg>
+        <svg width="24" height="24" aria-hidden="true"><use href="#m2"/></svg>
+        <svg width="16" height="16" aria-hidden="true"><use href="#m2"/></svg></div></div>
+        <div class="tab"><svg aria-hidden="true"><use href="#m2"/></svg>B&amp;P Finanças</div></div>
+      <div class="tile"><span class="lab">Na tela inicial</span><div class="home" aria-hidden="true">
+        <div class="app"><i></i><small>Fotos</small></div><div class="app"><i></i><small>Mapas</small></div><div class="app"><i></i><small>Clima</small></div><div class="app"><i></i><small>Notas</small></div>
+        <div class="app"><i></i><small>Nubank</small></div><div class="app"><svg><use href="#m2"/></svg><small>B&amp;P</small></div><div class="app"><i></i><small>WhatsApp</small></div><div class="app"><i></i><small>Câmera</small></div>
+        <div class="app"><i></i><small>Música</small></div><div class="app"><i></i><small>Relógio</small></div><div class="app"><i></i><small>Ajustes</small></div><div class="app"><i></i><small>BB</small></div></div></div>
+    </div>
+  </section>
+
+  <!-- ===== 3 ===== -->
+  <section class="concept" aria-labelledby="c3">
+    <div class="head">
+      <h2 id="c3">3 · O &amp; da casa</h2>
+      <p>O "e" comercial, que junta B e P no nome, morando sob um telhado azul. É a ideia de "contas da casa" dita com o menor desenho possível.</p>
+      <p class="why">Caloroso e simples de explicar. Risco: o &amp; desenhado com letra perde detalhe abaixo de 24 px; na versão final eu redesenho ele mais grosso.</p>
+    </div>
+    <div class="grid">
+      <div class="tile"><span class="lab">Marca</span><div class="stage big"><svg role="img" aria-label="Logo conceito 3"><use href="#m3"/></svg></div></div>
+      <div class="tile light"><span class="lab">Com nome, fundo claro</span><div class="stage"><div class="lock"><svg aria-hidden="true" style="box-shadow:0 0 0 1px #dedad2;border-radius:10px"><use href="#m3"/></svg><div class="word">B&amp;P <span>Finanças</span></div></div></div></div>
+      <div class="tile dark"><span class="lab">Com nome, fundo escuro</span><div class="stage"><div class="lock"><svg aria-hidden="true"><use href="#m3"/></svg><div class="word">B&amp;P <span>Finanças</span></div></div></div></div>
+      <div class="tile"><span class="lab">Uma cor só e tamanhos pequenos</span><div class="stage"><div class="sizes">
+        <svg width="56" height="56" class="mono" aria-hidden="true"><use href="#m3-mono"/></svg>
+        <svg width="40" height="40" aria-hidden="true"><use href="#m3"/></svg>
+        <svg width="24" height="24" aria-hidden="true"><use href="#m3"/></svg>
+        <svg width="16" height="16" aria-hidden="true"><use href="#m3"/></svg></div></div>
+        <div class="tab"><svg aria-hidden="true"><use href="#m3"/></svg>B&amp;P Finanças</div></div>
+      <div class="tile"><span class="lab">Na tela inicial</span><div class="home" aria-hidden="true">
+        <div class="app"><i></i><small>Fotos</small></div><div class="app"><i></i><small>Mapas</small></div><div class="app"><i></i><small>Clima</small></div><div class="app"><i></i><small>Notas</small></div>
+        <div class="app"><i></i><small>Nubank</small></div><div class="app"><svg><use href="#m3"/></svg><small>B&amp;P</small></div><div class="app"><i></i><small>WhatsApp</small></div><div class="app"><i></i><small>Câmera</small></div>
+        <div class="app"><i></i><small>Música</small></div><div class="app"><i></i><small>Relógio</small></div><div class="app"><i></i><small>Ajustes</small></div><div class="app"><i></i><small>BB</small></div></div></div>
+    </div>
+  </section>
+
+  <footer class="end">
+    <h2>Como escolher</h2>
+    <ul>
+      <li>Olhe o ícone na tela inicial: é ali que vocês vão ver o logo todo dia.</li>
+      <li>Pode misturar, por exemplo o desenho do 1 com o laranja do 2.</li>
+      <li>Os ícones cinza da tela inicial são só lugar marcado; não são os apps de verdade.</li>
+    </ul>
+  </footer>
+</main>

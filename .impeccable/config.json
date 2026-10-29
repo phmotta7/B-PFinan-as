@@ -38,6 +38,15 @@
         ],
         "createdAt": "2026-10-28T23:37:05.774Z",
         "reason": "Claude: é o gesto marcante da direção Caderneta (borda de cor no topo das abas, como divisória de caderno)"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "design/logo.html"
+        ],
+        "createdAt": "2026-10-29T00:53:03.688Z",
+        "reason": "falso positivo: mistura token do tema escuro (#aaa59c) com fundo claro; papel de parede escurecido"
       }
     ]
   }
