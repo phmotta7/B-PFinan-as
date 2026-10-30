@@ -713,3 +713,21 @@ h2.dia{margin:0}
 /* Lançar: parcelas de 2x a 12x numa grade de 6, logo abaixo do À vista / Parcelado */
 .chips.parcelas{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:4px}
 .chips.parcelas .chip{justify-content:center;padding:0 4px;min-height:44px}
+
+/* ================= Ícones redondos nítidos ================= */
+/* Anel por dentro do círculo, nunca por fora: um anel externo de 1,5px fica borrado e mais grosso de um lado quando o círculo cai entre pixels */
+.selo b{box-shadow:inset 0 0 0 1px var(--anel-pessoa)}
+.heroi .selo b{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+.selo.x b, .selo.c b, .heroi .selo.x b, .heroi .selo.c b{box-shadow:none}
+/* Letra centrada pela altura real da maiúscula, não pela caixa da fonte */
+.selo b, .logo.mono, .passos .bola{text-box:trim-both cap alphabetic}
+
+/* Logos de banco e loja já desenham o próprio círculo: o contêiner não pinta fundo nem borda (era o halo torto em volta) */
+.logo:has(img), .lin .logo:has(img){background:transparent;box-shadow:none;position:relative}
+.logo:has(img)::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(17,20,40,.08);pointer-events:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .logo:has(img)::after{box-shadow:none}}
+:root[data-theme="dark"] .logo:has(img)::after{box-shadow:none}
+/* No plástico do cartão, o aro claro é um disco atrás do logo (concêntrico), não uma sombra por fora */
+.cartao-banco .nome .logo:has(img){padding:2px;background:rgba(255,255,255,.6);box-shadow:none}
+.cartao-banco .nome .logo:has(img)::after{display:none}
+.lin[aria-pressed="true"] .logo:has(img){background:transparent}
