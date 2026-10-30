@@ -63,7 +63,7 @@ function Casca() {
       </div>
       <Dialogo pedido={confirmacao} aoFechar={fecharConfirmacao} />
       <Toaster position="bottom-center" offset={{ bottom: comBarra ? 100 : 24 }} mobileOffset={{ bottom: comBarra ? 100 : 24, left: 16, right: 16 }} duration={5000} visibleToasts={1}
-        toastOptions={{ unstyled: true, classNames: { toast: 'toast on', title: 'toast-titulo', actionButton: 'toast-acao', error: 'toast-erro' } }} />
+        toastOptions={{ unstyled: true, classNames: { toast: 'toast on vidro-normal', title: 'toast-titulo', actionButton: 'toast-acao', error: 'toast-erro' } }} />
     </div>
   );
 }

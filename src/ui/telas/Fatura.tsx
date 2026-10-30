@@ -83,7 +83,7 @@ export function Fatura() {
         </div></div>
       </>)}
     </main>
-    <div className={`massa ${selecao ? 'on' : ''}`} role="region" aria-label="Seleção" inert={!selecao}>
+    <div className={`massa vidro-normal ${selecao ? 'on' : ''}`} role="region" aria-label="Seleção" inert={!selecao}>
       <button className="redondo" onClick={() => setSelecao(null)} aria-label="Cancelar seleção"><X size={20} /></button>
       <p className="num">{selecao?.size ?? 0} {selecao?.size === 1 ? 'selecionada' : 'selecionadas'}</p>
       <button className="bt claro" disabled={!selecao?.size} onClick={() => setFolha([...(selecao ?? [])])}>Atribuir a…</button>

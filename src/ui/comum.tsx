@@ -202,7 +202,7 @@ export function Dialogo({ pedido, aoFechar }: { pedido: Confirmacao; aoFechar: (
   return (
     <>
       {pedido ? <div className="veu on" onClick={aoFechar} /> : null}
-      <div ref={caixa} className={`dialogo ${pedido ? 'on' : ''}`} role="alertdialog" aria-modal="true" aria-hidden={!pedido} inert={!pedido} aria-labelledby="dlg-t" aria-describedby="dlg-p">
+      <div ref={caixa} className={`dialogo vidro-espesso ${pedido ? 'on' : ''}`} role="alertdialog" aria-modal="true" aria-hidden={!pedido} inert={!pedido} aria-labelledby="dlg-t" aria-describedby="dlg-p">
         <h2 id="dlg-t">{p?.titulo}</h2><p id="dlg-p">{p?.texto}</p>
         <div className="acoes" style={{ marginTop: 6 }}>
           <button ref={manter} className="bt secundario" onClick={aoFechar}>Manter</button>

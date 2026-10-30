@@ -835,3 +835,36 @@ h2.dia{margin:0}
 /* ---------- Folhas: vidro espesso, com sombra macia e fio de luz ---------- */
 .folha{box-shadow:inset 0 1px 0 var(--vidro-luz),var(--s-folha)}
 .folha .cab p{color:var(--no-vidro-suave)}
+
+/* ================= Vidro, etapa 2: seleção em massa, avisos, diálogo, véu ================= */
+/* Barra de seleção: vidro normal flutuando sobre a lista; texto em tinta, ação principal sólida (cor nunca no vidro) */
+.massa.vidro-normal{color:var(--tinta);box-shadow:inset 0 1px 0 var(--vidro-luz),0 0 0 1px var(--vidro-contorno),var(--vidro-sombra)}
+.massa.vidro-normal .redondo{color:var(--tinta)}
+.massa.vidro-normal .bt.claro{background:var(--acao);color:var(--no-acao)}
+
+/* Avisos rápidos: o mesmo vidro normal; o de erro continua sólido, porque erro não pode depender do que está atrás */
+.toast.vidro-normal{color:var(--tinta);box-shadow:inset 0 1px 0 var(--vidro-luz),0 0 0 1px var(--vidro-contorno),var(--vidro-sombra)}
+.toast.vidro-normal .toast-acao{color:var(--no-vidro-acao)}
+.toast.vidro-normal.toast-erro{background-color:var(--erro);color:var(--no-erro);-webkit-backdrop-filter:none;backdrop-filter:none}
+.toast.vidro-normal.toast-erro .toast-acao{color:var(--no-erro)}
+
+/* Diálogo de confirmação: vidro espesso, centrado; o véu escurece e desfoca de leve o que ficou atrás (o desfoque não anima: só a opacidade) */
+.dialogo.vidro-espesso{box-shadow:inset 0 1px 0 var(--vidro-luz),0 0 0 1px var(--vidro-contorno),var(--s-elevado)}
+.dialogo.vidro-espesso p{color:var(--no-vidro-suave)}
+.veu{-webkit-backdrop-filter:blur(3px) saturate(115%);backdrop-filter:blur(3px) saturate(115%)}
+@media (prefers-reduced-transparency: reduce){.veu{-webkit-backdrop-filter:none;backdrop-filter:none}}
+
+/* No escuro, o texto do vidro marcante usa a tinta clara de sempre e o tom de ação mais claro */
+:root{--no-vidro-acao:var(--acao-texto)}
+
+/* ---------- "Talvez", só para mostrar: ?talvez=cofre e ?talvez=cartoes ---------- */
+/* Cofre de vidro: o azul-noite deixa passar um pouco da luz do fundo; o número continua sobre tinta escura densa (82%) */
+:root[data-talvez~="cofre"] .heroi{background-color:rgba(20,25,54,.82);background-image:radial-gradient(120% 90% at 20% 0%,rgba(35,42,77,.72),rgba(20,25,54,.86));-webkit-backdrop-filter:blur(28px) saturate(160%);backdrop-filter:blur(28px) saturate(160%);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1px rgba(255,255,255,.06),var(--s-painel)}
+/* Cartões de vidro: a cor do banco a 84%, com a luz do fundo passando por trás */
+:root[data-talvez~="cartoes"] .plastico.nubank{background-color:color-mix(in srgb,var(--nubank) 84%,transparent);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%)}
+:root[data-talvez~="cartoes"] .plastico.bb{background-color:color-mix(in srgb,var(--bb) 86%,transparent);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%)}
+.toast-acao{white-space:nowrap}
+/* Com a seleção em massa aberta, o aviso sobe e fica acima da barra (antes um cobria o outro) */
+[data-sonner-toaster]{transition:transform var(--d-curta) var(--ease-saida)}
+.tela:has(.massa.on) [data-sonner-toaster]{transform:translateY(-72px)}
+@media (prefers-reduced-motion: reduce){[data-sonner-toaster]{transition:none}}

@@ -20,7 +20,7 @@ export const viewport: Viewport = {
 // Aplica o tema escolhido antes de desenhar, para a tela não piscar
 const TEMA = "try{var t=localStorage.getItem('bp-tema');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}"
   // Proposta do vidro: intensidade e fundo escolhidos pela URL (?vidro=, ?fundo=) e guardados na aba
-  + "try{var q=new URLSearchParams(location.search),d=document.documentElement;['vidro','fundo'].forEach(function(k){var v=q.get(k)||sessionStorage.getItem('bp-'+k);if(v){sessionStorage.setItem('bp-'+k,v);d.setAttribute('data-'+k,v)}});if(!d.getAttribute('data-vidro'))d.setAttribute('data-vidro','sutil');if(!d.getAttribute('data-fundo'))d.setAttribute('data-fundo','luz')}catch(e){}";
+  + "try{var q=new URLSearchParams(location.search),d=document.documentElement;['vidro','fundo','talvez'].forEach(function(k){var v=q.get(k)||sessionStorage.getItem('bp-'+k);if(v){sessionStorage.setItem('bp-'+k,v);d.setAttribute('data-'+k,v)}});if(!d.getAttribute('data-vidro'))d.setAttribute('data-vidro','marcante');if(!d.getAttribute('data-fundo'))d.setAttribute('data-fundo','luz')}catch(e){}";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
