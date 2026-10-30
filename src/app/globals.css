@@ -710,3 +710,6 @@ h2.dia{margin:0}
 }
 /* "Para conferir" na régua: preenchimento suave em vez de contorno, que vira um colchete quando a fatia é estreita */
 .regua-fatia.c{background:rgba(255,255,255,.28);box-shadow:none}
+/* Lançar: parcelas de 2x a 12x numa grade de 6, logo abaixo do À vista / Parcelado */
+.chips.parcelas{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:4px}
+.chips.parcelas .chip{justify-content:center;padding:0 4px;min-height:44px}

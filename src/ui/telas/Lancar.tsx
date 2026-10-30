@@ -14,6 +14,8 @@ import type { Escopo } from '@/dados/tipos';
 
 const ler = (k: string, padrao: string) => { try { return localStorage.getItem(k) ?? padrao; } catch { return padrao; } };
 const gravar = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* sem armazenamento */ } };
+// Parcelado no lançamento manual: de 2x a 12x (decisão D13)
+const PARCELAS = Array.from({ length: 11 }, (_, i) => i + 2);
 const menosDias = (d: string, n: number) => { const x = new Date(d + 'T12:00:00'); x.setDate(x.getDate() - n); return x.toISOString().slice(0, 10); };
 
 export function Lancar() {
@@ -62,8 +64,12 @@ export function Lancar() {
       <div className="campo"><label htmlFor="f-valor">Valor</label>
         <div className={`entrada valor ${mostra('valor') ? 'erro' : ''}`}><span>R$</span><input id="f-valor" inputMode="decimal" placeholder="0,00" autoComplete="off" value={texto} onChange={e => setTexto(e.target.value.replace(/[^\d,.]/g, ''))} aria-invalid={!!mostra('valor')} aria-describedby="f-parts" /></div>
         {mostra('valor') ? <p className="ajuda erro"><CircleAlert size={16} aria-hidden="true" />{erros.valor}</p> : null}
-        <div className="linha-topo"><p className="ajuda num" id="f-parts">{n > 1 && valor ? `${n}x: ${partes.slice(0, 3).map(p => reais(p).slice(3)).join(' + ')}${n > 3 ? ' + …' : ''}` : 'À vista'}</p>
-          <div className="passo" role="group" aria-label="Parcelas"><button className="redondo" onClick={() => setN(Math.max(1, n - 1))} aria-label="Menos uma parcela"><span>−</span></button><b className="num" aria-live="polite">{n}x</b><button className="redondo" onClick={() => setN(n + 1)} aria-label="Mais uma parcela"><span>+</span></button></div></div>
+      </div>
+      <div className="campo"><span className="rot" id="r-pag">Pagamento</span>
+        <div className="seg" data-v={n > 1 ? 1 : 0} role="group" aria-labelledby="r-pag"><span className="pino" aria-hidden="true" />
+          <button aria-pressed={n === 1} onClick={() => setN(1)}>À vista</button><button aria-pressed={n > 1} onClick={() => n === 1 && setN(2)}>Parcelado</button></div>
+        {n > 1 ? <div className="chips parcelas" role="group" aria-label="Quantas parcelas">{PARCELAS.map(k => <button key={k} className="chip num" aria-pressed={n === k} onClick={() => setN(k)}>{k}x</button>)}</div> : null}
+        {n > 1 && valor ? <p className="ajuda num" id="f-parts" aria-live="polite">{n}x de {reais(partes[n - 1])}{partes[0] !== partes[n - 1] ? ` (a 1ª de ${reais(partes[0])})` : ''}</p> : null}
       </div>
       <div className="campo"><label htmlFor="f-desc">Descrição</label>
         <div className={`entrada ${mostra('desc') ? 'erro' : ''}`}><input id="f-desc" placeholder="Ex.: Tênis Centauro" autoComplete="off" enterKeyHint="done" value={desc} onChange={e => setDesc(e.target.value)} aria-invalid={!!mostra('desc')} /></div>
