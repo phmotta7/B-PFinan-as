@@ -731,3 +731,107 @@ h2.dia{margin:0}
 .cartao-banco .nome .logo:has(img){padding:2px;background:rgba(255,255,255,.6);box-shadow:none}
 .cartao-banco .nome .logo:has(img)::after{display:none}
 .lin[aria-pressed="true"] .logo:has(img){background:transparent}
+
+/* ================= Materiais de vidro ================= */
+/* O vidro é uma camada que flutua sobre o conteúdo: barra de baixo, topo depois de rolar, folhas.
+   Três espessuras (fino, normal, espesso) em duas intensidades (sutil, marcante), com tinta própria no escuro.
+   As opacidades mínimas saem da conta de contraste: texto cinza sobre o vidro fica AA mesmo com o pior fundo
+   passando por baixo (o cofre azul-noite, o roxo do Nubank, o amarelo do BB, o branco). No marcante, o vidro
+   abre mais e o texto de apoio fica mais escuro (vibrância), como faz a Apple. */
+:root{
+  --vidro-tinta:246,247,250;
+  --vidro-fino-alfa:.86;    --vidro-fino-desfoque:16px;    --vidro-fino-saturacao:160%;
+  --vidro-normal-alfa:.88;  --vidro-normal-desfoque:20px;  --vidro-normal-saturacao:170%;
+  --vidro-espesso-alfa:.92; --vidro-espesso-desfoque:28px; --vidro-espesso-saturacao:180%;
+  --vidro-luz:rgba(255,255,255,.75);          /* fio de luz de 1px no alto */
+  --vidro-contorno:rgba(17,20,40,.06);        /* contorno quase invisível que separa do fundo */
+  --vidro-sombra:0 1px 1px rgba(17,20,40,.04),0 12px 32px -12px rgba(17,20,40,.18);
+  --vidro-ruido-opacidade:.035;
+  --no-vidro-suave:var(--suave);
+  --no-vidro-acao:var(--acao-texto);
+}
+:root[data-vidro="marcante"]{
+  --vidro-fino-alfa:.72;   --vidro-fino-desfoque:20px;    --vidro-fino-saturacao:180%;
+  --vidro-normal-alfa:.72; --vidro-normal-desfoque:24px;  --vidro-normal-saturacao:190%;
+  --vidro-espesso-alfa:.8; --vidro-espesso-desfoque:32px; --vidro-espesso-saturacao:190%;
+  --vidro-luz:rgba(255,255,255,.9);
+  --vidro-ruido-opacidade:.05;
+  --no-vidro-suave:#3a4150;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --vidro-tinta:18,21,30;
+    --vidro-fino-alfa:.82; --vidro-normal-alfa:.85; --vidro-espesso-alfa:.9;
+    --vidro-luz:rgba(255,255,255,.08); --vidro-contorno:rgba(255,255,255,.05);
+    --vidro-sombra:0 1px 1px rgba(0,0,0,.3),0 16px 40px -12px rgba(0,0,0,.6);
+    --vidro-ruido-opacidade:.05;
+  }
+  :root[data-vidro="marcante"]:not([data-theme="light"]){
+    --vidro-fino-alfa:.8; --vidro-normal-alfa:.8; --vidro-espesso-alfa:.85;
+    --vidro-luz:rgba(255,255,255,.12); --no-vidro-suave:#c9cfdb;
+  }
+}
+:root[data-theme="dark"]{
+  --vidro-tinta:18,21,30;
+  --vidro-fino-alfa:.82; --vidro-normal-alfa:.85; --vidro-espesso-alfa:.9;
+  --vidro-luz:rgba(255,255,255,.08); --vidro-contorno:rgba(255,255,255,.05);
+  --vidro-sombra:0 1px 1px rgba(0,0,0,.3),0 16px 40px -12px rgba(0,0,0,.6);
+  --vidro-ruido-opacidade:.05;
+}
+:root[data-theme="dark"][data-vidro="marcante"]{
+  --vidro-fino-alfa:.8; --vidro-normal-alfa:.8; --vidro-espesso-alfa:.85;
+  --vidro-luz:rgba(255,255,255,.12); --no-vidro-suave:#c9cfdb;
+}
+
+/* Ruído fino para o vidro não parecer plástico (desenhado uma vez, fica parado) */
+:root{--vidro-ruido:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* As três espessuras, prontas para usar */
+.vidro-fino,.vidro-normal,.vidro-espesso{isolation:isolate}
+.vidro-fino{background-color:rgba(var(--vidro-tinta),var(--vidro-fino-alfa));-webkit-backdrop-filter:blur(var(--vidro-fino-desfoque)) saturate(var(--vidro-fino-saturacao));backdrop-filter:blur(var(--vidro-fino-desfoque)) saturate(var(--vidro-fino-saturacao))}
+.vidro-normal{background-color:rgba(var(--vidro-tinta),var(--vidro-normal-alfa));-webkit-backdrop-filter:blur(var(--vidro-normal-desfoque)) saturate(var(--vidro-normal-saturacao));backdrop-filter:blur(var(--vidro-normal-desfoque)) saturate(var(--vidro-normal-saturacao))}
+.vidro-espesso{background-color:rgba(var(--vidro-tinta),var(--vidro-espesso-alfa));-webkit-backdrop-filter:blur(var(--vidro-espesso-desfoque)) saturate(var(--vidro-espesso-saturacao));backdrop-filter:blur(var(--vidro-espesso-desfoque)) saturate(var(--vidro-espesso-saturacao))}
+.vidro-fino::after,.vidro-normal::after,.vidro-espesso::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;background-image:var(--vidro-ruido);opacity:var(--vidro-ruido-opacidade);mix-blend-mode:overlay}
+
+/* Sem desfoque no navegador, ou com "reduzir transparência" ligado: superfície sólida, bonita e legível */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .vidro-fino,.vidro-normal{background-color:var(--cartao)} .vidro-espesso{background-color:var(--elevado)}
+  :root{--no-vidro-suave:var(--suave)}
+}
+@media (prefers-reduced-transparency: reduce){
+  .vidro-fino,.vidro-normal{background-color:var(--cartao);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .vidro-espesso{background-color:var(--elevado);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .vidro-fino::after,.vidro-normal::after,.vidro-espesso::after{display:none}
+  :root{--no-vidro-suave:var(--suave)}
+}
+
+/* ---------- Fundo do app ---------- */
+/* Opção "luz": duas manchas suaves de azul-noite e lavanda, paradas; o conteúdo rola por cima delas.
+   Opção "plano": o chão continua liso; o vidro mostra só o próprio conteúdo passando por baixo. */
+:root{--fundo-mancha-1:rgba(43,58,143,.09);--fundo-mancha-2:rgba(184,194,242,.42);--fundo-mancha-3:rgba(43,58,143,.05)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--fundo-mancha-1:rgba(77,95,214,.16);--fundo-mancha-2:rgba(35,42,77,.55);--fundo-mancha-3:rgba(120,135,230,.07)}}
+:root[data-theme="dark"]{--fundo-mancha-1:rgba(77,95,214,.16);--fundo-mancha-2:rgba(35,42,77,.55);--fundo-mancha-3:rgba(120,135,230,.07)}
+:root[data-fundo="luz"] .tela{background:
+  radial-gradient(70% 45% at 8% -5%,var(--fundo-mancha-1),transparent 70%),
+  radial-gradient(60% 40% at 105% 22%,var(--fundo-mancha-2),transparent 70%),
+  radial-gradient(80% 50% at 30% 105%,var(--fundo-mancha-3),transparent 70%),
+  var(--chao)}
+
+/* ---------- O topo: parado, é o próprio fundo; quando o conteúdo passa por baixo, vira vidro fino ---------- */
+.coluna{display:grid;grid-template-rows:auto minmax(0,1fr);grid-template-columns:minmax(0,1fr)}
+.coluna > .faixa-demo{grid-row:1}
+.coluna > .topo{grid-row:2;grid-column:1;align-self:start;z-index:3;background:transparent;transition:background-color var(--d-cor) var(--ease-saida),box-shadow var(--d-cor) var(--ease-saida)}
+.coluna > .conteudo{grid-row:2;grid-column:1;padding-top:calc(var(--alt-topo,0px) + 8px);scroll-padding-top:var(--alt-topo,0px);background:transparent}
+.coluna[data-rolou] > .topo{background-color:rgba(var(--vidro-tinta),var(--vidro-fino-alfa));-webkit-backdrop-filter:blur(var(--vidro-fino-desfoque)) saturate(var(--vidro-fino-saturacao));backdrop-filter:blur(var(--vidro-fino-desfoque)) saturate(var(--vidro-fino-saturacao));box-shadow:inset 0 -1px 0 var(--vidro-contorno)}
+.coluna[data-rolou] > .topo .sub{color:var(--no-vidro-suave)}
+@media (min-width:1024px){.col-a{top:calc(var(--alt-topo,0px) + 8px)}}
+@media (prefers-reduced-transparency: reduce){.coluna[data-rolou] > .topo{background-color:var(--chao);-webkit-backdrop-filter:none;backdrop-filter:none}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.coluna[data-rolou] > .topo{background-color:var(--chao)}}
+
+/* ---------- Barra de baixo: vidro normal, fio de luz no alto em vez de divisória ---------- */
+.barra{box-shadow:inset 0 1px 0 var(--vidro-luz),0 -1px 0 var(--vidro-contorno)}
+.barra button:not([aria-current="page"]){color:var(--no-vidro-suave)}
+
+/* ---------- Folhas: vidro espesso, com sombra macia e fio de luz ---------- */
+.folha{box-shadow:inset 0 1px 0 var(--vidro-luz),var(--s-folha)}
+.folha .cab p{color:var(--no-vidro-suave)}

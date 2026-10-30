@@ -31,6 +31,14 @@ function Casca() {
   const ent = useRef({ chave, tela: rota.tela, valor: 'acende' });
   if (ent.current.chave !== chave) ent.current = { chave, tela: rota.tela, valor: rota.tela === ent.current.tela || RAIZ.includes(rota.tela) ? 'acende' : RAIZ.includes(ent.current.tela) ? 'lado' : 'acende' };
   const entrada = ent.current.valor;
+  // O topo vira vidro quando o conteúdo passa por baixo dele (marcado direto no elemento, sem redesenhar a tela)
+  const coluna = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const c = coluna.current; if (!c) return;
+    const m = c.querySelector<HTMLElement>(':scope > .conteudo'); c.toggleAttribute('data-rolou', !!m && m.scrollTop > 2);
+    const rolar = (e: Event) => { const t = e.target as HTMLElement; if (!t.classList?.contains('conteudo')) return; c.toggleAttribute('data-rolou', t.scrollTop > 2); };
+    c.addEventListener('scroll', rolar, { capture: true, passive: true }); return () => c.removeEventListener('scroll', rolar, { capture: true });
+  }, [chave]);
   const aba = rota.tela === 'lancar' ? 'lancar' : RAIZ.includes(rota.tela) ? rota.tela : rota.tela === 'fatura' ? 'cartoes' : DE_MAIS.includes(rota.tela) ? 'mais' : 'inicio';
   return (
     <div className="tela">
@@ -40,14 +48,14 @@ function Casca() {
         {ABAS.filter(([k]) => k !== 'lancar').map(([k, nome, Icone]) => (
           <button key={k} className="lateral-item" aria-current={aba === k ? 'page' : undefined} onClick={() => ir({ tela: k })}><Icone size={22} strokeWidth={1.75} aria-hidden="true" />{nome}</button>))}
       </nav>
-      <div className="coluna" data-entrada={entrada}>
+      <div className="coluna" data-entrada={entrada} ref={coluna}>
       {modo === 'demo' ? (
         <div className="faixa-demo" role="note"><span>Modo demonstração · dados fictícios · hoje é {hoje.split('-').reverse().join('/')}</span>
           <button onClick={() => confirmar({ titulo: 'Recomeçar a demonstração?', texto: 'Os dados fictícios voltam ao começo do cenário (03/11, antes de importar).', rotulo: 'Recomeçar', aoConfirmar: recomecarDemo })}>Recomeçar</button></div>
       ) : null}
       <Tela key={chave} />
       {comBarra ? (
-        <nav className="barra" aria-label="Navegação">{ABAS.map(([k, nome, Icone]) => k === 'lancar'
+        <nav className="barra vidro-normal" aria-label="Navegação">{ABAS.map(([k, nome, Icone]) => k === 'lancar'
           ? <button key={k} className="lancar" onClick={() => ir({ tela: 'lancar' })}><span><Icone size={24} strokeWidth={1.75} aria-hidden="true" /></span>{nome}</button>
           : <button key={k} aria-current={aba === k ? 'page' : undefined} onClick={() => ir({ tela: k })}><Icone size={24} strokeWidth={1.75} aria-hidden="true" />{nome}</button>)}
         </nav>

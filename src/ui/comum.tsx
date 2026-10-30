@@ -46,8 +46,14 @@ export const LogoBanco = ({ banco }: { banco: string }) =>
   banco === 'nubank' || banco === 'bb' ? <span className="logo" aria-hidden="true"><img src={`/logos/${banco}.svg`} alt="" /></span> : <Logo loja={banco} />;
 
 export function Topo({ titulo, sub, voltar, direita, abaixo }: { titulo: string; sub?: ReactNode; voltar?: () => void; direita?: ReactNode; abaixo?: ReactNode }) {
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => { // a altura do topo vira --alt-topo na coluna, para o conteúdo começar logo abaixo e passar por baixo ao rolar
+    const el = ref.current, pai = el?.parentElement; if (!el || !pai) return;
+    const medir = () => pai.style.setProperty('--alt-topo', `${Math.ceil(el.getBoundingClientRect().height)}px`);
+    medir(); const ro = new ResizeObserver(medir); ro.observe(el); return () => ro.disconnect();
+  }, []);
   return (
-    <header className="topo">
+    <header className="topo" ref={ref}>
       {voltar || direita ? (
         <div className="nav">
           {voltar ? <button className="redondo" onClick={voltar} aria-label="Voltar"><span><ChevronLeft size={20} strokeWidth={1.75} /></span></button> : <span />}
@@ -161,7 +167,7 @@ export function Folha({ aberta, aoFechar, titulo, sub, children }: { aberta: boo
   return (
     <>
       <div className={`veu ${aberta ? 'on' : ''}`} onClick={aoFechar} />
-      <div ref={ref} className="folha" role="dialog" aria-modal="true" aria-label={titulo} style={{ visibility: 'visible' }}
+      <div ref={ref} className="folha vidro-espesso" role="dialog" aria-modal="true" aria-label={titulo} style={{ visibility: 'visible' }}
         onPointerDown={baixo} onPointerMove={move} onPointerUp={solta} onPointerCancel={solta}>
         <div className="pega" aria-hidden="true"><i /></div>
         <div className="cab"><h2>{titulo}</h2>{sub ? <p className="num">{sub}</p> : null}</div>
