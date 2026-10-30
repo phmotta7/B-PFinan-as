@@ -531,7 +531,9 @@ Coleção Lucide: quadro de 24, traço de 1,75, pontas e cantos arredondados, se
 - Seletor, aviso com Desfazer, diálogo, barra de seleção e troca de tela (desliza 12px): 0,22s, saída rápida no começo.
 - Folha: mola de 0,34s. Fatias da régua: 0,34s.
 - Números e listas não animam: valor é informação e aparece pronto.
-- Menos movimento (pedido no celular): nada se desloca nem encolhe, nada de mola, a régua não desliza; só troca de opacidade em 150ms.
+- Entrada do login, a única sequência do app: a fatura de exemplo acende; as compras sobem 8px uma a uma (a cada 50ms) e o selo de cada uma aparece crescendo de 55%; depois sobem o logo, o nome e a frase; a régua se preenche da esquerda, uma cor por vez (a cada 70ms); a legenda acende; por fim sobe o botão. Tudo termina antes de 0,8s, com saída rápida no começo, e nunca se repete. O botão aceita o toque desde o primeiro instante.
+- Passagem do login para o app: uma cópia do painel escuro encolhe em 0,42s até o lugar do cofre da primeira tela, enquanto o resto da tela acende e sobe 8px (0,22s, começando em 0,2s). O cofre de verdade aparece pronto quando a cópia encaixa; os valores não animam. Sem cofre na primeira tela, ela só acende.
+- Menos movimento (pedido no celular): nada se desloca nem encolhe, nada de mola, a régua não desliza; só troca de opacidade em 150ms. Na entrada do login, tudo acende junto, sem sequência; na passagem para o app, a primeira tela só acende em 150ms.
 
 ### Cartões de banco (tela Cartões)
 O plástico usa a cor do banco chapada com o mesmo material do cofre: uma luz radial suave no alto à esquerda, um fio de luz de 1px na borda de cima e a sombra de painel. Altura mínima 180, raio 18. O valor encolhe com a largura do cartão para nunca vazar.
@@ -549,7 +551,13 @@ Na legenda do cofre, um selo próprio com o ícone de cópia, e na régua uma fa
 Nome de pessoa encolhe com reticências (o nome completo fica no `title`); total do cofre encolhe com a largura do painel (`15.5cqi`, até 56/64); valor negativo leva o sinal de menos (−) no número, no tamanho dele.
 
 ### Login
-A única tela em que o cofre aparece sem total: a marca, o nome, uma frase e uma régua das quatro cores, sobre o painel escuro. É exceção à Um Cofre Rule porque não há outro bloco na tela.
+Aprovado pelo Pedro em 30/10/2026. A única tela em que o cofre aparece sem total. É exceção à Um Cofre Rule porque não há outro bloco na tela.
+- **Painel da marca:** o material do cofre com a luz no alto à esquerda, um brilho frio e fraco no canto de baixo à direita e o ruído fino parado (8%). No celular ocupa a tela até o botão, com os cantos de baixo em 28; no computador (a partir de 1024px) fica à esquerda, com 56% da largura, a altura toda (16 de margem) e cantos de 28.
+- **Ilustração:** uma fatura de exemplo ("Fatura Nubank · novembro") num cartão translúcido sobre o painel, com quatro compras: placa da loja, nome, selo da pessoa e valor. A ordem é a da régua (Pedro, Bruna, Eliete, Lucimar). Em celular baixo, as linhas ficam mais juntas; abaixo de 640px de altura, ou com um aviso na tela até 820px, a ilustração sai e a régua continua dizendo o mesmo.
+- **Marca:** logo (52; 60 no computador), nome em 700/34px (48 no computador), frase em `cofre-suave`, a régua (10 de altura; 12 no computador) na proporção da fatura de exemplo e a legenda com os quatro selos logo abaixo (Nome Junto Rule).
+- **Acesso:** no celular, só o botão embaixo; no computador, à direita, o título "Entrar" (`t-mes`), a frase "Use a conta Google cadastrada na casa." e o botão. Nenhuma frase sobre quem tem acesso: quem barra os outros é a lista de e-mails da casa no banco.
+- **Botão do Google:** pílula de 52, cartão com borda `borda-campo` e sombra de cartão, logo do Google e 600/16px. Encolhe a 97% no toque. Carregando: círculo girando e "Entrando", sem mudar de cor. Falha (o Google não abriu ou a volta veio com erro): aviso vermelho "Não consegui concluir a entrada com o Google. Confira a internet e toque para tentar de novo." e o botão vira "Tentar de novo". E-mail fora da lista: aviso vermelho com o e-mail e o caminho para incluir, e o botão vira "Entrar com outra conta".
+- **Na volta do Google:** enquanto os dados carregam, a pessoa continua vendo a entrada, parada e com o botão em "Entrando", no lugar do esqueleto.
 
 ### Acessibilidade de folha e diálogo
 Ao abrir, o foco vai para o primeiro controle e o fundo fica fora do alcance (`inert`); Tab não sai da folha ou do diálogo; Esc fecha o de cima; ao fechar, o foco volta para quem abriu. O diálogo fechado fica invisível também para o teclado.

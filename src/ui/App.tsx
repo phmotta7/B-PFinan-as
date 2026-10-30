@@ -1,9 +1,10 @@
 'use client';
 // Casca do app: faixa do modo demonstração, tela atual, barra de baixo (D10) e avisos com Desfazer.
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Toaster } from 'sonner';
 import { House, CreditCard, Plus, ReceiptText, Ellipsis } from 'lucide-react';
 import { ProvedorApp, RAIZ, useApp, type NomeTela } from './estado';
+import { fazerPassagem } from './passagem';
 import { Dialogo } from './comum';
 import { Inicio, Cartoes } from './telas/Inicio';
 import { Fatura } from './telas/Fatura';
@@ -39,9 +40,12 @@ function Casca() {
     const rolar = (e: Event) => { const t = e.target as HTMLElement; if (!t.classList?.contains('conteudo')) return; c.toggleAttribute('data-rolou', t.scrollTop > 2); };
     c.addEventListener('scroll', rolar, { capture: true, passive: true }); return () => c.removeEventListener('scroll', rolar, { capture: true });
   }, [chave]);
+  // Logo depois de entrar, o painel do login encolhe até o cofre desta primeira tela (antes de desenhar, para não piscar)
+  const tela = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => { if (tela.current) fazerPassagem(tela.current); }, []);
   const aba = rota.tela === 'lancar' ? 'lancar' : RAIZ.includes(rota.tela) ? rota.tela : rota.tela === 'fatura' ? 'cartoes' : DE_MAIS.includes(rota.tela) ? 'mais' : 'inicio';
   return (
-    <div className="tela">
+    <div className="tela" ref={tela}>
       <nav className="lateral" aria-label="Navegação principal">
         <div className="lateral-marca"><img src="/marca.svg" alt="" width={36} height={36} /><b>B&amp;P Finanças</b></div>
         <button className="bt principal lateral-lancar" onClick={() => ir({ tela: 'lancar' })}><Plus size={20} strokeWidth={1.75} aria-hidden="true" />Lançar compra</button>

@@ -46,16 +46,21 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
   // Sessão: no modo demonstração entra direto; no Supabase confere o login Google e a lista da casa
   useEffect(() => {
     if (repo.modo === 'demo') {
-      // ?entrar=1 mostra a tela de entrada no modo demonstração (capturas); ?entrar=negado mostra o acesso negado
+      // ?entrar=1 mostra a tela de entrada no modo demonstração (capturas); ?entrar=negado, o acesso negado; ?entrar=erro, a falha no login
       const entrar = new URLSearchParams(location.search).get('entrar');
-      if (entrar) { setSessao(entrar === 'negado' ? { situacao: 'negado', email: 'visitante@exemplo.com' } : { situacao: 'fora' }); return; }
+      if (entrar) { setSessao(entrar === 'negado' ? { situacao: 'negado', email: 'visitante@exemplo.com' } : entrar === 'erro' ? { situacao: 'fora', erro: 'login' } : { situacao: 'fora' }); return; }
       setSessao({ situacao: 'dentro', email: 'bruna@exemplo.com' }); recarregar(); return;
     }
     const sb = supabaseNavegador();
     const conferir = async () => {
       const { data } = await sb.auth.getUser();
       const email = data.user?.email;
-      if (!email) return setSessao({ situacao: 'fora' });
+      // A volta do Google com falha chega com ?erro=login (ver auth/callback): mostra o aviso e limpa o endereço
+      if (!email) {
+        const falhou = new URLSearchParams(location.search).get('erro') === 'login';
+        if (falhou) history.replaceState(null, '', '/');
+        return setSessao(falhou ? { situacao: 'fora', erro: 'login' } : { situacao: 'fora' });
+      }
       const { data: casa } = await sb.rpc('minha_casa');
       if (!casa) { await sb.auth.signOut(); return setSessao({ situacao: 'negado', email }); }
       setSessao({ situacao: 'dentro', email }); recarregar();
@@ -96,7 +101,8 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
   const entrar = useCallback(async () => {
     if (repo.modo === 'demo') { setSessao({ situacao: 'dentro', email: 'bruna@exemplo.com' }); await recarregar(); return; }
     const sb = supabaseNavegador();
-    await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${location.origin}/auth/callback` } });
+    const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${location.origin}/auth/callback` } });
+    if (error) throw error;
   }, [repo, recarregar]);
   const sair = useCallback(async () => {
     if (repo.modo === 'supabase') await supabaseNavegador().auth.signOut();
@@ -128,8 +134,12 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
 
 // Antes de ter dados: login, acesso negado, carregando ou erro
 import { Login } from './telas/Login';
+import { esquecerEntrada, voltandoDaEntrada } from './passagem';
 function EstadoInicial({ sessao, erro, repo, entrar, recarregar }: { sessao: Sessao; erro: string | null; repo: Repositorio; entrar: () => Promise<void>; recarregar: () => Promise<void> }) {
-  if (sessao.situacao === 'fora' || sessao.situacao === 'negado') return <Login negado={sessao.situacao === 'negado' ? sessao.email : undefined} entrar={entrar} />;
+  if (sessao.situacao === 'fora' || sessao.situacao === 'negado') return <Login negado={sessao.situacao === 'negado' ? sessao.email : undefined} falhou={sessao.situacao === 'fora' && !!sessao.erro} entrar={entrar} />;
+  if (erro) esquecerEntrada();
+  // Quem acabou de entrar continua vendo o painel da entrada enquanto os dados chegam; depois ele vira o cofre (ver passagem.ts)
+  else if (voltandoDaEntrada()) return <Login entrando entrar={entrar} />;
   if (erro) return (
     <main className="conteudo" style={{ paddingTop: 80 }}>
       <div className="aviso er" role="alert"><div><p>Não consegui carregar os dados agora. {repo.modo === 'supabase' ? 'Se o app ficou mais de 7 dias sem uso, o Supabase pode estar pausado: reative no painel e tente de novo.' : ''} Nada do que você marcou se perdeu.</p>
