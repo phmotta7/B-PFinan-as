@@ -363,12 +363,6 @@ h1,h2,h3,p{margin:0}
 .dialogo h2{font:var(--t-titulo)}
 .dialogo p{color:var(--suave);font:var(--t-apoio)}
 
-/* Troca de tela */
-.entra{animation:entra var(--d-curta) var(--ease-saida)}
-@keyframes entra{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
-.entra.volta{animation-name:volta}
-@keyframes volta{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
-
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:1ms !important;animation-iteration-count:1 !important}
   .bt:active,.chip:active,.pessoas button:active,.cartao.toque:active,.barra .lancar:active span{transform:none}
@@ -390,7 +384,7 @@ h1,h2,h3,p{margin:0}
 .passos li.atual b{font-weight:700}
 .passos li.atual .bola{background:var(--acao);color:var(--no-acao);box-shadow:none}
 /* Ação fixa embaixo das telas sem barra (Lançar, Importar) */
-.conteudo.sem-barra:has(> .rodape){padding-bottom:0}
+.conteudo.sem-barra:has(> .rodape),.conteudo.sem-barra:has(> .passo > .rodape){padding-bottom:0}
 .rodape{position:sticky;bottom:0;margin:8px -16px 0;padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(to bottom,transparent,var(--chao) 22%);z-index:3}
 .resumo-ct{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--cartao);border-radius:var(--r-bloco);box-shadow:var(--s-cartao);padding:6px 6px 6px 14px}
 .resumo-ct p{display:flex;align-items:center;gap:8px;font:var(--t-apoio);color:var(--suave)}
@@ -903,3 +897,38 @@ h2.dia{margin:0}
 
 /* Rodapé de ação (Lançar, Importar): vidro normal flutuando sobre o formulário, com o fio de luz no alto */
 .rodape.vidro-normal{background-image:none;box-shadow:inset 0 1px 0 var(--vidro-luz),0 -1px 0 var(--vidro-contorno)}
+
+/* ================= Movimento no app (etapa 2) ================= */
+/* Voltar de tela: o conteúdo chega da esquerda, o espelho do avançar */
+.coluna[data-entrada="volta"] > .conteudo{animation:entra-volta var(--d-curta) var(--ease-saida)}
+@keyframes entra-volta{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
+/* Passos do Importar: avançar chega da direita, voltar da esquerda */
+.passo{display:flex;flex-direction:column;gap:14px}
+.passo[data-dir="frente"]{animation:entra-lado var(--d-curta) var(--ease-saida)}
+.passo[data-dir="volta"]{animation:entra-volta var(--d-curta) var(--ease-saida)}
+/* Barra de baixo: a cor do lugar atual troca suave; o ícone encolhe de leve no toque; nas telas com rodapé ela desce e some */
+.barra{transition:transform var(--d-curta) var(--ease-saida),opacity var(--d-curta) var(--ease-saida)}
+.barra.fora{transform:translateY(100%);opacity:0;pointer-events:none}
+.barra button{transition:color var(--d-cor) var(--ease-saida)}
+.barra button:not(.lancar) svg{transition:transform var(--d-toque) var(--ease-saida)}
+.barra button:not(.lancar):active svg{transform:scale(.9)}
+/* O rodapé de ação sobe no lugar da barra */
+.rodape{animation:sobe-rodape var(--d-curta) var(--ease-saida) 60ms both}
+@keyframes sobe-rodape{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+/* Menu lateral (computador): o fundo do item surge em vez de aparecer seco */
+.lateral-item{transition:background-color var(--d-cor) var(--ease-saida),color var(--d-cor) var(--ease-saida),box-shadow var(--d-cor) var(--ease-saida)}
+/* Pílula de situação ("Falta pagar" → "Pago"): a cor troca suave */
+.pil{transition:background-color var(--d-cor) var(--ease-saida),color var(--d-cor) var(--ease-saida)}
+/* Sanfona: o detalhe abre deslizando dentro do cartão (o -12px desconta o vão do cartão quando está fechada) */
+.sanfona{display:grid;grid-template-rows:0fr;margin-top:-12px;transition:grid-template-rows var(--d-curta) var(--ease-saida)}
+.sanfona[data-aberta]{grid-template-rows:1fr}
+.sanfona > div{min-height:0;overflow:hidden;opacity:0;transition:opacity var(--d-curta) var(--ease-saida)}
+.sanfona[data-aberta] > div{opacity:1}
+.sanfona > div > :first-child{margin-top:12px}
+@media (prefers-reduced-motion: reduce){
+  .coluna[data-entrada="volta"] > .conteudo,.passo[data-dir]{animation:acende 120ms linear}
+  .barra{transition:opacity 150ms linear}.barra.fora{transform:none}
+  .barra button:not(.lancar):active svg{transform:none}
+  .rodape{animation:acende 150ms linear both}
+  .sanfona{transition:none}.sanfona > div{transition:opacity 150ms linear}
+}

@@ -528,12 +528,19 @@ Coleção Lucide: quadro de 24, traço de 1,75, pontas e cantos arredondados, se
 ### Movimento (regras gerais)
 - Toque em botão, opção ou pessoa: encolhe para 97% em 100ms, na hora do toque.
 - Troca de cor de fundo e de borda: 160ms.
-- Seletor, aviso com Desfazer, diálogo, barra de seleção e troca de tela (desliza 12px): 0,22s, saída rápida no começo.
+- Seletor, aviso com Desfazer, diálogo, barra de seleção e troca de tela: 0,22s, saída rápida no começo.
+- Troca de tela: entrar numa tela mais funda, o conteúdo chega da direita (16px); voltar (botão de voltar do app ou do celular), chega da esquerda; trocar de aba ou de mês, só acende. Os passos do Importar (arquivo, colunas, prévia) seguem a mesma regra: avançar vem da direita, voltar ou cancelar vem da esquerda.
+- Barra de baixo: a cor do lugar atual troca em 0,16s e o ícone encolhe para 90% no toque. Nas telas com rodapé de ação (Lançar, Importar), a barra desce e some em 0,22s e o rodapé sobe 16px no lugar; ao sair, a barra volta pelo mesmo caminho. No computador, o item do menu lateral ganha o fundo em 0,16s.
+- Marcar uma compra (na folha ou em massa, e também ao desfazer): a linha acende em `acao-leve` e se apaga em 0,7s, e o selo novo entra crescendo de 55%. O valor não mexe.
+- Cartão que sai da lista (Conciliação: confirmar, "não é a mesma", escolher a compra, mover ou excluir a parcela): recolhe a altura e o vão até o próximo em 0,22s, e quem está embaixo sobe no lugar. Se a mudança não for gravada, ele volta; Desfazer o traz inteiro.
+- Abrir no lugar: "Ver o detalhe" dos Fechamentos abre deslizando para baixo dentro do cartão (0,22s; fechado, fica fora do alcance do teclado); "Outras…" nas categorias faz a caixa crescer de onde estava, e as opções novas acendem.
+- Pílula de situação ("Pendente" para "Pago"): a cor troca em 0,16s.
 - Folha: mola de 0,34s. Fatias da régua: 0,34s.
 - Números e listas não animam: valor é informação e aparece pronto.
 - Entrada do login, a única sequência do app: a fatura de exemplo acende; as compras sobem 8px uma a uma (a cada 50ms) e o selo de cada uma aparece crescendo de 55%; depois sobem o logo, o nome e a frase; a régua se preenche da esquerda, uma cor por vez (a cada 70ms); a legenda acende; por fim sobe o botão. Tudo termina antes de 0,8s, com saída rápida no começo, e nunca se repete. O botão aceita o toque desde o primeiro instante.
 - Passagem do login para o app: uma cópia do painel escuro encolhe em 0,42s até o lugar do cofre da primeira tela, enquanto o resto da tela acende e sobe 8px (0,22s, começando em 0,2s). O cofre de verdade aparece pronto quando a cópia encaixa; os valores não animam. Sem cofre na primeira tela, ela só acende.
-- Menos movimento (pedido no celular): nada se desloca nem encolhe, nada de mola, a régua não desliza; só troca de opacidade em 150ms. Na entrada do login, tudo acende junto, sem sequência; na passagem para o app, a primeira tela só acende em 150ms.
+- Menos movimento (pedido no celular): nada se desloca nem encolhe, nada de mola, a régua não desliza; só troca de opacidade em 150ms. Na entrada do login, tudo acende junto, sem sequência; na passagem para o app, a primeira tela só acende em 150ms. Voltar de tela e os passos do Importar só acendem; a barra de baixo e o cartão que sai só somem; o detalhe e as categorias abrem de uma vez, com o conteúdo acendendo; o selo da linha marcada só acende.
+- O que fica parado de propósito: números e totais; a lista da fatura ao filtrar ou trocar de mês (a tela inteira já acende); nada fica se repetindo, exceto o esqueleto pulsando enquanto carrega e o círculo de "carregando" no botão.
 
 ### Cartões de banco (tela Cartões)
 O plástico usa a cor do banco chapada com o mesmo material do cofre: uma luz radial suave no alto à esquerda, um fio de luz de 1px na borda de cima e a sombra de painel. Altura mínima 180, raio 18. O valor encolhe com a largura do cartão para nunca vazar.

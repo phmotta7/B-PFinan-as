@@ -1,6 +1,6 @@
 'use client';
 // Lançar compra no cartão (T7, §4.3). Lembra o último cartão e a última pessoa; escopo padrão D6; categoria obrigatória só para Pedro e Bruna (D4).
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Calendar, CircleAlert, CreditCard } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Selo, Topo, ddmm, reais } from '../comum';
@@ -11,6 +11,7 @@ import { dividirEmParcelas } from '@/dominio/parcelas';
 import { datasDaFatura, faturaDaCompra, somarMeses } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
 import type { Escopo } from '@/dados/tipos';
+import { crescer, fotografar } from '../movimento';
 
 const ler = (k: string, padrao: string) => { try { return localStorage.getItem(k) ?? padrao; } catch { return padrao; } };
 const gravar = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* sem armazenamento */ } };
@@ -26,6 +27,9 @@ export function Lancar() {
   const [escopo, setEscopo] = useState<Escopo>(() => (ler('bp-esc-' + dono, 'pessoal') as Escopo));
   const [cat, setCat] = useState<string | null>(null);
   const [todas, setTodas] = useState(false);
+  // "Outras…": a caixa de categorias cresce de onde estava e as novas acendem
+  const cats = useRef<HTMLDivElement>(null), fotoCats = useRef<ReturnType<typeof fotografar> | null>(null);
+  useLayoutEffect(() => { if (todas && fotoCats.current) { crescer(cats.current, fotoCats.current); fotoCats.current = null; } }, [todas]);
   const [n, setN] = useState(1);
   const [cartaoId, setCartaoId] = useState(() => ler('bp-ultimo-cartao', r.cartao.find(c => c.ativo)?.id ?? ''));
   const [data, setData] = useState(hoje);
@@ -80,8 +84,8 @@ export function Lancar() {
         <div className="seg" data-v={escopo === 'casal' ? 1 : 0} role="group" aria-labelledby="r-esc"><span className="pino" aria-hidden="true" />
           <button aria-pressed={escopo !== 'casal'} onClick={() => setEscopo('pessoal')}>Pessoal</button><button aria-pressed={escopo === 'casal'} onClick={() => setEscopo('casal')}>Casal</button></div></div> : null}
       <div className="campo"><span className="rot" id="r-cat">Categoria{ehUsuario ? '' : ' (opcional)'}</span>
-        <div className="cats" role="group" aria-labelledby="r-cat">{categoriasVisiveis(r, dono, cat, todas).map(c => <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(cat === c.id ? null : c.id)}>{c.nome}</button>)}
-          {todas ? null : <button className="chip" onClick={() => setTodas(true)}>Outras…</button>}</div>
+        <div className="cats" role="group" aria-labelledby="r-cat" ref={cats}>{categoriasVisiveis(r, dono, cat, todas).map(c => <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(cat === c.id ? null : c.id)}>{c.nome}</button>)}
+          {todas ? null : <button className="chip" onClick={() => { fotoCats.current = fotografar(cats.current); setTodas(true); }}>Outras…</button>}</div>
         {mostra('cat') ? <p className="ajuda erro"><CircleAlert size={16} aria-hidden="true" />{erros.cat}</p> : null}</div>
       {alterar ? (<>
         <div className="campo"><span className="rot" id="r-ct">Cartão</span><div className="chips" role="group" aria-labelledby="r-ct">{r.cartao.filter(c => c.ativo).map(c => <button key={c.id} className="chip" aria-pressed={cartao.id === c.id} onClick={() => setCartaoId(c.id)}>{c.apelido}</button>)}</div></div>

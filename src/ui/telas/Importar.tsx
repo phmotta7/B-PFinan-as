@@ -36,10 +36,14 @@ export function Importar() {
     ler(texto, f.name, cartao.mapaCsv);
   };
 
+  // Avançar um passo chega da direita; voltar (cancelar, arquivo com erro), da esquerda
+  const ordem = lendo ? 1 : ({ escolher: 0, mapa: 2, previa: 3 } as const)[passo.n];
+  const anterior = useRef(ordem), direcao = useRef<'frente' | 'volta' | undefined>(undefined);
+  if (anterior.current !== ordem) { direcao.current = ordem > anterior.current ? 'frente' : 'volta'; anterior.current = ordem; }
   const titulo = passo.n === 'escolher' ? 'Escolha o cartão e o arquivo' : passo.n === 'mapa' ? 'Colunas do arquivo' : 'Confira o arquivo antes de gravar';
   return (<>
     <Topo titulo="Importar fatura" sub={titulo} voltar={voltar} />
-    <main className="conteudo sem-barra">
+    <main className="conteudo sem-barra"><div className="passo" key={ordem} data-dir={direcao.current}>
       {lendo ? <Esqueleto linhas={6} /> : passo.n === 'escolher' ? (<>
         <div className="campo"><span className="rot" id="r-cart">Cartão</span>
           <div className="pessoas" role="group" aria-labelledby="r-cart">{r.cartao.filter(c => c.ativo).map(c => (
@@ -68,7 +72,7 @@ export function Importar() {
             ir({ tela: 'conciliacao', cartao: cartao.id, mes: passo.mes });
           }} />
       )}
-    </main>
+    </div></main>
   </>);
 }
 

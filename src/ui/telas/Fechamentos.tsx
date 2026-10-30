@@ -47,7 +47,8 @@ export function Fechamentos() {
             <Valor c={f.total} tamanho="g" />
             <p className="mini num">{f.pago ? `Pago ${reais(f.pago)} · falta ${reais(f.emAberto)}` : 'Nada pago ainda'}{f.enviadoEm ? ` · resumo enviado em ${ddmm(f.enviadoEm)}` : ''}</p>
             <button className="ver-detalhe" onClick={() => setAberto(aberta ? null : f.pessoa.id)} aria-expanded={aberta} aria-controls={`det-${f.pessoa.id}`}>{aberta ? 'Esconder o detalhe' : 'Ver o detalhe'}<ChevronDown size={18} aria-hidden="true" /></button>
-            {aberta ? <div className="msg" id={`det-${f.pessoa.id}`} aria-label="Detalhe do fechamento">{mensagemDe(r, f.pessoa, mes, titular)}</div> : null}
+            {/* O detalhe abre deslizando dentro do cartão; fechado, fica fora do alcance do teclado e do leitor de tela */}
+            <div className="sanfona" id={`det-${f.pessoa.id}`} data-aberta={aberta || undefined} inert={!aberta}><div><div className="msg" aria-label="Detalhe do fechamento">{mensagemDe(r, f.pessoa, mes, titular)}</div></div></div>
             <div className="fech-acoes">
               {f.emAberto ? <button className={`bt ${f.enviadoEm ? 'principal' : 'secundario'} medio`} onClick={() => setPagar({ pessoa: f.pessoa, mes })}>Registrar pagamento</button> : null}
               <button className={`bt ${f.enviadoEm && f.emAberto ? 'secundario' : 'principal'} medio`} onClick={() => setMsg(f.pessoa)}><MessageCircle size={20} aria-hidden="true" />WhatsApp</button>

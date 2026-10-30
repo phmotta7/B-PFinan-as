@@ -9,6 +9,7 @@ import type { Mudanca, Pessoa, Retrato } from '@/dados/tipos';
 import { supabaseConfigurado, supabaseNavegador } from '@/lib/supabase';
 import { datasDaFatura, faturaDaCompra, somarMeses, type Mes } from '@/dominio/ciclo';
 import type { Confirmacao } from './comum';
+import { marcarVolta } from './movimento';
 
 export type NomeTela = 'inicio' | 'cartoes' | 'fatura' | 'importar' | 'conciliacao' | 'lancar' | 'fechamentos' | 'mais' | 'dividas' | 'pessoas' | 'cfg-cartoes' | 'categorias' | 'emails' | 'exportar';
 export type Rota = { tela: NomeTela; cartao?: string; mes?: Mes; filtro?: string };
@@ -74,14 +75,14 @@ export function ProvedorApp({ children }: { children: ReactNode }) {
   const router = useRouter(), params = useSearchParams();
   const rota: Rota = { tela: (params.get('tela') as NomeTela) || 'inicio', cartao: params.get('cartao') ?? undefined, mes: params.get('mes') ?? undefined, filtro: params.get('filtro') ?? undefined };
   const profundidade = useRef(0);
-  useEffect(() => { const volta = () => { profundidade.current = Math.max(0, profundidade.current - 1); }; window.addEventListener('popstate', volta); return () => window.removeEventListener('popstate', volta); }, []);
+  useEffect(() => { const volta = () => { marcarVolta(); profundidade.current = Math.max(0, profundidade.current - 1); }; window.addEventListener('popstate', volta); return () => window.removeEventListener('popstate', volta); }, []);
   const ir = useCallback((r: Rota) => {
     const q = new URLSearchParams(Object.entries(r).filter(([, v]) => v) as [string, string][]);
     const url = r.tela === 'inicio' && q.size === 1 ? '/' : `/?${q}`;
     if (RAIZ.includes(r.tela)) { profundidade.current = 0; router.replace(url, { scroll: false }); }
     else { profundidade.current++; router.push(url, { scroll: false }); }
   }, [router]);
-  const voltar = useCallback(() => { if (profundidade.current > 0) router.back(); else ir({ tela: 'inicio' }); }, [router, ir]);
+  const voltar = useCallback(() => { marcarVolta(); if (profundidade.current > 0) router.back(); else ir({ tela: 'inicio' }); }, [router, ir]);
 
   const executar = useCallback(async (m: Mudanca, mensagem?: string, opc?: { semDesfazer?: boolean }) => {
     const antes = rRef.current; if (!antes || vazia(m)) return true;

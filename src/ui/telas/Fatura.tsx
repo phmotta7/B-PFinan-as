@@ -1,6 +1,6 @@
 'use client';
 // Fatura (T4): linhas por dia, filtros, totais por pessoa, marcação individual e em massa (§4.6).
-import { memo, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { FileUp, X, Check, Copy } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Divisao, Folha, Logo, LogoBanco, SeletorMes, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
@@ -9,6 +9,7 @@ import { marcar } from '@/dados/operacoes';
 import { datasDaFatura, somarMeses } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
 import type { Escopo, Pessoa, Retrato } from '@/dados/tipos';
+import { crescer, destacar, fotografar } from '../movimento';
 
 export function Fatura() {
   const { r, hoje, rota, ir, voltar, podeVoltar, mesDeTrabalho } = useApp();
@@ -94,8 +95,11 @@ export function Fatura() {
 
 const Linha = memo(function Linha({ l, pessoa, marcada, emSelecao }: { l: LinhaFatura; pessoa?: Pessoa; marcada: boolean; emSelecao: boolean }) {
   const nome = `${l.compra.descricao}, ${reais(l.valor)}, ${l.total > 1 ? `parcela ${l.numero} de ${l.total}, ` : ''}${l.pendente ? 'para conferir' : pessoa ? pessoa.nome : 'sem dono'}`;
+  // Quando a linha ganha outro dono (ou muda de Pessoal para Casal), ela acende para mostrar onde mudou
+  const ref = useRef<HTMLButtonElement>(null), dono = `${pessoa?.id ?? ''}|${l.compra.escopo ?? ''}|${l.pendente}`, antes = useRef(dono);
+  useEffect(() => { if (antes.current !== dono) { antes.current = dono; destacar(ref.current); } }, [dono]);
   return (
-    <button className={`lin${l.compra.tipo === 'iof' ? ' filho' : ''}`} data-l={l.parcela.id} aria-pressed={emSelecao ? marcada : undefined} aria-label={nome}>
+    <button ref={ref} className={`lin${l.compra.tipo === 'iof' ? ' filho' : ''}`} data-l={l.parcela.id} aria-pressed={emSelecao ? marcada : undefined} aria-label={nome}>
       <Logo loja={l.compra.descricao} vazio={l.compra.tipo === 'iof'} />
       <span className="d"><b>{l.compra.descricao}</b>
         <small>{l.total > 1 ? <span className="parc num">{l.numero}/{l.total}</span> : ddmm(l.data)}{l.prevista ? <span className="mini">prevista</span> : null}
@@ -126,6 +130,9 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
   const [escopo, setEscopo] = useState<Escopo | null>(null);
   const [todas, setTodas] = useState(false);
   const [aberta, setAberta] = useState<string[] | null>(null);
+  // "Outras…": a caixa de categorias cresce de onde estava e as novas acendem
+  const cats = useRef<HTMLDivElement>(null), fotoCats = useRef<ReturnType<typeof fotografar> | null>(null);
+  useLayoutEffect(() => { if (todas && fotoCats.current) { crescer(cats.current, fotoCats.current); fotoCats.current = null; } }, [todas]);
   if (compras !== aberta) { setAberta(compras); const c = compras?.length === 1 ? r.compra.find(x => x.id === compras[0]) : null; setEscolha(c?.pagador ?? null); setEscopo(c?.escopo ?? null); setTodas(false); }
   const cs = (compras ?? []).map(id => r.compra.find(c => c.id === id)).filter(Boolean) as Retrato['compra'];
   const um = cs.length === 1 ? cs[0] : null;
@@ -151,8 +158,8 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
           <div className="seg" data-v={e === 'casal' ? 1 : 0} role="group" aria-label="Para quê"><span className="pino" aria-hidden="true" />
             <button aria-pressed={e !== 'casal'} onClick={() => setEscopo('pessoal')}>Pessoal</button><button aria-pressed={e === 'casal'} onClick={() => setEscopo('casal')}>Casal</button></div></div>
         <div className="campo"><span className="rot">Categoria · toque para salvar</span>
-          <div className="cats">{categoriasVisiveis(r, escolha, um?.categoria ?? null, todas).map(c => <button key={c.id} className="chip" aria-pressed={um?.categoria === c.id} onClick={() => salvar(escolha!, e, c.id)}>{c.nome}</button>)}
-            {todas ? null : <button className="chip" onClick={() => setTodas(true)}>Outras…</button>}</div></div>
+          <div className="cats" ref={cats}>{categoriasVisiveis(r, escolha, um?.categoria ?? null, todas).map(c => <button key={c.id} className="chip" aria-pressed={um?.categoria === c.id} onClick={() => salvar(escolha!, e, c.id)}>{c.nome}</button>)}
+            {todas ? null : <button className="chip" onClick={() => { fotoCats.current = fotografar(cats.current); setTodas(true); }}>Outras…</button>}</div></div>
       </>) : null}
     </Folha>
   );

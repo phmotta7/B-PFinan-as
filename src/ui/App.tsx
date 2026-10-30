@@ -5,6 +5,7 @@ import { Toaster } from 'sonner';
 import { House, CreditCard, Plus, ReceiptText, Ellipsis } from 'lucide-react';
 import { ProvedorApp, RAIZ, useApp, type NomeTela } from './estado';
 import { fazerPassagem } from './passagem';
+import { tomarVolta } from './movimento';
 import { Dialogo } from './comum';
 import { Inicio, Cartoes } from './telas/Inicio';
 import { Fatura } from './telas/Fatura';
@@ -26,11 +27,12 @@ function Casca() {
   const { rota, ir, modo, hoje, confirmacao, fecharConfirmacao, recomecarDemo, confirmar } = useApp();
   const Tela = TELAS[rota.tela] ?? Inicio;
   const comBarra = !SEM_BARRA.includes(rota.tela);
-  // Transição com propósito: entrar numa tela mais funda desliza da direita; trocar de aba ou de mês só acende
+  // Transição com propósito: entrar numa tela mais funda desliza da direita; voltar chega da esquerda; trocar de aba ou de mês só acende
   // A entrada é decidida uma vez por tela: outras atualizações (marcar uma linha, abrir um diálogo) não repetem a animação
   const chave = rota.tela + (rota.cartao ?? '') + (rota.mes ?? '') + (rota.filtro ?? '');
   const ent = useRef({ chave, tela: rota.tela, valor: 'acende' });
-  if (ent.current.chave !== chave) ent.current = { chave, tela: rota.tela, valor: rota.tela === ent.current.tela || RAIZ.includes(rota.tela) ? 'acende' : RAIZ.includes(ent.current.tela) ? 'lado' : 'acende' };
+  if (ent.current.chave !== chave) ent.current = { chave, tela: rota.tela, valor: tomarVolta() && rota.tela !== ent.current.tela ? 'volta'
+    : rota.tela === ent.current.tela || RAIZ.includes(rota.tela) ? 'acende' : RAIZ.includes(ent.current.tela) ? 'lado' : 'acende' };
   const entrada = ent.current.valor;
   // O topo vira vidro quando o conteúdo passa por baixo dele (marcado direto no elemento, sem redesenhar a tela)
   const coluna = useRef<HTMLDivElement>(null);
@@ -58,12 +60,11 @@ function Casca() {
           <button onClick={() => confirmar({ titulo: 'Recomeçar a demonstração?', texto: 'Os dados fictícios voltam ao começo do cenário (03/11, antes de importar).', rotulo: 'Recomeçar', aoConfirmar: recomecarDemo })}>Recomeçar</button></div>
       ) : null}
       <Tela key={chave} />
-      {comBarra ? (
-        <nav className="barra vidro-normal" aria-label="Navegação">{ABAS.map(([k, nome, Icone]) => k === 'lancar'
-          ? <button key={k} className="lancar" onClick={() => ir({ tela: 'lancar' })}><span><Icone size={24} strokeWidth={1.75} aria-hidden="true" /></span>{nome}</button>
-          : <button key={k} aria-current={aba === k ? 'page' : undefined} onClick={() => ir({ tela: k })}><Icone size={24} strokeWidth={1.75} aria-hidden="true" />{nome}</button>)}
-        </nav>
-      ) : null}
+      {/* Nas telas com rodapé de ação (Lançar, Importar) a barra desce e some, em vez de sumir de repente */}
+      <nav className={`barra vidro-normal${comBarra ? '' : ' fora'}`} aria-label="Navegação" inert={!comBarra} aria-hidden={!comBarra || undefined}>{ABAS.map(([k, nome, Icone]) => k === 'lancar'
+        ? <button key={k} className="lancar" onClick={() => ir({ tela: 'lancar' })}><span><Icone size={24} strokeWidth={1.75} aria-hidden="true" /></span>{nome}</button>
+        : <button key={k} aria-current={aba === k ? 'page' : undefined} onClick={() => ir({ tela: k })}><Icone size={24} strokeWidth={1.75} aria-hidden="true" />{nome}</button>)}
+      </nav>
       </div>
       <Dialogo pedido={confirmacao} aoFechar={fecharConfirmacao} />
       <Toaster position="bottom-center" offset={{ bottom: comBarra ? 100 : 24 }} mobileOffset={{ bottom: comBarra ? 100 : 24, left: 16, right: 16 }} duration={5000} visibleToasts={1}

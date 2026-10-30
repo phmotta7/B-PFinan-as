@@ -9,6 +9,7 @@ import { linhasDaFatura, parcelasNaoEncontradas } from '@/dados/consultas';
 import { mesCurto } from '@/dominio/mensagem';
 import { somarMeses } from '@/dominio/ciclo';
 import type { Compra } from '@/dados/tipos';
+import { recolher } from '../movimento';
 
 export function Conciliacao() {
   const { r, voltar, ir, executar, confirmar } = useApp();
@@ -39,6 +40,14 @@ export function Conciliacao() {
     await executar({ inserir: {}, atualizar: {}, apagar: {} }, `${dups.length} duplicidades confirmadas.`, { semDesfazer: true });
   };
 
+  // O cartão resolvido recolhe e quem está embaixo sobe no lugar; se a mudança não for gravada, ele volta
+  const sair = (id: string, fazer: () => Promise<boolean>) => async () => {
+    const el = document.querySelector<HTMLElement>(`[data-sai="${id}"]`);
+    const desfazer = await recolher(el);
+    const ok = await fazer();
+    if (!ok) desfazer(); else window.setTimeout(() => { if (el?.isConnected) desfazer(); }, 60);
+  };
+
   return (<>
     <Topo titulo="Conferir importação" sub={titulo} voltar={voltar} />
     <main className="conteudo">
@@ -48,33 +57,33 @@ export function Conciliacao() {
         const m = r.compra.find(x => c.pendencia?.tipo === 'duplicidade' && x.id === c.pendencia.manual);
         if (!m) return null;
         return (
-          <div className="cartao" key={c.id}>
+          <div className="cartao" key={c.id} data-sai={c.id}>
             <p>Encontrei 1 duplicidade: {desc(m, 'manual')} e {desc(c, 'fatura')} parecem a mesma compra.</p>
             <p className="mini">Manter a da fatura e copiar <Selo pessoa={pessoa(m.pagador)} />{m.escopo ? `, ${m.escopo === 'casal' ? 'Casal' : 'Pessoal'}` : ''}{cat(m.categoria) ? `, ${cat(m.categoria)}` : ''}?</p>
-            <div className="acoes"><button className="bt secundario medio" onClick={() => executar(negarDuplicidade(r, c.id), 'Mantive as duas. A linha da fatura ficou sem dono.')}>Não é a mesma</button>
-              <button className="bt principal medio" onClick={() => executar(confirmarDuplicidade(r, c.id), `Duplicidade resolvida: ficou a linha da fatura, com os dados de ${pessoa(m.pagador)?.nome ?? 'quem lançou'}.`)}>Confirmar</button></div>
+            <div className="acoes"><button className="bt secundario medio" onClick={sair(c.id, () => executar(negarDuplicidade(r, c.id), 'Mantive as duas. A linha da fatura ficou sem dono.'))}>Não é a mesma</button>
+              <button className="bt principal medio" onClick={sair(c.id, () => executar(confirmarDuplicidade(r, c.id), `Duplicidade resolvida: ficou a linha da fatura, com os dados de ${pessoa(m.pagador)?.nome ?? 'quem lançou'}.`))}>Confirmar</button></div>
           </div>);
       })}
       {ambs.length ? <p className="secao">Mais de uma possibilidade</p> : null}
       {ambs.map(c => c.pendencia?.tipo === 'ambigua' ? (
-        <div className="cartao" key={c.id}>
+        <div className="cartao" key={c.id} data-sai={c.id}>
           <p>{desc(c, 'fatura')} pode ser uma destas compras lançadas no app. Qual é?</p>
           <div className="quem num">
             {c.pendencia.candidatos.map(id => r.compra.find(x => x.id === id)).filter(Boolean).map(x => (
-              <button key={x!.id} onClick={() => executar(escolherCandidata(r, c.id, x!.id), `${c.descricao} ficou com ${pessoa(x!.pagador)?.nome ?? 'sem dono'}.`)}>
+              <button key={x!.id} onClick={sair(c.id, () => executar(escolherCandidata(r, c.id, x!.id), `${c.descricao} ficou com ${pessoa(x!.pagador)?.nome ?? 'sem dono'}.`))}>
                 <span>{x!.descricao} · {ddmm(x!.data)} <Selo pessoa={pessoa(x!.pagador)} extra={x!.escopo === 'casal' ? ' · Casal' : ''} /></span><span className="v">{reais(x!.valorTotal)}</span></button>))}
-            <button onClick={() => executar(escolherCandidata(r, c.id, null), `${c.descricao} ficou sem dono.`)}><span>Nenhuma delas, deixar sem dono</span><ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" /></button>
+            <button onClick={sair(c.id, () => executar(escolherCandidata(r, c.id, null), `${c.descricao} ficou sem dono.`))}><span>Nenhuma delas, deixar sem dono</span><ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" /></button>
           </div>
         </div>) : null)}
       {nao.length ? <p className="secao">Esperadas e não encontradas</p> : null}
       {nao.map(l => (
-        <div className="cartao" key={l.parcela.id}>
+        <div className="cartao" key={l.parcela.id} data-sai={l.parcela.id}>
           <div className="linha-topo"><span className="banco"><Logo loja={l.compra.descricao} /><span>{l.compra.descricao}<small>{l.total > 1 ? <span className="parc num">{l.numero}/{l.total}</span> : ddmm(l.data)} <Selo pessoa={pessoa(l.compra.pagador)} /></small></span></span><b className="num">{reais(l.valor)}</b></div>
           <p className="mini">Esta parcela estava prevista para {mesCurto(fatura.mes)}, mas não veio no arquivo. O banco pode ter jogado para a próxima fatura.</p>
           <div className="acoes">
             <button className="bt destrutivo medio" onClick={() => confirmar({ titulo: `Excluir ${l.compra.descricao}${l.total > 1 ? ` ${l.numero}/${l.total}` : ''}?`, texto: 'Só esta parcela prevista sai do app. As outras parcelas da série continuam.', rotulo: 'Excluir',
-              aoConfirmar: () => executar(excluirParcelaPrevista(r, l.parcela.id), `${l.compra.descricao}${l.total > 1 ? ` ${l.numero}/${l.total}` : ''} excluída.`) })}><Trash2 size={20} aria-hidden="true" />Excluir</button>
-            <button className="bt secundario medio" onClick={() => executar(moverParaProximaFatura(r, l.parcela.id), `Parcela movida para a fatura ${mesCurto(somarMeses(fatura.mes, 1))}.`)}>Mover para {mesCurto(somarMeses(fatura.mes, 1))}</button>
+              aoConfirmar: sair(l.parcela.id, () => executar(excluirParcelaPrevista(r, l.parcela.id), `${l.compra.descricao}${l.total > 1 ? ` ${l.numero}/${l.total}` : ''} excluída.`)) })}><Trash2 size={20} aria-hidden="true" />Excluir</button>
+            <button className="bt secundario medio" onClick={sair(l.parcela.id, () => executar(moverParaProximaFatura(r, l.parcela.id), `Parcela movida para a fatura ${mesCurto(somarMeses(fatura.mes, 1))}.`))}>Mover para {mesCurto(somarMeses(fatura.mes, 1))}</button>
           </div>
         </div>))}
       {series.length ? <><p className="secao">Reconhecidas automaticamente</p>
