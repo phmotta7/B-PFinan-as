@@ -142,3 +142,96 @@ export function lerCsvGenerico(texto: string, cartao: string, mapa: MapaDeColuna
   }
   return { linhas: comDigitais(cartao, lidas), ignoradas };
 }
+
+// ---------- BB em PDF ----------
+// O PDF da fatura do Ourocard não tem colunas de verdade: cada pedaço de texto tem uma posição na página.
+// O leitor remonta as linhas pela posição: o cabeçalho "Data … Valor" diz onde começa cada coluna (a página pode ter duas),
+// a linha com data (dd/mm) e valor é uma compra, e a linha logo abaixo, sem data nem valor, é o resto do nome ou a cidade.
+// Títulos como "Compras Diversas" ou "Restaurantes" ficam mais longe da compra de cima e são ignorados.
+export type ItemPdf = { pagina: number; x: number; y: number; texto: string };
+
+const DATA_CURTA = /^(\d{2})\/(\d{2})$/;
+const VALOR_BR = /^-?[\d.]*\d,\d{2}$/;
+const MOEDA = /^(R\$|US\$|U\$S|USD|EUR|€|GBP|£)$/i;
+
+/** O PDF só traz dia e mês: o ano é o de hoje, a não ser que a data caia mais de 45 dias no futuro (aí é do ano passado). */
+function comAno(dia: string, mes: string, hoje: string): string {
+  const ano = Number(hoje.slice(0, 4));
+  const data = `${ano}-${mes}-${dia}`;
+  const limite = new Date(hoje + 'T12:00:00'); limite.setDate(limite.getDate() + 45);
+  return new Date(data + 'T12:00:00') > limite ? `${ano - 1}-${mes}-${dia}` : data;
+}
+
+export function lerBbPdf(itens: ItemPdf[], cartao: string, hoje: string): Leitura {
+  const limpos = itens.map(i => ({ ...i, texto: i.texto.replace(/\s+/g, ' ').trim() })).filter(i => i.texto);
+  if (!/ourocard|banco do brasil/i.test(limpos.map(i => i.texto).join(' ')))
+    throw new ErroDeLeitura('Não reconheci este PDF como fatura do cartão do Banco do Brasil.');
+
+  type Linha = { y: number; itens: ItemPdf[] };
+  const lidas: Omit<LinhaLida, 'digital'>[] = [], ignoradas: LinhaIgnorada[] = [];
+  let colunas: number[] = [];
+  let emProcessamento = false;
+  const paginas = [...new Set(limpos.map(i => i.pagina))].sort((a, b) => a - b);
+
+  for (const p of paginas) {
+    const daPagina = limpos.filter(i => i.pagina === p);
+    // Agrupa em linhas pela altura (os pedaços de uma mesma linha variam 1 ou 2 pontos)
+    const linhas: Linha[] = [];
+    for (const it of [...daPagina].sort((a, b) => b.y - a.y)) {
+      const l = linhas.find(x => Math.abs(x.y - it.y) <= 2);
+      if (l) l.itens.push(it); else linhas.push({ y: it.y, itens: [it] });
+    }
+    linhas.forEach(l => l.itens.sort((a, b) => a.x - b.x));
+
+    // Cabeçalho "Data … Valor": cada "Data" abre uma coluna. Acima dele fica o aviso do banco, que não interessa.
+    const cab = linhas.find(l => l.itens.some(i => i.texto === 'Data') && l.itens.some(i => i.texto === 'Valor'));
+    if (cab) colunas = cab.itens.filter(i => i.texto === 'Data').map(i => i.x - 6);
+    if (!colunas.length) continue;
+    const titulos = linhas.filter(l => /lançamentos em processamento|lancamentos em processamento|lançamentos futuros|lancamentos futuros/i.test(l.itens.map(i => i.texto).join(' ')));
+
+    for (let c = 0; c < colunas.length; c++) {
+      const ini = colunas[c], fim = colunas[c + 1] ?? Infinity;
+      let anterior: { y: number; idx: number; alvo: 'lida' | 'ignorada' } | null = null;
+      let processamentoNaColuna: boolean = emProcessamento;
+      for (const l of linhas) {
+        if (cab && l.y >= cab.y - 1) continue;
+        const titulo = titulos.find(t => t.y > l.y && !titulos.some(o => o.y > l.y && o.y < t.y));
+        if (titulo) processamentoNaColuna = /processamento/i.test(titulo.itens.map(i => i.texto).join(' '));
+        const meus = l.itens.filter(i => i.x >= ini && i.x < fim);
+        if (!meus.length) continue;
+        const data = meus[0].texto.match(DATA_CURTA);
+        let iValor = -1; meus.forEach((i, k) => { if (VALOR_BR.test(i.texto)) iValor = k; });
+        if (!data || iValor < 1) {
+          // Sem data e sem valor: se vier logo abaixo de uma compra, é o resto do nome ou a cidade
+          if (anterior && anterior.y - l.y <= 14 && !meus.some(i => DATA_CURTA.test(i.texto) || VALOR_BR.test(i.texto))) {
+            const resto = meus.map(i => i.texto).join(' ');
+            const alvo = anterior.alvo === 'lida' ? lidas[anterior.idx] : ignoradas[anterior.idx];
+            alvo.descricao = `${alvo.descricao} ${resto}`;
+          }
+          anterior = null;
+          continue;
+        }
+        const meio = meus.slice(1, iValor);
+        const moeda = meio.find(i => MOEDA.test(i.texto))?.texto ?? 'R$';
+        const partes = meio.filter(i => !MOEDA.test(i.texto));
+        const descricao = partes.map(i => i.texto).join(' ');
+        // Nome da loja: sem a cidade, que o BB põe num pedaço separado bem à direita do começo do nome
+        const loja = partes.filter((i, k) => k === 0 || i.x - partes[0].x < 45).map(i => i.texto).join(' ');
+        const valor = paraCentavos(meus[iValor].texto, ',');
+        const quando = comAno(data[1], data[2], hoje);
+        const ignorar = (motivo: string) => { ignoradas.push({ data: quando, descricao, valor, motivo }); anterior = { y: l.y, idx: ignoradas.length - 1, alvo: 'ignorada' }; };
+        if (processamentoNaColuna) { ignorar('Ainda em processamento no banco. Entra quando o BB lançar na fatura.'); continue; }
+        if (/^(pgto|pagamento)\b/i.test(descricao)) { ignorar('É o pagamento da fatura, não uma compra.'); continue; }
+        if (!/^R\$$/.test(moeda)) { ignorar(`Valor em ${moeda}. Confira o valor em reais na fatura fechada e lance à mão.`); continue; }
+        const lida = classificar(quando, loja, valor);
+        // Na parcelada, o BB põe a cidade logo depois do "PARC 02/04": a loja é só o que vem antes
+        const nomeLoja = lida.parcela ? loja.split(/\s+PARC\b/i)[0] : lida.loja;
+        lidas.push({ ...lida, descricao, loja: nomeLoja.replace(/\s+/g, ' ').trim() });
+        anterior = { y: l.y, idx: lidas.length - 1, alvo: 'lida' };
+      }
+      if (c === colunas.length - 1) emProcessamento = processamentoNaColuna;
+    }
+  }
+  if (!lidas.length && !ignoradas.length) throw new ErroDeLeitura('Não encontrei nenhuma compra neste PDF. Confira se é a fatura do cartão do BB.');
+  return { linhas: comDigitais(cartao, lidas), ignoradas };
+}

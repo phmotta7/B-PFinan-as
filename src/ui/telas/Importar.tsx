@@ -1,16 +1,19 @@
 'use client';
-// Importar fatura (T5): escolher cartão e arquivo → mapeamento (CSV genérico, 1ª vez) → pré-visualização → gravar (§4.4).
+// Importar fatura (T5): escolher cartão e arquivo → mapeamento (CSV genérico, 1ª vez) ou senha (PDF do BB) → pré-visualização → gravar (§4.4).
 import { useRef, useState } from 'react';
-import { FileUp, Check } from 'lucide-react';
+import { FileUp, Check, CircleAlert } from 'lucide-react';
 import { useApp } from '../estado';
 import { Aviso, Esqueleto, Logo, LogoBanco, Topo, Valor, ddmm, reais } from '../comum';
-import { lerCsvGenerico, lerNubank, ErroDeLeitura, type Leitura, type MapaDeColunas, type FormatoData } from '@/dominio/leitores';
+import { lerBbPdf, lerCsvGenerico, lerNubank, ErroDeLeitura, type Leitura, type MapaDeColunas, type FormatoData } from '@/dominio/leitores';
+import { ehPdf, lerItensDoPdf, PdfComSenha } from '@/dados/pdf';
+import type { Importacao } from '@/dados/tipos';
 import { datasDaFatura, somarMeses, sugerirFatura, type Mes } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
 import { importarFatura, salvar } from '@/dados/operacoes';
 import { aplicar } from '@/dados/mudanca';
 
-type Passo = { n: 'escolher' } | { n: 'mapa'; texto: string; nome: string } | { n: 'previa'; texto: string; nome: string; leitura: Leitura; mes: Mes };
+type Passo = { n: 'escolher' } | { n: 'mapa'; texto: string; nome: string } | { n: 'senha'; arquivo: File; errada: boolean }
+  | { n: 'previa'; arquivo: string | Blob; nome: string; leitura: Leitura; mes: Mes; formato: Importacao['formato'] };
 
 export function Importar() {
   const { r, rota, voltar, ir, executar, repo, hoje } = useApp();
@@ -26,10 +29,26 @@ export function Importar() {
     try {
       const leitura = ehNubank ? lerNubank(texto, cartao.id) : lerCsvGenerico(texto, cartao.id, mapa!);
       if (!leitura.linhas.length) throw new ErroDeLeitura('Não encontrei nenhuma compra neste arquivo.');
-      setPasso({ n: 'previa', texto, nome, leitura, mes: sugerirFatura(cartao, leitura.linhas.map(l => l.data)) }); setErro('');
+      setPasso({ n: 'previa', arquivo: texto, nome, leitura, mes: sugerirFatura(cartao, leitura.linhas.map(l => l.data)), formato: ehNubank ? 'nubank_csv' : 'csv_generico' }); setErro('');
     } catch (e) { setErro(e instanceof ErroDeLeitura ? e.message : 'Não consegui ler este arquivo. Confira se é a fatura em CSV.'); setPasso({ n: 'escolher' }); }
   };
+  // PDF (por enquanto só o do BB): lido no próprio aparelho; se pedir senha, o app pergunta e tenta de novo
+  const abrirPdf = async (f: File, senha?: string) => {
+    setLendo(true); setErro('');
+    try {
+      const leitura = lerBbPdf(await lerItensDoPdf(await f.arrayBuffer(), senha), cartao.id, hoje);
+      if (!leitura.linhas.length) throw new ErroDeLeitura('Não encontrei nenhuma compra lançada neste PDF.');
+      setPasso({ n: 'previa', arquivo: f, nome: f.name, leitura, mes: sugerirFatura(cartao, leitura.linhas.map(l => l.data)), formato: 'bb_pdf' });
+    } catch (e) {
+      if (e instanceof PdfComSenha) setPasso({ n: 'senha', arquivo: f, errada: e.errada });
+      else { setErro(e instanceof ErroDeLeitura ? e.message : 'Não consegui abrir este PDF. Confira se é a fatura do cartão do BB.'); setPasso({ n: 'escolher' }); }
+    } finally { setLendo(false); }
+  };
   const escolher = async (f: File) => {
+    if (ehPdf(f)) {
+      if (cartao.banco !== 'bb') return setErro('Por enquanto o app só lê o PDF da fatura do BB. Para este cartão, exporte a fatura em CSV.');
+      return abrirPdf(f);
+    }
     setLendo(true); setErro('');
     const texto = await f.text(); setLendo(false);
     if (!ehNubank && !cartao.mapaCsv) return setPasso({ n: 'mapa', texto, nome: f.name });
@@ -37,26 +56,28 @@ export function Importar() {
   };
 
   // Avançar um passo chega da direita; voltar (cancelar, arquivo com erro), da esquerda
-  const ordem = lendo ? 1 : ({ escolher: 0, mapa: 2, previa: 3 } as const)[passo.n];
+  const ordem = lendo ? 1 : ({ escolher: 0, mapa: 2, senha: 2, previa: 3 } as const)[passo.n];
   const anterior = useRef(ordem), direcao = useRef<'frente' | 'volta' | undefined>(undefined);
   if (anterior.current !== ordem) { direcao.current = ordem > anterior.current ? 'frente' : 'volta'; anterior.current = ordem; }
-  const titulo = passo.n === 'escolher' ? 'Escolha o cartão e o arquivo' : passo.n === 'mapa' ? 'Colunas do arquivo' : 'Confira o arquivo antes de gravar';
+  const titulo = passo.n === 'escolher' ? 'Escolha o cartão e o arquivo' : passo.n === 'mapa' ? 'Colunas do arquivo' : passo.n === 'senha' ? 'Senha do PDF' : 'Confira o arquivo antes de gravar';
   return (<>
     <Topo titulo="Importar fatura" sub={titulo} voltar={voltar} />
     <main className="conteudo sem-barra"><div className="passo" key={ordem} data-dir={direcao.current}>
       {lendo ? <Esqueleto linhas={6} /> : passo.n === 'escolher' ? (<>
         <div className="campo"><span className="rot" id="r-cart">Cartão</span>
           <div className="pessoas" role="group" aria-labelledby="r-cart">{r.cartao.filter(c => c.ativo).map(c => (
-            <button key={c.id} aria-pressed={cartaoId === c.id} onClick={() => { setCartaoId(c.id); setErro(''); }}><span className="banco"><LogoBanco banco={c.banco} /><span className="nome-banco">{c.banco === 'nubank' ? 'Nubank' : c.banco === 'bb' ? 'BB' : c.apelido}<small>{c.banco === 'nubank' ? 'Arquivo CSV' : 'CSV ou planilha'}</small></span></span></button>))}
+            <button key={c.id} aria-pressed={cartaoId === c.id} onClick={() => { setCartaoId(c.id); setErro(''); }}><span className="banco"><LogoBanco banco={c.banco} /><span className="nome-banco">{c.banco === 'nubank' ? 'Nubank' : c.banco === 'bb' ? 'BB' : c.apelido}<small>{c.banco === 'nubank' ? 'Arquivo CSV' : c.banco === 'bb' ? 'PDF ou CSV' : 'CSV ou planilha'}</small></span></span></button>))}
           </div></div>
         {erro ? <Aviso tipo="er" papel="alert"><p>{erro}</p></Aviso> : null}
         <div className="escolha-arquivo"><h2>Arquivo da fatura</h2>
-          <p>{ehNubank ? 'No app do Nubank, abra a fatura fechada e exporte em CSV. O arquivo vem com data, descrição e valor de cada linha.' : cartao?.mapaCsv ? 'O app já sabe ler o arquivo deste cartão.' : 'Na primeira vez, você mostra ao app qual coluna é a data, a descrição e o valor; ele lembra nas próximas.'}</p>
+          <p>{ehNubank ? 'No app do Nubank, abra a fatura fechada e exporte em CSV. O arquivo vem com data, descrição e valor de cada linha.' : cartao?.banco === 'bb' ? 'Pode ser o PDF da fatura que o BB envia (se ele pedir senha, o app pergunta) ou uma planilha em CSV.' : cartao?.mapaCsv ? 'O app já sabe ler o arquivo deste cartão.' : 'Na primeira vez, você mostra ao app qual coluna é a data, a descrição e o valor; ele lembra nas próximas.'}</p>
           <button className="bt principal" onClick={() => input.current?.click()}><FileUp size={20} strokeWidth={1.75} aria-hidden="true" />Escolher arquivo</button>
-          <input ref={input} type="file" accept=".csv,text/csv,text/plain" className="escondido" onChange={e => { const f = e.target.files?.[0]; if (f) escolher(f); e.target.value = ''; }} />
+          <input ref={input} type="file" accept=".csv,.pdf,text/csv,text/plain,application/pdf" className="escondido" onChange={e => { const f = e.target.files?.[0]; if (f) escolher(f); e.target.value = ''; }} />
         </div>
         <p className="mini">Nada é gravado antes de você conferir.</p>
-      </>) : passo.n === 'mapa' ? (
+      </>) : passo.n === 'senha' ? (
+        <Senha nome={passo.arquivo.name} errada={passo.errada} aoAbrir={s => abrirPdf(passo.arquivo, s)} />
+      ) : passo.n === 'mapa' ? (
         <Mapa texto={passo.texto} nome={passo.nome} aoConfirmar={async mapa => {
           await executar(salvar(r, 'cartao', { ...cartao, mapaCsv: mapa }));
           ler(passo.texto, passo.nome, mapa);
@@ -64,11 +85,11 @@ export function Importar() {
       ) : (
         <Previa passo={passo} cartaoId={cartao.id} mudarMes={mes => setPasso({ ...passo, mes })} cancelar={() => setPasso({ n: 'escolher' })}
           gravar={async () => {
-            const res = importarFatura(r, { cartao: cartao.id, mes: passo.mes, leitura: passo.leitura, formato: ehNubank ? 'nubank_csv' : 'csv_generico', arquivoNome: passo.nome, hoje });
+            const res = importarFatura(r, { cartao: cartao.id, mes: passo.mes, leitura: passo.leitura, formato: passo.formato, arquivoNome: passo.nome, hoje });
             const ok = await executar(res.mudanca, `${res.resumo.novas} linhas gravadas na fatura ${mesCurto(passo.mes)}.`, { semDesfazer: true });
             if (!ok) return;
             const imp = aplicar(r, res.mudanca).importacao.find(i => i.fatura === res.resumo.fatura && i.arquivoNome === passo.nome);
-            if (imp) repo.guardarArquivo(imp.id, passo.nome, passo.texto).catch(() => undefined);
+            if (imp) repo.guardarArquivo(imp.id, passo.nome, passo.arquivo).catch(() => undefined);
             ir({ tela: 'conciliacao', cartao: cartao.id, mes: passo.mes });
           }} />
       )}
@@ -136,5 +157,20 @@ function Mapa({ texto, nome, aoConfirmar }: { texto: string; nome: string; aoCon
     {sel('Decimal', m.decimal, [[',', 'vírgula (18,00)'], ['.', 'ponto (18.00)']], v => setM({ ...m, decimal: v as ',' | '.' }))}
     {sel('Compras aparecem como', m.compraPositiva ? '+' : '-', [['+', 'valor positivo'], ['-', 'valor negativo']], v => setM({ ...m, compraPositiva: v === '+' }))}
     <div className="rodape vidro-normal"><button className="bt principal cheio" onClick={() => aoConfirmar({ ...m, pularLinhas: pular })}>Ver as linhas lidas</button></div>
+  </>);
+}
+
+// O BB protege o PDF da fatura com senha. Ela só abre o arquivo aqui no aparelho e não é guardada.
+function Senha({ nome, errada, aoAbrir }: { nome: string; errada: boolean; aoAbrir: (senha: string) => void }) {
+  const [senha, setSenha] = useState('');
+  return (<>
+    <div className="escolha-arquivo"><h2>Este PDF tem senha</h2>
+      <p>Digite a senha da fatura para o app abrir {nome} aqui no aparelho. Ela não fica guardada.</p></div>
+    <form id="f-senha" className="campo" onSubmit={e => { e.preventDefault(); if (senha) aoAbrir(senha); }}>
+      <label htmlFor="pdf-senha">Senha do PDF</label>
+      <div className={`entrada ${errada ? 'erro' : ''}`}><input id="pdf-senha" type="password" autoComplete="off" autoFocus value={senha} onChange={e => setSenha(e.target.value)} aria-invalid={errada} aria-describedby={errada ? 'pdf-senha-erro' : undefined} /></div>
+      {errada ? <p className="ajuda erro" id="pdf-senha-erro"><CircleAlert size={16} aria-hidden="true" />Essa senha não abriu o PDF. Confira e tente de novo.</p> : null}
+    </form>
+    <div className="rodape vidro-normal"><button className="bt principal cheio" type="submit" form="f-senha" disabled={!senha}>Abrir o PDF</button></div>
   </>);
 }

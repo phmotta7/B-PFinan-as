@@ -56,7 +56,7 @@ export function lancarCompra(r: Retrato, n: NovaCompra): Mudanca {
 }
 
 // ---------- Importar fatura (§4.4, §4.5) ----------
-export type PedidoImportacao = { cartao: string; mes: Mes; leitura: Leitura; formato: 'nubank_csv' | 'csv_generico'; arquivoNome: string; hoje: string };
+export type PedidoImportacao = { cartao: string; mes: Mes; leitura: Leitura; formato: 'nubank_csv' | 'csv_generico' | 'bb_pdf'; arquivoNome: string; hoje: string };
 export function importarFatura(r: Retrato, q: PedidoImportacao) {
   const p = new Pacote(r);
   const cartao = r.cartao.find(c => c.id === q.cartao)!;

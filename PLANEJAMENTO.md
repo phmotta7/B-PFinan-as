@@ -126,7 +126,7 @@ Campos: cartão, data, descrição, valor total, nº de parcelas (padrão 1), pa
 Fluxo geral (igual para qualquer formato):
 
 1. Usuário escolhe o cartão e envia o arquivo.
-2. O sistema lê o arquivo com o leitor do formato (Nubank CSV ou CSV genérico).
+2. O sistema lê o arquivo com o leitor do formato (Nubank CSV, BB PDF ou CSV genérico).
 3. **Tela de pré-visualização**: lista todas as linhas lidas, com tipo detectado (compra, parcela X/Y, IOF, estorno, pagamento, anuidade…), fatura de destino e total. Linhas problemáticas destacadas. Nada é gravado ainda.
 4. Usuário confirma → sistema grava as linhas e executa a **conciliação** (§4.5).
 5. Sistema leva à **tela de marcação** com o filtro "sem dono" ativo.
@@ -142,7 +142,15 @@ Fluxo geral (igual para qualquer formato):
 - Na primeira vez, o usuário mapeia colunas: data, descrição, valor, (opcional) parcela, formato de data e de decimal, se débito é positivo ou negativo, linhas de cabeçalho a pular.
 - O mapeamento é salvo por cartão e reutilizado nas próximas importações.
 - Detecção de parcela por padrões comuns na descrição (`X/Y`, `PARC X/Y`, `PARCELA X DE Y`).
-- Quando um arquivo real do BB estiver disponível, cria-se um leitor dedicado (ver §19).
+- Continua disponível para o BB (planilha) e para qualquer outro cartão; o BB ganhou leitor próprio em PDF (§4.4.2.1).
+
+#### 4.4.2.1 Leitor BB (PDF) — decidido em 30/10/2026, com a fatura real de novembro
+- O BB envia a fatura em PDF, protegido por senha. O app abre o PDF no próprio aparelho (pdf.js) e, se pedir senha, pergunta na hora; a senha não é guardada. O arquivo original vai para o armazenamento como os CSV (RN-IM-02).
+- Desenho do PDF: cabeçalho "Data · Transações · País · Moeda · Valor", às vezes em duas colunas na mesma página; a cidade (ou o resto do nome) vem na linha de baixo; títulos de categoria do banco ("Compras Diversas", "Restaurantes"…) entre as compras.
+- A linha com data (dd/mm) e valor é uma compra; a linha logo abaixo, sem data nem valor, completa a descrição. A loja é o nome sem a cidade; na parcelada, o que vem antes de `PARC X/Y`.
+- O PDF não traz o ano: vale o ano de hoje, ou o anterior se a data cair mais de 45 dias no futuro. Nas parcelas, a data é a da compra original.
+- Ignoradas, com o motivo na pré-visualização: o pagamento da fatura (`PGTO…`), os "Lançamentos em processamento" (ainda não lançados pelo banco) e valores em moeda estrangeira (lançar à mão com o valor em reais da fatura fechada).
+- Por enquanto o PDF só é aceito no cartão do BB; os outros continuam em CSV.
 
 #### 4.4.3 Idempotência
 - **RN-IM-01**: cada linha importada recebe uma impressão digital (cartão + data + descrição + valor + parcela + ordem de ocorrência no arquivo). Reimportar o mesmo arquivo não duplica linhas; a pré-visualização mostra "já importada".
@@ -598,7 +606,7 @@ Os arquivos reais de fatura/extrato (com valores e nomes alterados) virarão **c
 | # | Item | Impacto | Como resolver |
 |---|---|---|---|
 | V1 | **Formato real do CSV do Nubank** (colunas, como aparecem as parcelas, se a data das parcelas é a da compra original) | Leitor Nubank e conciliação de parcelas | Pedro/Bruna enviarem uma fatura de exemplo (valores podem ser alterados). |
-| V2 | **Formato de exportação da fatura do BB** (PDF? CSV? TXT?) | Leitor dedicado do BB | Enviar exemplo; até lá, CSV genérico. Se o BB só exportar PDF, avaliar leitor de PDF na etapa 1 ou transcrição via planilha. |
+| V2 | ~~Formato de exportação da fatura do BB~~ | — | **Resolvido (30/10/2026): PDF com senha**; leitor dedicado em §4.4.2.1. |
 | V3 | **Regra exata de corte no dia do fechamento** (RN-CA-02) em cada banco | Compras caindo na fatura errada | Validar com as primeiras faturas reais; ajuste manual disponível (RN-CA-03). |
 | V4 | ~~Saldo pendente passa para o mês seguinte?~~ | — | **Resolvido (28/10/2026): não passa**; fica no fechamento original, conforme RN-FE-14. |
 | V5 | ~~Crédito Shopee~~ | — | **Resolvido (28/10/2026)**: cadastrado como empréstimo; o responsável é escolhido no cadastro inicial. |

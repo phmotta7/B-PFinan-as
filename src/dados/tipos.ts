@@ -17,7 +17,7 @@ export type Compra = {
   observacao?: string | null; origem: 'manual' | 'importacao'; conciliada: boolean; pendencia?: Pendencia | null;
 };
 export type ParcelaCartao = { id: string; compra: string; fatura: string; numero: number; valor: Centavos; status: 'prevista' | 'confirmada'; linhaImportada?: string | null };
-export type Importacao = { id: string; formato: 'nubank_csv' | 'csv_generico'; cartao: string; fatura: string; arquivoNome: string; total: Centavos; linhasNovas: number; linhasRepetidas: number; linhasIgnoradas: number; criadoEm: string };
+export type Importacao = { id: string; formato: 'nubank_csv' | 'csv_generico' | 'bb_pdf'; cartao: string; fatura: string; arquivoNome: string; total: Centavos; linhasNovas: number; linhasRepetidas: number; linhasIgnoradas: number; criadoEm: string };
 export type LinhaImportada = { id: string; importacao: string; cartao: string; dados: Record<string, unknown>; digital: string; situacao: 'nova' | 'conciliada' | 'duplicada' | 'ignorada' };
 export type Divida = { id: string; nome: string; tipo: 'emprestimo' | 'parcelamento_externo' | 'outro'; titular: string; responsavel: string; escopo?: Escopo | null; valorParcela: Centavos; parcelaAtual: number; mesParcelaAtual: Mes; totalParcelas: number; diaVencimento: number; situacao: 'ativa' | 'quitada' };
 export type Fechamento = { id: string; devedor: string; credor: string; mes: Mes; enviadoEm?: string | null };

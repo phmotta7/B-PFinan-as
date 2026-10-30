@@ -10,7 +10,7 @@ export interface Repositorio {
   modo: 'demo' | 'supabase';
   carregar(): Promise<Retrato>;
   gravar(m: Mudanca): Promise<void>;
-  guardarArquivo(importacao: string, nome: string, conteudo: string): Promise<void>;
+  guardarArquivo(importacao: string, nome: string, conteudo: string | Blob): Promise<void>;
 }
 
 // ---------- Modo demonstração ----------
@@ -83,9 +83,9 @@ export class RepoSupabase implements Repositorio {
       if (ids.length) { const { error } = await this.sb.from(t).delete().in('id', ids); if (error) throw new Error(error.message); }
     }
   }
-  async guardarArquivo(importacao: string, nome: string, conteudo: string) {
+  async guardarArquivo(importacao: string, nome: string, conteudo: string | Blob) {
     const { data: casa } = await this.sb.rpc('minha_casa');
     if (!casa) return;
-    await this.sb.storage.from('importacoes').upload(`${casa}/${importacao}-${nome}`, new Blob([conteudo], { type: 'text/csv' }), { upsert: true });
+    await this.sb.storage.from('importacoes').upload(`${casa}/${importacao}-${nome}`, typeof conteudo === 'string' ? new Blob([conteudo], { type: 'text/csv' }) : conteudo, { upsert: true });
   }
 }
