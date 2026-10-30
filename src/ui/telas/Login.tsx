@@ -4,7 +4,7 @@ import { useState } from 'react';
 export function Login({ negado, entrar }: { negado?: string; entrar: () => Promise<void> }) {
   const [entrando, setEntrando] = useState(false);
   return (
-    <div className="login">
+    <main className="login">
       <div className="login-cofre">
         <img src="/marca.svg" alt="" width={64} height={64} />
         <h1>B&amp;P Finanças</h1>
@@ -20,7 +20,7 @@ export function Login({ negado, entrar }: { negado?: string; entrar: () => Promi
         </button>
         <p className="mini" style={{ textAlign: 'center' }}>Só Pedro e Bruna têm acesso.</p>
       </div>
-    </div>
+    </main>
   );
 }
 

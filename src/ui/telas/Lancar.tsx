@@ -1,9 +1,9 @@
 'use client';
 // Lançar compra no cartão (T7, §4.3). Lembra o último cartão e a última pessoa; escopo padrão D6; categoria obrigatória só para Pedro e Bruna (D4).
 import { useState } from 'react';
-import { Calendar, CircleAlert } from 'lucide-react';
+import { Calendar, CircleAlert, CreditCard } from 'lucide-react';
 import { useApp } from '../estado';
-import { Selo, Topo, ddmm, reais } from '../comum';
+import { IconeVazio, Selo, Topo, ddmm, reais } from '../comum';
 import { categoriasVisiveis, lembrarEscopo, usarCategoria } from './Fatura';
 import { lancarCompra } from '@/dados/operacoes';
 import { lerValorDigitado } from '@/dominio/dinheiro';
@@ -35,7 +35,7 @@ export function Lancar() {
   const pessoa = r.pessoa.find(p => p.id === dono);
   const ehUsuario = pessoa?.tipo === 'usuario';
   const cartao = r.cartao.find(c => c.id === cartaoId) ?? r.cartao.find(c => c.ativo);
-  if (!cartao) return <><Topo titulo="Lançar compra" voltar={voltar} /><main className="conteudo"><div className="vazio"><h2>Cadastre um cartão primeiro</h2><p>Em Mais → Cartões.</p></div></main></>;
+  if (!cartao) return <><Topo titulo="Lançar compra" voltar={voltar} /><main className="conteudo"><div className="vazio"><IconeVazio icone={CreditCard} /><h2>Cadastre um cartão primeiro</h2><p>Em Mais → Cartões.</p></div></main></>;
   const destino = faturaDaCompra(cartao, data);
   const fechaNoDia = data === datasDaFatura(cartao, somarMeses(destino, -1)).fechamento; // RN-CA-02: no dia do fechamento vai para a seguinte
   const partes = valor ? dividirEmParcelas(valor, n) : [];
@@ -58,7 +58,7 @@ export function Lancar() {
 
   return (<>
     <Topo titulo="Lançar compra" sub="No cartão" voltar={podeVoltar ? voltar : undefined} />
-    <main className="conteudo sem-barra">
+    <main className="conteudo sem-barra form-estreito">
       <div className="campo"><label htmlFor="f-valor">Valor</label>
         <div className={`entrada valor ${mostra('valor') ? 'erro' : ''}`}><span>R$</span><input id="f-valor" inputMode="decimal" placeholder="0,00" autoComplete="off" value={texto} onChange={e => setTexto(e.target.value.replace(/[^\d,.]/g, ''))} aria-invalid={!!mostra('valor')} aria-describedby="f-parts" /></div>
         {mostra('valor') ? <p className="ajuda erro"><CircleAlert size={16} aria-hidden="true" />{erros.valor}</p> : null}

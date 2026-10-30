@@ -46,7 +46,7 @@ export function Importar() {
             <button key={c.id} aria-pressed={cartaoId === c.id} onClick={() => { setCartaoId(c.id); setErro(''); }}><span className="banco"><LogoBanco banco={c.banco} /><span className="nome-banco">{c.banco === 'nubank' ? 'Nubank' : c.banco === 'bb' ? 'BB' : c.apelido}<small>{c.banco === 'nubank' ? 'Arquivo CSV' : 'CSV ou planilha'}</small></span></span></button>))}
           </div></div>
         {erro ? <Aviso tipo="er" papel="alert"><p>{erro}</p></Aviso> : null}
-        <div className="vazio"><h2>Arquivo da fatura</h2>
+        <div className="escolha-arquivo"><h2>Arquivo da fatura</h2>
           <p>{ehNubank ? 'No app do Nubank, abra a fatura fechada e exporte em CSV. O arquivo vem com data, descrição e valor de cada linha.' : cartao?.mapaCsv ? 'O app já sabe ler o arquivo deste cartão.' : 'Na primeira vez, você mostra ao app qual coluna é a data, a descrição e o valor; ele lembra nas próximas.'}</p>
           <button className="bt principal" onClick={() => input.current?.click()}><FileUp size={20} strokeWidth={1.75} aria-hidden="true" />Escolher arquivo</button>
           <input ref={input} type="file" accept=".csv,text/csv,text/plain" className="escondido" onChange={e => { const f = e.target.files?.[0]; if (f) escolher(f); e.target.value = ''; }} />

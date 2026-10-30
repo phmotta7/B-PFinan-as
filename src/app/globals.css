@@ -93,10 +93,10 @@
     --chao:#0d0f15; --cartao:#161922; --elevado:#1d212c; --vidro:rgba(16,18,26,.86); --linha:#262b37; --linha-forte:#3a404e; --veu:rgba(0,0,0,.55);
     --cofre-1:#232a4d; --cofre-2:#141936;
     --tinta:#eef0f5; --suave:#a5adbd; --apagado:#9aa2b2;
-    --acao:#4d5fd6; --acao-forte:#3f50c0; --acao-texto:#a9b6ff; --acao-leve:#232945; --foco:#a9b6ff;
-    --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#3a2e15; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#0d0f15;
+    --acao:#b8c2f2; --acao-forte:#a3afec; --no-acao:#121a40; --acao-texto:#a9b6ff; --acao-leve:#232945; --foco:#a9b6ff;
+    --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#1d212c; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#0d0f15;
     --inverso:#eef0f5; --no-inverso:#0d0f15; --acao-inverso:#2b3a8f;
-    --sem-dono:#9aa2b2; --anel-pessoa:rgba(255,255,255,.22);
+    --sem-dono:#9aa2b2; --anel-pessoa:rgba(255,255,255,.22); --nubank:#6a1aa8; --bb:#c9b400; --bb-tinta:#002a62;
     --s-cartao:0 1px 0 rgba(255,255,255,.04) inset, 0 8px 22px -14px rgba(0,0,0,.7);
     --s-elevado:0 1px 0 rgba(255,255,255,.05) inset, 0 22px 48px -18px rgba(0,0,0,.8);
     --s-acao:none; --s-folha:0 -10px 40px -12px rgba(0,0,0,.75);
@@ -107,10 +107,10 @@
   --chao:#0d0f15; --cartao:#161922; --elevado:#1d212c; --vidro:rgba(16,18,26,.86); --linha:#262b37; --linha-forte:#3a404e; --veu:rgba(0,0,0,.55);
   --cofre-1:#232a4d; --cofre-2:#141936;
   --tinta:#eef0f5; --suave:#a5adbd; --apagado:#9aa2b2;
-  --acao:#4d5fd6; --acao-forte:#3f50c0; --acao-texto:#a9b6ff; --acao-leve:#232945; --foco:#a9b6ff;
-  --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#3a2e15; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#0d0f15;
+  --acao:#b8c2f2; --acao-forte:#a3afec; --no-acao:#121a40; --acao-texto:#a9b6ff; --acao-leve:#232945; --foco:#a9b6ff;
+  --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#1d212c; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#0d0f15;
   --inverso:#eef0f5; --no-inverso:#0d0f15; --acao-inverso:#2b3a8f;
-  --sem-dono:#9aa2b2; --anel-pessoa:rgba(255,255,255,.22);
+  --sem-dono:#9aa2b2; --anel-pessoa:rgba(255,255,255,.22); --nubank:#6a1aa8; --bb:#c9b400; --bb-tinta:#002a62;
   --s-cartao:0 1px 0 rgba(255,255,255,.04) inset, 0 8px 22px -14px rgba(0,0,0,.7);
   --s-elevado:0 1px 0 rgba(255,255,255,.05) inset, 0 22px 48px -18px rgba(0,0,0,.8);
   --s-acao:none; --s-folha:0 -10px 40px -12px rgba(0,0,0,.75);
@@ -602,3 +602,109 @@ input[type="file"].escondido{position:absolute;width:1px;height:1px;opacity:0;po
 @keyframes entra-lado{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
 @keyframes acende{from{opacity:.0}to{opacity:1}}
 @media (prefers-reduced-motion: reduce){.coluna[data-entrada="lado"] > .conteudo{animation:acende 120ms linear}}
+
+/* ================= Correções da revisão final ================= */
+/* Cartões de banco com o material do cofre: cor do banco chapada, uma luz suave no alto, borda de luz fina, sombra de painel; mais baixos */
+.cartao-banco .plastico{aspect-ratio:auto;min-height:180px;background-image:radial-gradient(120% 90% at 20% 0%,rgba(255,255,255,.2),rgba(255,255,255,0) 62%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),var(--s-painel)}
+.cartao-banco .plastico.bb{background-image:radial-gradient(120% 90% at 20% 0%,rgba(255,255,255,.35),rgba(255,255,255,0) 62%)}
+
+/* Lançar: o valor num campo branco de 72, "R$" pequeno no alto, como no cofre */
+.entrada.valor{min-height:72px;background:var(--cartao);border-radius:var(--r-campo);box-shadow:inset 0 0 0 1.5px var(--linha-forte);padding:0 16px}
+.entrada.valor:focus-within{box-shadow:inset 0 0 0 2px var(--foco)}
+.entrada.valor.erro{box-shadow:inset 0 0 0 2px var(--erro)}
+.entrada.valor span{font:600 16px/1 var(--fonte);align-self:flex-start;margin-top:16px}
+.entrada.valor input::placeholder{color:var(--apagado)}
+
+/* Lojas sem logo: placa quadrada com duas letras (nunca um círculo, que lembra o selo de pessoa) */
+.logo.mono{border-radius:10px;font:600 12px/1 var(--fonte);letter-spacing:.02em;background:var(--chao);color:var(--suave)}
+/* "Para conferir" tem selo próprio e uma fatia visível na régua */
+.selo.c{color:var(--acao-texto)}
+.selo.c b{background:var(--acao-leve);color:var(--acao-texto);border:0;box-shadow:none}
+.heroi .selo.c{color:var(--cofre-tinta)}
+.heroi .selo.c b{background:rgba(255,255,255,.14);color:var(--cofre-tinta)}
+.regua-fatia.c{background:transparent;box-shadow:inset 0 0 0 1px var(--cofre-suave)}
+
+/* Vazios: um ícone por situação, num círculo suave */
+.vazio::before{display:none}
+.vazio-icone{width:48px;height:48px;border-radius:50%;background:var(--acao-leve);color:var(--acao-texto);display:grid;place-items:center;margin-bottom:4px}
+.escolha-arquivo{background:var(--cartao);border-radius:var(--r-cartao);box-shadow:var(--s-cartao);padding:24px 20px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.escolha-arquivo h2{font:var(--t-titulo)}
+.escolha-arquivo p{color:var(--suave);font:var(--t-apoio)}
+
+/* Fechamentos: ações numa linha, detalhe como linha com seta, duas colunas no computador */
+.fech-acoes{display:flex;gap:8px;flex-wrap:wrap}
+.fech-acoes .bt{flex:1 1 auto;white-space:nowrap;padding:0 14px;min-height:44px;font-size:14px}
+.ver-detalhe{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;font:600 14px/1 var(--fonte);color:var(--acao-texto);border-top:1px solid var(--linha);padding-top:4px}
+.ver-detalhe:focus-visible{outline:2.5px solid var(--foco);outline-offset:2px}
+.ver-detalhe svg{transition:transform var(--d-curta) var(--ease-saida)}
+.ver-detalhe[aria-expanded="true"] svg{transform:rotate(180deg)}
+.grade-fech{display:flex;flex-direction:column;gap:14px}
+@media (min-width:1024px){.grade-fech{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}
+
+/* Computador: Lançar com largura de formulário */
+
+
+/* Escuro: faixa de atenção neutra com borda âmbar fina */
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .aviso:not(.er):not(.ok):not(.info){box-shadow:inset 0 0 0 1px rgba(242,196,107,.35)}}
+:root[data-theme="dark"] .aviso:not(.er):not(.ok):not(.info){box-shadow:inset 0 0 0 1px rgba(242,196,107,.35)}
+.heroi-nota{display:block;margin-top:4px;font:var(--t-apoio);color:var(--cofre-suave)}
+@media (min-width:1024px){.conteudo.form-estreito > *{width:100%;max-width:560px}}
+
+/* ================= Correções da 2ª revisão: casos extremos, movimento, acessibilidade ================= */
+/* Nomes longos encolhem com reticências em vez de empurrar a coluna vizinha */
+.selo{min-width:0;max-width:100%}
+.selo-nome{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.selo > b{flex:none}
+.legenda li > * > .selo{max-width:100%}
+.pessoas{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pessoas button{min-width:0}
+.quem > * > :first-child{min-width:0;flex:1 1 auto}
+.quem .v{flex:none}
+.fech-cab{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;min-width:0}
+.fech-cab .pil{flex:none}
+.folha .cab p{overflow-wrap:anywhere}
+.dica-linha{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dica-linha .bt.link{flex:none;min-height:44px}
+h2.dia{margin:0}
+.cartao h2{font:var(--t-rotulo);color:var(--suave)}
+
+/* Totais enormes cabem no cofre: o número encolhe com a largura do painel */
+.heroi{container-type:inline-size}
+.heroi .valor-gg{font-size:min(56px,15.5cqi)}
+@media (min-width:1024px){.heroi .valor-gg{font-size:min(64px,15.5cqi)}}
+.plastico, .grade-fech .cartao{container-type:inline-size}
+.plastico .valor-g, .grade-fech .valor-g{font-size:min(34px,11cqi)}
+
+/* Avisos rápidos: largura do celular, texto quebra, botão não espreme */
+.toast-titulo{min-width:0;overflow-wrap:anywhere}
+.toast-acao{flex:none}
+[data-sonner-toast]{transition-duration:220ms!important;transition-timing-function:var(--ease-saida)!important}
+
+/* Logo vazio (IOF) sem borda */
+.lin .logo.vazio{box-shadow:none}
+
+/* Diálogo: sai mais rápido do que entra e, fechado, não ocupa o teclado */
+.dialogo:not(.on){visibility:hidden;transition:opacity 140ms var(--ease-saida),transform 140ms var(--ease-saida),visibility 0s 140ms}
+.massa:not(.on){visibility:hidden}
+
+/* Foco visível no "Recomeçar" da faixa de demonstração */
+.faixa-demo button:focus-visible{outline:2.5px solid var(--foco);outline-offset:2px;border-radius:4px}
+
+/* Contraste das bordas de campo (3:1 com o fundo) */
+:root{--borda-campo:#8a92a3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--borda-campo:#5b6273}}
+:root[data-theme="dark"]{--borda-campo:#5b6273}
+.entrada, .entrada.valor, .chip{box-shadow:inset 0 0 0 1.5px var(--borda-campo)}
+.chip[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--acao-texto)}
+.entrada:focus-within, .entrada.valor:focus-within{box-shadow:inset 0 0 0 2px var(--foco)}
+.entrada.erro, .entrada.valor.erro{box-shadow:inset 0 0 0 2px var(--erro)}
+
+/* A fatia da Eliete, verde escuro, ganha um contorno de luz no painel escuro (a cor dela não muda) */
+.heroi .regua-fatia.e{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+
+@media (prefers-reduced-motion: reduce){
+  .ver-detalhe svg{transition:none}
+  [data-sonner-toast]{transition:opacity 150ms linear!important;transform:none!important}
+  .dialogo{transition:opacity 120ms linear!important;transform:translateY(-50%)!important}
+}

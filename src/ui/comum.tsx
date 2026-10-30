@@ -1,7 +1,7 @@
 'use client';
 // Peças comuns da interface (DESIGN.md): selos, logos, cabeçalho, pílulas, esqueleto, folha com mola e diálogo.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { ChevronLeft, ChevronRight, CircleAlert } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CircleAlert, Copy, type LucideIcon } from 'lucide-react';
 import { formatarReais } from '@/dominio/dinheiro';
 import type { Pessoa } from '@/dados/tipos';
 
@@ -15,13 +15,18 @@ export const diaLongo = (d: string) => { const x = new Date(d + 'T12:00:00'); re
 export const prefereMenosMovimento = () => typeof window !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const CLASSE: Record<string, string> = { Pedro: 'p', Bruna: 'b', Eliete: 'e', Lucimar: 'l' };
+/** Preto ou branco, o que tiver mais contraste com a cor de fundo. */
+const letraSobre = (hex: string) => {
+  const n = parseInt(hex.replace('#', '').slice(0, 6), 16), lin = (c: number) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  return 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255) > 0.179 ? '#11141c' : '#fff';
+};
 /** Selo de pessoa: cor fixa + inicial + nome; nunca só a cor. */
 export function Selo({ pessoa, grande, extra, semDono }: { pessoa?: Pessoa | null; grande?: boolean; extra?: ReactNode; semDono?: string }) {
-  if (!pessoa) return <span className={`selo x${grande ? ' g' : ''}`}><b aria-hidden="true">?</b>{semDono ?? 'Sem dono'}{extra}</span>;
+  if (!pessoa) return <span className={`selo x${grande ? ' g' : ''}`}><b aria-hidden="true">?</b><span className="selo-nome">{semDono ?? 'Sem dono'}</span>{extra}</span>;
   const cl = CLASSE[pessoa.nome];
   return (
     <span className={`selo ${cl ?? ''}${grande ? ' g' : ''}`}>
-      <b aria-hidden="true" style={cl ? undefined : { background: pessoa.cor, color: '#fff' }}>{pessoa.nome[0]}</b>{pessoa.nome}{extra}
+      <b aria-hidden="true" style={cl ? undefined : { background: pessoa.cor, color: letraSobre(pessoa.cor) }}>{pessoa.nome[0]}</b><span className="selo-nome" title={pessoa.nome}>{pessoa.nome}</span>{extra}
     </span>
   );
 }
@@ -33,7 +38,9 @@ export function Logo({ loja, vazio }: { loja: string; vazio?: boolean }) {
   if (vazio) return <span className="logo vazio" aria-hidden="true" />;
   const k = LOGOS.find(([p]) => loja.toLowerCase().includes(p));
   if (k) return <span className="logo" aria-hidden="true"><img src={`/logos/${k[1]}.svg`} alt="" /></span>;
-  return <span className="logo" aria-hidden="true">{(loja.replace(/[^A-Za-zÀ-ú]/g, '')[0] ?? '?').toUpperCase()}</span>;
+  const palavras = loja.replace(/[^A-Za-zÀ-ú ]/g, ' ').trim().split(/\s+/).filter(Boolean);
+  const mono = (palavras.length > 1 ? palavras[0][0] + palavras[1][0] : (palavras[0] ?? '?').slice(0, 2)).toUpperCase();
+  return <span className="logo mono" aria-hidden="true">{mono}</span>;
 }
 export const LogoBanco = ({ banco }: { banco: string }) =>
   banco === 'nubank' || banco === 'bb' ? <span className="logo" aria-hidden="true"><img src={`/logos/${banco}.svg`} alt="" /></span> : <Logo loja={banco} />;
@@ -56,13 +63,17 @@ export function Topo({ titulo, sub, voltar, direita, abaixo }: { titulo: string;
 
 const MESES_LONGOS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 /** Troca de mês num controle só: anterior, nome do mês, próximo. */
+let ladoDoFoco = 0; // a tela é recriada a cada mês; guarda qual botão estava com o foco para devolvê-lo
 export function SeletorMes({ mes, mudar, rotulo = 'Mês' }: { mes: string; mudar: (k: number) => void; rotulo?: string }) {
   const nome = MESES_LONGOS[Number(mes.slice(5, 7)) - 1];
+  const ant = useRef<HTMLButtonElement>(null), prox = useRef<HTMLButtonElement>(null);
+  useEffect(() => { if (ladoDoFoco) (ladoDoFoco < 0 ? ant : prox).current?.focus({ preventScroll: true }); ladoDoFoco = 0; }, []);
+  const trocar = (k: number) => { ladoDoFoco = document.activeElement === (k < 0 ? ant : prox).current ? k : 0; mudar(k); };
   return (
     <div className="seletor-mes" role="group" aria-label={rotulo}>
-      <button onClick={() => mudar(-1)} aria-label="Mês anterior"><ChevronLeft size={20} strokeWidth={1.75} aria-hidden="true" /></button>
-      <b aria-live="polite">{nome[0].toUpperCase() + nome.slice(1)} de {mes.slice(0, 4)}</b>
-      <button onClick={() => mudar(1)} aria-label="Próximo mês"><ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" /></button>
+      <button ref={ant} onClick={() => trocar(-1)} aria-label="Mês anterior" aria-describedby="mes-atual"><ChevronLeft size={20} strokeWidth={1.75} aria-hidden="true" /></button>
+      <b id="mes-atual">{nome[0].toUpperCase() + nome.slice(1)} de {mes.slice(0, 4)}</b>
+      <button ref={prox} onClick={() => trocar(1)} aria-label="Próximo mês" aria-describedby="mes-atual"><ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" /></button>
     </div>
   );
 }
@@ -86,6 +97,7 @@ export function Folha({ aberta, aoFechar, titulo, sub, children }: { aberta: boo
   const est = useRef({ y: 0, v: 0, alvo: 0, raf: 0, t0: 0, arrastando: false, inicio: 0, base: 0, hist: [] as { y: number; t: number }[] });
   const [visivel, setVisivel] = useState(aberta);
   const fecharRef = useRef(aoFechar); fecharRef.current = aoFechar;
+  const abridor = useRef<HTMLElement | null>(null), fundo = useRef<Element[]>([]);
 
   const altura = () => (ref.current?.getBoundingClientRect().height ?? 600) + 24;
   const pinta = () => { if (ref.current) ref.current.style.transform = `translateY(${est.current.y}px)`; };
@@ -102,6 +114,12 @@ export function Folha({ aberta, aoFechar, titulo, sub, children }: { aberta: boo
   };
 
   useEffect(() => {
+    // Com a folha aberta o fundo fica fora do alcance; ao fechar, o foco volta para quem abriu
+    if (aberta) {
+      abridor.current = document.activeElement as HTMLElement | null;
+      const irmaos = ref.current?.parentElement ? [...ref.current.parentElement.children].filter(c => c !== ref.current && !c.classList.contains('veu')) : [];
+      fundo.current = [...irmaos, ...document.querySelectorAll('.lateral')]; fundo.current.forEach(el => el.setAttribute('inert', ''));
+    } else { fundo.current.forEach(el => el.removeAttribute('inert')); fundo.current = []; if (abridor.current?.isConnected) abridor.current.focus({ preventScroll: true }); abridor.current = null; }
     if (aberta) { setVisivel(true); requestAnimationFrame(() => { const e = est.current; if (!e.raf && e.y === 0) { e.y = altura(); pinta(); } molaPara(0); ref.current?.querySelector<HTMLElement>('button, input, select, textarea')?.focus({ preventScroll: true }); }); }
     else if (visivel) molaPara(altura());
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,7 +127,16 @@ export function Folha({ aberta, aoFechar, titulo, sub, children }: { aberta: boo
   useEffect(() => () => cancelAnimationFrame(est.current.raf), []);
   useEffect(() => {
     if (!aberta) return;
-    const esc = (ev: KeyboardEvent) => { if (ev.key === 'Escape') fecharRef.current(); };
+    const esc = (ev: KeyboardEvent) => {
+      if (document.querySelector('.dialogo.on')) return; // o diálogo por cima responde primeiro
+      if (ev.key === 'Escape') fecharRef.current();
+      if (ev.key === 'Tab' && ref.current) { // o foco não sai da folha
+        const f = [...ref.current.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input, select, textarea')];
+        if (!f.length) return;
+        const p = f[0], u = f[f.length - 1];
+        if (ev.shiftKey && document.activeElement === p) { ev.preventDefault(); u.focus(); } else if (!ev.shiftKey && document.activeElement === u) { ev.preventDefault(); p.focus(); }
+      }
+    };
     window.addEventListener('keydown', esc); return () => window.removeEventListener('keydown', esc);
   }, [aberta]);
 
@@ -149,17 +176,27 @@ export type Confirmacao = { titulo: string; texto: string; rotulo: string; aoCon
 export function Dialogo({ pedido, aoFechar }: { pedido: Confirmacao; aoFechar: () => void }) {
   const manter = useRef<HTMLButtonElement>(null);
   const [ultimo, setUltimo] = useState(pedido);
-  useEffect(() => { if (pedido) { setUltimo(pedido); setTimeout(() => manter.current?.focus(), 0); } }, [pedido]);
+  const caixa = useRef<HTMLDivElement>(null), abridor = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (pedido) { abridor.current = document.activeElement as HTMLElement | null; setUltimo(pedido); setTimeout(() => manter.current?.focus(), 0); }
+    else if (abridor.current) { if (abridor.current.isConnected) abridor.current.focus({ preventScroll: true }); abridor.current = null; }
+  }, [pedido]);
   useEffect(() => {
     if (!pedido) return;
-    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') aoFechar(); };
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') aoFechar();
+      if (e.key === 'Tab') { // o foco fica entre os dois botões
+        const f = [...(caixa.current?.querySelectorAll<HTMLElement>('button') ?? [])], i = f.indexOf(document.activeElement as HTMLElement);
+        e.preventDefault(); f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length]?.focus();
+      }
+    };
     window.addEventListener('keydown', esc); return () => window.removeEventListener('keydown', esc);
   }, [pedido, aoFechar]);
   const p = pedido ?? ultimo;
   return (
     <>
       {pedido ? <div className="veu on" onClick={aoFechar} /> : null}
-      <div className={`dialogo ${pedido ? 'on' : ''}`} role="alertdialog" aria-modal="true" aria-hidden={!pedido} aria-labelledby="dlg-t" aria-describedby="dlg-p">
+      <div ref={caixa} className={`dialogo ${pedido ? 'on' : ''}`} role="alertdialog" aria-modal="true" aria-hidden={!pedido} inert={!pedido} aria-labelledby="dlg-t" aria-describedby="dlg-p">
         <h2 id="dlg-t">{p?.titulo}</h2><p id="dlg-p">{p?.texto}</p>
         <div className="acoes" style={{ marginTop: 6 }}>
           <button ref={manter} className="bt secundario" onClick={aoFechar}>Manter</button>
@@ -176,16 +213,17 @@ export function Valor({ c, tamanho = 'g', className = '' }: { c: number; tamanho
   const neg = txt.startsWith('-');
   const [inteiro, cent] = txt.replace(/^-?R\$ /, '').split(',');
   return (
-    <span className={`valor valor-${tamanho} num ${className}`} aria-label={txt}>
-      <span className="valor-moeda" aria-hidden="true">{neg ? '-' : ''}R$</span>
-      <span className="valor-inteiro" aria-hidden="true">{inteiro}</span>
+    <span className={`valor valor-${tamanho} num ${neg ? 'neg ' : ''}${className}`}>
+      <span className="sr">{txt}</span>
+      <span className="valor-moeda" aria-hidden="true">R$</span>
+      <span className="valor-inteiro" aria-hidden="true">{neg ? '\u2212' : ''}{inteiro}</span>
       <span className="valor-cent" aria-hidden="true">,{cent}</span>
     </span>
   );
 }
 
 // ---------- Divisão do total por pessoa: o único gráfico, com a pergunta "de quem é esse dinheiro?" ----------
-export type FatiaDivisao = { pessoa: Pessoa | null; valor: number; rotulo?: string; acao?: () => void };
+export type FatiaDivisao = { pessoa: Pessoa | null; valor: number; rotulo?: string; conferir?: boolean; acao?: () => void };
 export function Divisao({ total, fatias, sub, children }: { total: number; fatias: FatiaDivisao[]; sub?: ReactNode; children?: ReactNode }) {
   const visiveis = fatias.filter(f => f.valor > 0);
   const descricao = fatias.map(f => `${f.rotulo ?? f.pessoa?.nome ?? 'Sem dono'} ${reais(f.valor)}`).join(', ');
@@ -194,11 +232,14 @@ export function Divisao({ total, fatias, sub, children }: { total: number; fatia
       <Valor c={total} tamanho="gg" />
       {sub ? <p className="heroi-sub">{sub}</p> : null}
       <div className="regua" role="img" aria-label={`Divisão: ${descricao}`}>
-        {visiveis.map((f, i) => <span key={i} className={`regua-fatia ${f.pessoa ? classePessoa(f.pessoa) : 'x'}`} style={{ flexGrow: f.valor }} />)}
+        {visiveis.map((f, i) => {
+          const cl = f.pessoa ? classePessoa(f.pessoa) : f.conferir ? 'c' : 'x';
+          return <span key={i} className={`regua-fatia ${cl}`} style={{ flexGrow: f.valor, ...(cl === 'outro' ? { background: f.pessoa!.cor } : null) }} />;
+        })}
       </div>
       <ul className="legenda num">
         {fatias.map((f, i) => {
-          const conteudo = <><Selo pessoa={f.pessoa} semDono={f.rotulo} /><Valor c={f.valor} tamanho="m" /></>;
+          const conteudo = <>{f.conferir ? <span className="selo c"><b aria-hidden="true"><Copy size={12} strokeWidth={2.25} /></b>{f.rotulo}</span> : <Selo pessoa={f.pessoa} semDono={f.rotulo} />}<Valor c={f.valor} tamanho="m" /></>;
           return <li key={i}>{f.acao ? <button onClick={f.acao}>{conteudo}</button> : <div>{conteudo}</div>}</li>;
         })}
       </ul>
@@ -207,3 +248,6 @@ export function Divisao({ total, fatias, sub, children }: { total: number; fatia
   );
 }
 export const classePessoa = (p: Pessoa) => ({ Pedro: 'p', Bruna: 'b', Eliete: 'e', Lucimar: 'l' } as Record<string, string>)[p.nome] ?? 'outro';
+
+/** Ícone de estado vazio: um por situação, num círculo suave. */
+export const IconeVazio = ({ icone: I }: { icone: LucideIcon }) => <span className="vazio-icone" aria-hidden="true"><I size={22} strokeWidth={1.75} /></span>;

@@ -93,10 +93,10 @@
     --chao:#0d0f15; --cartao:#161922; --elevado:#1d212c; --vidro:rgba(16,18,26,.86); --linha:#262b37; --linha-forte:#3a404e; --veu:rgba(0,0,0,.55);
     --cofre-1:#232a4d; --cofre-2:#141936;
     --tinta:#eef0f5; --suave:#a5adbd; --apagado:#9aa2b2;
-    --acao:#4d5fd6; --acao-forte:#3f50c0; --acao-texto:#a9b6ff; --acao-leve:#232945; --foco:#a9b6ff;
-    --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#3a2e15; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#0d0f15;
+    --acao:#b8c2f2; --acao-forte:#a3afec; --no-acao:#121a40; --acao-texto:#a9b6ff; --acao-leve:#232945; --foco:#a9b6ff;
+    --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#1d212c; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#0d0f15;
     --inverso:#eef0f5; --no-inverso:#0d0f15; --acao-inverso:#2b3a8f;
-    --sem-dono:#9aa2b2; --anel-pessoa:rgba(255,255,255,.22);
+    --sem-dono:#9aa2b2; --anel-pessoa:rgba(255,255,255,.22); --nubank:#6a1aa8; --bb:#c9b400; --bb-tinta:#002a62;
     --s-cartao:0 1px 0 rgba(255,255,255,.04) inset, 0 8px 22px -14px rgba(0,0,0,.7);
     --s-elevado:0 1px 0 rgba(255,255,255,.05) inset, 0 22px 48px -18px rgba(0,0,0,.8);
     --s-acao:none; --s-folha:0 -10px 40px -12px rgba(0,0,0,.75);
@@ -107,10 +107,10 @@
   --chao:#0d0f15; --cartao:#161922; --elevado:#1d212c; --vidro:rgba(16,18,26,.86); --linha:#262b37; --linha-forte:#3a404e; --veu:rgba(0,0,0,.55);
   --cofre-1:#232a4d; --cofre-2:#141936;
   --tinta:#eef0f5; --suave:#a5adbd; --apagado:#9aa2b2;
-  --acao:#4d5fd6; --acao-forte:#3f50c0; --acao-texto:#a9b6ff; --acao-leve:#232945; --foco:#a9b6ff;
-  --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#3a2e15; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#0d0f15;
+  --acao:#b8c2f2; --acao-forte:#a3afec; --no-acao:#121a40; --acao-texto:#a9b6ff; --acao-leve:#232945; --foco:#a9b6ff;
+  --ok:#6fd3a6; --ok-leve:#173328; --atencao:#f2c46b; --atencao-leve:#1d212c; --erro:#ff8f87; --erro-leve:#3d1c1a; --no-erro:#0d0f15;
   --inverso:#eef0f5; --no-inverso:#0d0f15; --acao-inverso:#2b3a8f;
-  --sem-dono:#9aa2b2; --anel-pessoa:rgba(255,255,255,.22);
+  --sem-dono:#9aa2b2; --anel-pessoa:rgba(255,255,255,.22); --nubank:#6a1aa8; --bb:#c9b400; --bb-tinta:#002a62;
   --s-cartao:0 1px 0 rgba(255,255,255,.04) inset, 0 8px 22px -14px rgba(0,0,0,.7);
   --s-elevado:0 1px 0 rgba(255,255,255,.05) inset, 0 22px 48px -18px rgba(0,0,0,.8);
   --s-acao:none; --s-folha:0 -10px 40px -12px rgba(0,0,0,.75);

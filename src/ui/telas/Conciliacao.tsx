@@ -1,8 +1,8 @@
 'use client';
 // Conciliação (T6): duplicidades, ambíguas, parcelas reconhecidas e esperadas não encontradas (§4.5).
-import { Check, ChevronRight, Trash2, User } from 'lucide-react';
+import { Check, ChevronRight, Trash2, User, CheckCheck } from 'lucide-react';
 import { useApp } from '../estado';
-import { Aviso, Logo, Selo, Topo, ddmm, reais } from '../comum';
+import { IconeVazio, Aviso, Logo, Selo, Topo, ddmm, reais } from '../comum';
 import { confirmarDuplicidade, escolherCandidata, excluirParcelaPrevista, moverParaProximaFatura, negarDuplicidade } from '@/dados/operacoes';
 import { aplicar } from '@/dados/mudanca';
 import { linhasDaFatura, parcelasNaoEncontradas } from '@/dados/consultas';
@@ -21,7 +21,7 @@ export function Conciliacao() {
 
   if (!fatura || !cartao) return (<>
     <Topo titulo="Conferir importação" voltar={voltar} />
-    <main className="conteudo"><div className="vazio"><h2>Nada para conferir</h2><p>Depois de importar uma fatura, aparecem aqui as compras que você já tinha lançado e as parcelas que o app reconheceu.</p>
+    <main className="conteudo"><div className="vazio"><IconeVazio icone={CheckCheck} /><h2>Nada para conferir</h2><p>Depois de importar uma fatura, aparecem aqui as compras que você já tinha lançado e as parcelas que o app reconheceu.</p>
       <button className="bt principal" onClick={() => ir({ tela: 'importar' })}>Importar fatura</button></div></main>
   </>);
 

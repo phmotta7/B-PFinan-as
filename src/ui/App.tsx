@@ -26,10 +26,12 @@ function Casca() {
   const Tela = TELAS[rota.tela] ?? Inicio;
   const comBarra = !SEM_BARRA.includes(rota.tela);
   // Transição com propósito: entrar numa tela mais funda desliza da direita; trocar de aba ou de mês só acende
-  const anterior = useRef(rota.tela);
-  const entrada = rota.tela === anterior.current ? 'acende' : RAIZ.includes(rota.tela) ? 'acende' : RAIZ.includes(anterior.current) ? 'lado' : 'acende';
-  useEffect(() => { anterior.current = rota.tela; }, [rota.tela]);
-  const aba = RAIZ.includes(rota.tela) ? rota.tela : rota.tela === 'fatura' ? 'cartoes' : DE_MAIS.includes(rota.tela) ? 'mais' : 'inicio';
+  // A entrada é decidida uma vez por tela: outras atualizações (marcar uma linha, abrir um diálogo) não repetem a animação
+  const chave = rota.tela + (rota.cartao ?? '') + (rota.mes ?? '') + (rota.filtro ?? '');
+  const ent = useRef({ chave, tela: rota.tela, valor: 'acende' });
+  if (ent.current.chave !== chave) ent.current = { chave, tela: rota.tela, valor: rota.tela === ent.current.tela || RAIZ.includes(rota.tela) ? 'acende' : RAIZ.includes(ent.current.tela) ? 'lado' : 'acende' };
+  const entrada = ent.current.valor;
+  const aba = rota.tela === 'lancar' ? 'lancar' : RAIZ.includes(rota.tela) ? rota.tela : rota.tela === 'fatura' ? 'cartoes' : DE_MAIS.includes(rota.tela) ? 'mais' : 'inicio';
   return (
     <div className="tela">
       <nav className="lateral" aria-label="Navegação principal">
@@ -43,7 +45,7 @@ function Casca() {
         <div className="faixa-demo" role="note"><span>Modo demonstração · dados fictícios · hoje é {hoje.split('-').reverse().join('/')}</span>
           <button onClick={() => confirmar({ titulo: 'Recomeçar a demonstração?', texto: 'Os dados fictícios voltam ao começo do cenário (03/11, antes de importar).', rotulo: 'Recomeçar', aoConfirmar: recomecarDemo })}>Recomeçar</button></div>
       ) : null}
-      <Tela key={rota.tela + (rota.cartao ?? '') + (rota.mes ?? '') + (rota.filtro ?? '')} />
+      <Tela key={chave} />
       {comBarra ? (
         <nav className="barra" aria-label="Navegação">{ABAS.map(([k, nome, Icone]) => k === 'lancar'
           ? <button key={k} className="lancar" onClick={() => ir({ tela: 'lancar' })}><span><Icone size={24} strokeWidth={1.75} aria-hidden="true" /></span>{nome}</button>
@@ -52,7 +54,7 @@ function Casca() {
       ) : null}
       </div>
       <Dialogo pedido={confirmacao} aoFechar={fecharConfirmacao} />
-      <Toaster position="bottom-center" offset={comBarra ? 100 : 24} mobileOffset={comBarra ? 100 : 24} duration={5000} visibleToasts={1}
+      <Toaster position="bottom-center" offset={{ bottom: comBarra ? 100 : 24 }} mobileOffset={{ bottom: comBarra ? 100 : 24, left: 16, right: 16 }} duration={5000} visibleToasts={1}
         toastOptions={{ unstyled: true, classNames: { toast: 'toast on', title: 'toast-titulo', actionButton: 'toast-acao', error: 'toast-erro' } }} />
     </div>
   );

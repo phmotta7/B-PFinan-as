@@ -1,9 +1,9 @@
 'use client';
 // Mais (D10/D11): Dívidas, conferência, importação e Configurações (T15): pessoas, cartões, categorias, e-mails, exportar.
 import { useState, type ReactNode } from 'react';
-import { ChevronRight, Layers, Copy, FileUp, User, CreditCard, SlidersHorizontal, Mail, Download, Plus, Trash2 } from 'lucide-react';
+import { ChevronRight, Layers, Copy, FileUp, User, CreditCard, SlidersHorizontal, Mail, Download, Plus, Trash2, Landmark } from 'lucide-react';
 import { useApp } from '../estado';
-import { Folha, LogoBanco, Selo, Topo, reais } from '../comum';
+import { IconeVazio, Folha, LogoBanco, Selo, Topo, reais } from '../comum';
 import { novoId, remover, salvar } from '@/dados/operacoes';
 import { lerValorDigitado } from '@/dominio/dinheiro';
 import { mesCurto } from '@/dominio/mensagem';
@@ -52,7 +52,7 @@ export function Dividas() {
   return (<>
     <Topo titulo="Dívidas" sub="Pagas pela titular e repassadas no fechamento" voltar={voltar} />
     <main className="conteudo">
-      {!r.divida.length ? <div className="vazio"><h2>Nenhuma dívida cadastrada</h2><p>Cadastre o empréstimo ou parcelamento que alguém paga por meio da Bruna. A parcela do mês entra no fechamento dessa pessoa, no bloco &ldquo;Outros&rdquo;.</p></div> : null}
+      {!r.divida.length ? <div className="vazio"><IconeVazio icone={Landmark} /><h2>Nenhuma dívida cadastrada</h2><p>Cadastre o empréstimo ou parcelamento que alguém paga por meio da Bruna. A parcela do mês entra no fechamento dessa pessoa, no bloco &ldquo;Outros&rdquo;.</p></div> : null}
       {r.divida.map(d => { const n = noMes.find(x => x.id === d.id); return (
         <button key={d.id} className="cartao toque" onClick={() => setEditar(d)} aria-label={`Editar ${d.nome}`}>
           <div className="linha-topo"><b style={{ font: 'var(--t-forte)' }}>{d.nome}</b>{n ? <span className="parc num">{n.atual}/{n.total} em {mesCurto(mesDeTrabalho)}</span> : <span className="pil neutra">{d.situacao === 'quitada' ? 'Quitada' : 'Fora do mês'}</span>}</div>
@@ -213,7 +213,7 @@ export function Exportar() {
   };
   return (<>
     <Topo titulo="Exportar dados" voltar={voltar} />
-    <main className="conteudo"><div className="vazio"><h2>Cópia de tudo</h2>
+    <main className="conteudo"><div className="vazio"><IconeVazio icone={Download} /><h2>Cópia de tudo</h2>
       <p>Gera arquivos com cartões, faturas, marcações, dívidas, fechamentos e pagamentos, para guardar onde você quiser. Vale fazer uma vez por mês.</p>
       <div className="acoes"><button className="bt principal medio" onClick={() => baixar(`bp-financas-${hoje}.json`, JSON.stringify(r, null, 2), 'application/json')}><Download size={20} aria-hidden="true" />Tudo (JSON)</button>
         <button className="bt secundario medio" onClick={() => baixar(`bp-financas-linhas-${hoje}.csv`, '﻿' + csv(), 'text/csv')}>Linhas (CSV)</button></div></div></main>

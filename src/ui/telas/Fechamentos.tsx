@@ -1,10 +1,10 @@
 'use client';
 // Fechamentos (T8, §5): uma linha por pessoa com total, pago, em aberto, situação; WhatsApp, Copiar, Registrar pagamento.
 import { useState } from 'react';
-import { MessageCircle, Copy, Check, CircleAlert } from 'lucide-react';
+import { MessageCircle, Copy, Check, CircleAlert, ReceiptText, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { useApp } from '../estado';
-import { Folha, SeletorMes, Selo, Topo, Valor, ddmm, mesLongo, reais } from '../comum';
+import { IconeVazio, Folha, SeletorMes, Selo, Topo, Valor, ddmm, mesLongo, reais } from '../comum';
 import { aReceberAntesDe, faturaDe, fechamentosDoMes, gastosDaTitularNoMes, linhasDaFatura, mensagemDe } from '@/dados/consultas';
 import { marcarEnviado, registrarPagamento } from '@/dados/operacoes';
 import { linkWhatsApp, mesCurto } from '@/dominio/mensagem';
@@ -36,24 +36,24 @@ export function Fechamentos() {
       {semDono && !(naoImportadas.length && mes >= mesDeTrabalho) ? <div className="aviso" role="status"><CircleAlert size={20} aria-hidden="true" /><div><p>{semDono} linhas desta fatura ainda sem dono, o total pode mudar.</p>
         <button className="bt link" onClick={() => ir({ tela: 'fatura', cartao: linhas.find(l => !l.compra.pagador || l.pendente)?.compra.cartao, mes, filtro: 'sem' })}>Marcar agora</button></div></div> : null}
       {todosAvisados ? <div className="aviso ok" role="status"><Check size={20} aria-hidden="true" /><p>Todos avisados. Agora é registrar os Pix quando chegarem.</p></div> : null}
-      {!comItens.length ? <div className="vazio"><h2>Nenhum fechamento em {mesLongo(mes).toLowerCase()}</h2><p>Os fechamentos aparecem quando alguém além da {credor?.nome ?? 'titular'} tem compras numa fatura que vence no mês.</p></div> : null}
-      {comItens.map(f => {
+      {!comItens.length ? <div className="vazio"><IconeVazio icone={ReceiptText} /><h2>Nenhum fechamento em {mesLongo(mes).toLowerCase()}</h2><p>Os fechamentos aparecem quando alguém além da {credor?.nome ?? 'titular'} tem compras numa fatura que vence no mês.</p></div> : null}
+      {comItens.length ? <div className="grade-fech">{comItens.map(f => {
         const pil = f.situacao === 'Pago' ? 'ok' : 'at';
         const aberta = aberto === f.pessoa.id;
         return (
           <section key={f.pessoa.id} className="cartao" aria-label={`Fechamento de ${f.pessoa.nome}`}>
-            <button onClick={() => setAberto(aberta ? null : f.pessoa.id)} aria-expanded={aberta} style={{ all: 'unset', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, minHeight: 44 }}>
-              <Selo pessoa={f.pessoa} grande /><span className={`pil ${pil}`}>{f.situacao === 'Pago' ? <Check size={14} strokeWidth={2.25} aria-hidden="true" /> : <CircleAlert size={14} strokeWidth={2.25} aria-hidden="true" />}{f.situacao}</span></button>
+            <div className="fech-cab">
+              <Selo pessoa={f.pessoa} grande /><span className={`pil ${pil}`}>{f.situacao === 'Pago' ? <Check size={14} strokeWidth={2.25} aria-hidden="true" /> : <CircleAlert size={14} strokeWidth={2.25} aria-hidden="true" />}{f.situacao}</span></div>
             <Valor c={f.total} tamanho="g" />
             <p className="mini num">{f.pago ? `Pago ${reais(f.pago)} · falta ${reais(f.emAberto)}` : 'Nada pago ainda'}{f.enviadoEm ? ` · resumo enviado em ${ddmm(f.enviadoEm)}` : ''}</p>
-            {aberta ? <div className="msg" aria-label="Detalhe do fechamento">{mensagemDe(r, f.pessoa, mes, titular)}</div>
-              : <button className="bt link" onClick={() => setAberto(f.pessoa.id)} style={{ color: 'var(--acao-texto)', alignSelf: 'flex-start' }}>Ver o detalhe</button>}
-            <div className="acoes">
-              {f.emAberto ? <button className="bt secundario medio" onClick={() => setPagar({ pessoa: f.pessoa, mes })}>Registrar pagamento</button> : null}
-              <button className="bt principal medio" onClick={() => setMsg(f.pessoa)}><MessageCircle size={20} aria-hidden="true" />WhatsApp</button>
+            <button className="ver-detalhe" onClick={() => setAberto(aberta ? null : f.pessoa.id)} aria-expanded={aberta} aria-controls={`det-${f.pessoa.id}`}>{aberta ? 'Esconder o detalhe' : 'Ver o detalhe'}<ChevronDown size={18} aria-hidden="true" /></button>
+            {aberta ? <div className="msg" id={`det-${f.pessoa.id}`} aria-label="Detalhe do fechamento">{mensagemDe(r, f.pessoa, mes, titular)}</div> : null}
+            <div className="fech-acoes">
+              {f.emAberto ? <button className={`bt ${f.enviadoEm ? 'principal' : 'secundario'} medio`} onClick={() => setPagar({ pessoa: f.pessoa, mes })}>Registrar pagamento</button> : null}
+              <button className={`bt ${f.enviadoEm && f.emAberto ? 'secundario' : 'principal'} medio`} onClick={() => setMsg(f.pessoa)}><MessageCircle size={20} aria-hidden="true" />WhatsApp</button>
             </div>
           </section>);
-      })}
+      })}</div> : null}
       {credor ? <section className="cartao"><div className="linha-topo"><Selo pessoa={credor} /><b className="num" style={{ font: 'var(--t-forte)' }}>{reais(gastosDaTitularNoMes(r, mes, titular))}</b></div>
         <p className="mini">Gastos da {credor.nome} nas faturas que vencem em {mesLongo(mes).toLowerCase()}. Ela é a dona dos cartões, então não tem cobrança.</p></section> : null}
       {rec.length ? <><p className="secao">A receber de meses anteriores</p>

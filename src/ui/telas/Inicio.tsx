@@ -1,8 +1,8 @@
 'use client';
 // Início (T2, Etapa 1: cartões e pendências) e Cartões (T3).
-import { Check, FileUp, Copy, User, MessageCircle, Plus } from 'lucide-react';
+import { Check, FileUp, Copy, User, MessageCircle, Plus, CreditCard } from 'lucide-react';
 import { useApp } from '../estado';
-import { Divisao, Esqueleto, LogoBanco, Selo, Topo, Valor, ddmm, mesLongo, reais } from '../comum';
+import { IconeVazio, Divisao, Esqueleto, LogoBanco, Selo, Topo, Valor, ddmm, mesLongo, reais } from '../comum';
 import { aReceberAntesDe, faturaDe, fechamentosDoMes, linhasDaFatura, parcelasNaoEncontradas, situacaoDaFatura, totaisDaFatura } from '@/dados/consultas';
 import { mesCurto } from '@/dominio/mensagem';
 import { datasDaFatura, somarMeses, type Mes } from '@/dominio/ciclo';
@@ -40,7 +40,7 @@ export function Inicio() {
   const nome = usuario?.nome ?? 'você';
   if (!r.cartao.length) return (<>
     <Topo titulo="Boas-vindas" sub={`Olá, ${nome}`} />
-    <main className="conteudo"><div className="vazio"><h2>Vamos começar pelos cartões</h2><p>Cadastre o Nubank e o BB da Bruna com o dia de fechamento e de vencimento. Depois é só lançar compras ou importar a fatura.</p>
+    <main className="conteudo"><div className="vazio"><IconeVazio icone={CreditCard} /><h2>Vamos começar pelos cartões</h2><p>Cadastre o Nubank e o BB da Bruna com o dia de fechamento e de vencimento. Depois é só lançar compras ou importar a fatura.</p>
       <button className="bt principal" onClick={() => ir({ tela: 'cfg-cartoes' })}>Cadastrar cartões</button></div></main>
   </>);
   const { passos, abertas } = passosDoMes(r, m, titular, hoje);
@@ -58,13 +58,24 @@ export function Inicio() {
       <div className="duas">
       <div className="col-a">
       <Divisao total={t.total}
-        sub={<span>{vencimentos}</span>}
+        sub={<><span>{vencimentos}</span>{abertas.length ? <span className="heroi-nota">{abertas.map(x => `${x.c.apelido} fecha em ${ddmm(x.d.fechamento)}`).join(' · ')}; até lá os totais são parciais.</span> : null}</>}
         fatias={[...pessoas.map(p => ({ pessoa: p, valor: t.porPessoa.get(p.id) ?? 0 })),
           ...(t.semDono + t.pendentes ? [{ pessoa: null, valor: t.valorSemDono + t.valorPendente, rotulo: `${t.semDono + t.pendentes} sem dono` }] : [])]} />
+      {rec.length ? (
+        <section className="cartao" aria-labelledby="h-rec"><h2 id="h-rec">A receber de meses anteriores</h2>
+          <div className="quem num">{rec.map(x => <button key={x.pessoa.id + x.mes} onClick={() => ir({ tela: 'fechamentos', mes: x.mes })}><Selo pessoa={x.pessoa} extra={<span className="mini"> · {mesCurto(x.mes)}</span>} /><span className="v">{reais(x.emAberto)}</span></button>)}</div>
+        </section>) : null}
+      <section className="cartao" aria-labelledby="h-fat"><h2 id="h-fat">Faturas que vencem em {mesLongo(m).toLowerCase()}</h2>
+        <div className="quem num">{r.cartao.filter(c => c.ativo).map(c => {
+          const f = faturaDe(r, c.id, m), d = datasDaFatura(c, m), v = f ? totaisDaFatura(linhasDaFatura(r, f.id)).total : 0;
+          const s = f ? situacaoDaFatura(f, hoje) : hoje >= d.fechamento ? 'fechada' : 'aberta';
+          return <button key={c.id} onClick={() => ir({ tela: 'fatura', cartao: c.id, mes: m })}><span className="banco"><LogoBanco banco={c.banco} /><span>{c.apelido}<small>{s === 'aberta' ? `Parcial · fecha ${ddmm(d.fechamento)}` : `${s[0].toUpperCase() + s.slice(1)} · vence ${ddmm(d.vencimento)}`}</small></span></span><span className="v">{reais(v)}</span></button>;
+        })}</div>
+      </section>
       </div>
       <div className="col-b">
       <section className="cartao" aria-labelledby="h-passos">
-        <div className="linha-topo"><h3 id="h-passos">Fechamento de {mesLongo(m).toLowerCase()}</h3><span className="mini num">{passos.filter(p => p.feito).length} de 4</span></div>
+        <div className="linha-topo"><h2 id="h-passos">Fechamento de {mesLongo(m).toLowerCase()}</h2><span className="mini num">{passos.filter(p => p.feito).length} de 4</span></div>
         <ol className="passos">{passos.map((p, i) => (
           <li key={p.nome} className={p.feito ? 'feito' : p === atual ? 'atual' : ''}>
             <span className="bola" aria-hidden="true">{p.feito ? <Check size={16} strokeWidth={2.25} /> : i + 1}</span>
@@ -74,18 +85,6 @@ export function Inicio() {
         </ol>
         {atual ? <button className="bt principal cheio" onClick={() => ir(atual.rota)}><atual.icone size={20} strokeWidth={1.75} aria-hidden="true" />{atual.botao}</button>
           : <div className="aviso ok" role="status"><Check size={20} aria-hidden="true" /><p>Tudo marcado e todos avisados. Agora é registrar os Pix quando chegarem.</p></div>}
-        {abertas.length && atual?.rota.tela !== 'lancar' ? <p className="mini">{abertas.map(a => `${a.c.apelido} fecha em ${ddmm(a.d.fechamento)}`).join(' · ')}; até lá os totais são parciais.</p> : null}
-      </section>
-      {rec.length ? (
-        <section className="cartao" aria-labelledby="h-rec"><h3 id="h-rec">A receber de meses anteriores</h3>
-          <div className="quem num">{rec.map(x => <button key={x.pessoa.id + x.mes} onClick={() => ir({ tela: 'fechamentos', mes: x.mes })}><Selo pessoa={x.pessoa} extra={<span className="mini"> · {mesCurto(x.mes)}</span>} /><span className="v">{reais(x.emAberto)}</span></button>)}</div>
-        </section>) : null}
-      <section className="cartao" aria-labelledby="h-fat"><h3 id="h-fat">Faturas que vencem em {mesLongo(m).toLowerCase()}</h3>
-        <div className="quem num">{r.cartao.filter(c => c.ativo).map(c => {
-          const f = faturaDe(r, c.id, m), d = datasDaFatura(c, m), v = f ? totaisDaFatura(linhasDaFatura(r, f.id)).total : 0;
-          const s = f ? situacaoDaFatura(f, hoje) : hoje >= d.fechamento ? 'fechada' : 'aberta';
-          return <button key={c.id} onClick={() => ir({ tela: 'fatura', cartao: c.id, mes: m })}><span className="banco"><LogoBanco banco={c.banco} /><span>{c.apelido}<small>{s === 'aberta' ? `Parcial · fecha ${ddmm(d.fechamento)}` : `${s[0].toUpperCase() + s.slice(1)} · vence ${ddmm(d.vencimento)}`}</small></span></span><span className="v">{reais(v)}</span></button>;
-        })}</div>
       </section>
       </div></div>
     </main>
@@ -95,7 +94,7 @@ export function Inicio() {
 export function Cartoes() {
   const { r, hoje, mesDeTrabalho: m, ir } = useApp();
   if (!r) return <Esqueleto />;
-  if (!r.cartao.length) return (<><Topo titulo="Cartões" /><main className="conteudo"><div className="vazio"><h2>Nenhum cartão cadastrado</h2><p>Cadastre o cartão com o apelido, o banco e os dias de fechamento e vencimento.</p><button className="bt principal" onClick={() => ir({ tela: 'cfg-cartoes' })}>Cadastrar cartão</button></div></main></>);
+  if (!r.cartao.length) return (<><Topo titulo="Cartões" /><main className="conteudo"><div className="vazio"><IconeVazio icone={CreditCard} /><h2>Nenhum cartão cadastrado</h2><p>Cadastre o cartão com o apelido, o banco e os dias de fechamento e vencimento.</p><button className="bt principal" onClick={() => ir({ tela: 'cfg-cartoes' })}>Cadastrar cartão</button></div></main></>);
   return (<>
     <Topo titulo="Cartões" sub={`Faturas que vencem em ${mesLongo(m).toLowerCase()}`} />
     <main className="conteudo"><div className="grade-cartoes">{r.cartao.filter(c => c.ativo).map(c => {

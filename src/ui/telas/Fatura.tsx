@@ -3,7 +3,7 @@
 import { memo, useMemo, useRef, useState } from 'react';
 import { FileUp, X, Check, Copy } from 'lucide-react';
 import { useApp } from '../estado';
-import { Divisao, Folha, Logo, LogoBanco, SeletorMes, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
+import { IconeVazio, Divisao, Folha, Logo, LogoBanco, SeletorMes, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
 import { faturaDe, linhasDaFatura, situacaoDaFatura, totaisDaFatura, type LinhaFatura } from '@/dados/consultas';
 import { marcar } from '@/dados/operacoes';
 import { datasDaFatura, somarMeses } from '@/dominio/ciclo';
@@ -21,6 +21,7 @@ export function Fatura() {
 
   const fatura = cartao ? faturaDe(r, cartao.id, mes) : undefined;
   const linhas = useMemo(() => (fatura ? linhasDaFatura(r, fatura.id) : []), [r, fatura]);
+  const porId = useMemo(() => new Map(linhas.map(l => [l.parcela.id, l])), [linhas]);
   if (!cartao) return null;
   const d = datasDaFatura(cartao, mes);
   const sit = fatura ? situacaoDaFatura(fatura, hoje) : hoje >= d.fechamento ? 'fechada' : 'aberta';
@@ -43,7 +44,6 @@ export function Fatura() {
   const apertar = (l: LinhaFatura) => { longo.current = false; window.clearTimeout(segura.current);
     segura.current = window.setTimeout(() => { longo.current = true; setSelecao(new Set([...(selecao ?? []), l.compra.id])); navigator.vibrate?.(10); }, 450); };
   const soltar = () => window.clearTimeout(segura.current);
-  const porId = useMemo(() => new Map(linhas.map(l => [l.parcela.id, l])), [linhas]);
   const daLinha = (e: React.SyntheticEvent) => { const id = (e.target as HTMLElement).closest<HTMLElement>('[data-l]')?.dataset.l; return id ? porId.get(id) : undefined; };
 
   const tudoCerto = fatura?.status === 'importada' && !t.semDono && !t.pendentes && linhas.length > 0;
@@ -53,7 +53,7 @@ export function Fatura() {
       abaixo={<SeletorMes mes={mes} mudar={mudarMes} rotulo="Fatura" />} />
     <main className="conteudo">
       {!linhas.length ? (
-        <div className="vazio"><h2>Nenhuma linha nesta fatura ainda</h2>
+        <div className="vazio"><IconeVazio icone={FileUp} /><h2>Nenhuma linha nesta fatura ainda</h2>
           <p>Quando a fatura {mesCurto(mes)} do {cartao.apelido} fechar ({ddmm(d.fechamento)}), baixe o arquivo no app do banco e traga para cá. Compras lançadas no app também aparecem aqui.</p>
           <div className="acoes"><button className="bt principal medio" onClick={() => ir({ tela: 'importar', cartao: cartao.id })}>Importar</button><button className="bt secundario medio" onClick={() => ir({ tela: 'lancar' })}>Lançar</button></div></div>
       ) : (<>
@@ -63,7 +63,7 @@ export function Fatura() {
           sub={<><LogoBanco banco={cartao.banco} /><span>{cartao.apelido} · {sit === 'aberta' ? `parcial, fecha ${ddmm(d.fechamento)}` : sit === 'importada' ? `importada, vence ${ddmm(d.vencimento)}` : `fechou ${ddmm(d.fechamento)}`}</span></>}
           fatias={[...r.pessoa.map(p => ({ pessoa: p, valor: t.porPessoa.get(p.id) ?? 0, acao: () => setFiltro(filtro === p.id ? 'todas' : p.id) })),
             ...(t.semDono ? [{ pessoa: null, valor: t.valorSemDono, rotulo: `${t.semDono} sem dono`, acao: () => setFiltro('sem') }] : []),
-            ...(t.pendentes ? [{ pessoa: null, valor: t.valorPendente, rotulo: `${t.pendentes} para conferir`, acao: () => ir({ tela: 'conciliacao' }) }] : [])]}>
+            ...(t.pendentes ? [{ pessoa: null, valor: t.valorPendente, rotulo: `${t.pendentes} para conferir`, conferir: true, acao: () => ir({ tela: 'conciliacao' }) }] : [])]}>
           {t.semDono && !t.pendentes ? <p className="heroi-nota">{t.semDono} {t.semDono > 1 ? 'linhas ainda sem dono' : 'linha ainda sem dono'}, o total de cada pessoa pode mudar.</p> : null}
           {sit !== 'importada' ? <p className="heroi-nota">Parcial com o que foi lançado no app e as parcelas previstas. Ao importar a fatura do banco, ela vira a palavra final.</p> : null}
         </Divisao>
@@ -72,17 +72,18 @@ export function Fatura() {
         </div>
         <div className="col-b">
         <div className="filtros" role="group" aria-label="Filtrar linhas">{filtros.filter(([, , n], i) => n || i < 2).map(([k, n, q]) => <button key={k} className="chip" aria-pressed={filtro === k} onClick={() => setFiltro(filtro === k && k !== 'todas' ? 'todas' : k)}>{n} <span className="n">{q}</span></button>)}</div>
-        <p className="dica-lista" aria-live="polite">{selecao ? 'Toque nas linhas para marcar ou desmarcar.' : 'Toque numa linha para dizer de quem é; toque longo para marcar várias.'}</p>
+        <div className="dica-linha"><p className="dica-lista" aria-live="polite">{selecao ? 'Toque nas linhas para marcar ou desmarcar.' : 'Toque numa linha para dizer de quem é; toque longo para marcar várias.'}</p>
+          {!selecao && visiveis.length ? <button className="bt link" onClick={() => setSelecao(new Set())}>Selecionar</button> : null}</div>
         {visiveis.length ? (
           <div className="lista" onClick={e => { const l = daLinha(e); if (l) tocar(l); }} onPointerDown={e => { const l = daLinha(e); if (l) apertar(l); }}
             onPointerUp={soltar} onPointerCancel={soltar} onPointerLeave={soltar}>{[...grupos.entries()].map(([dia, ls]) => (
-            <div key={dia}><div className="dia">{diaLongo(dia)}</div>{ls.map(l => <Linha key={l.parcela.id} l={l} pessoa={nome(l.compra.pagador)} marcada={!!selecao?.has(l.compra.id)} emSelecao={!!selecao} />)}</div>))}
+            <div key={dia}><h2 className="dia">{diaLongo(dia)}</h2>{ls.map(l => <Linha key={l.parcela.id} l={l} pessoa={nome(l.compra.pagador)} marcada={!!selecao?.has(l.compra.id)} emSelecao={!!selecao} />)}</div>))}
           </div>
-        ) : <div className="vazio"><h2>Nada neste filtro</h2><p>{filtro === 'sem' ? 'Todas as linhas já têm dono.' : 'Nenhuma linha combina com este filtro.'}</p><button className="bt secundario medio" onClick={() => setFiltro('todas')}>Ver todas</button></div>}
+        ) : <div className="vazio"><IconeVazio icone={Check} /><h2>Nada neste filtro</h2><p>{filtro === 'sem' ? 'Todas as linhas já têm dono.' : 'Nenhuma linha combina com este filtro.'}</p><button className="bt secundario medio" onClick={() => setFiltro('todas')}>Ver todas</button></div>}
         </div></div>
       </>)}
     </main>
-    <div className={`massa ${selecao ? 'on' : ''}`} role="region" aria-label="Seleção">
+    <div className={`massa ${selecao ? 'on' : ''}`} role="region" aria-label="Seleção" inert={!selecao}>
       <button className="redondo" onClick={() => setSelecao(null)} aria-label="Cancelar seleção"><X size={20} /></button>
       <p className="num">{selecao?.size ?? 0} {selecao?.size === 1 ? 'selecionada' : 'selecionadas'}</p>
       <button className="bt claro" disabled={!selecao?.size} onClick={() => setFolha([...(selecao ?? [])])}>Atribuir a…</button>
