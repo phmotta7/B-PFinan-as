@@ -11,7 +11,7 @@ colors:
   chao: "#f2f3f6"
   cartao: "#ffffff"
   elevado: "#ffffff"
-  vidro: "rgba(246,247,250,.86)"
+  vidro: "rgba(246,247,250,.72)"
   linha: "#e2e5eb"
   linha-forte: "#c9ced8"
   veu: "rgba(17,20,28,.36)"
@@ -339,7 +339,7 @@ Porcelana fria com cartões brancos, um cofre azul-noite para o total, dois azui
 ### Neutral
 - **Chão** (`chao`): fundo do app e do menu lateral, porcelana fria.
 - **Cartão** (`cartao`) e **Elevado** (`elevado`): cartões e listas; folhas e diálogos. No claro os dois são brancos; no escuro o elevado é um degrau mais claro.
-- **Vidro** (`vidro`): barra de baixo, translúcida com desfoque.
+- **Vidro** (`vidro-fino`, `vidro-normal`, `vidro-espesso`): o que flutua sobre o conteúdo. Ver *Materiais de vidro*.
 - **Linha** (`linha`) e **Linha forte** (`linha-forte`): divisórias finas; bordas de campo, opção e botão secundário, alça da folha.
 - **Véu** (`veu`): escurece o fundo atrás de folha e diálogo.
 - **Tinta**, **Suave**, **Apagado** (`tinta`, `suave`, `apagado`): texto principal; texto de apoio (5,9:1 no chão); texto menor de apoio e placeholders (4,8:1 no chão). Nenhum texto abaixo de 4,5:1.
@@ -351,7 +351,7 @@ Segue o celular e pode ser forçado em Mais (Claro, Escuro, Do celular). Fundo q
 | Token | Escuro |
 |---|---|
 | chao / cartao / elevado | #0d0f15 / #161922 / #1d212c |
-| vidro | rgba(16,18,26,.86) |
+| vidro (tinta) | 18,21,30 a 80% (fino e normal) e 85% (espesso); texto de apoio sobre o vidro #c9cfdb |
 | linha / linha-forte | #262b37 / #3a404e |
 | veu | rgba(0,0,0,.55) |
 | cofre-1 / cofre-2 | #232a4d / #141936 |
@@ -367,7 +367,7 @@ Segue o celular e pode ser forçado em Mais (Claro, Escuro, Do celular). Fundo q
 
 No escuro, o círculo de cada pessoa ganha um anel fino branco translúcido (`--anel-pessoa`, 22%) para não sumir no fundo; Eliete depende dele. Dentro do cofre, o anel é sempre branco a 35%, nos dois temas.
 
-Quem pede **mais contraste** recebe divisórias na força de `linha-forte` e texto suave igual à tinta. Quem pede **menos transparência** recebe a barra de baixo sólida, na cor do cartão.
+Quem pede **mais contraste** recebe divisórias na força de `linha-forte` e texto suave igual à tinta. Quem pede **menos transparência** (ou usa um navegador sem desfoque) recebe todo vidro sólido: cartão no lugar do fino e do normal, elevado no lugar do espesso, sem desfoque nem ruído, e o véu só escurece.
 
 ### Named Rules
 **The Dois Azuis Rule.** O azul-marinho é do botão principal; o azul de tinta é de link, seleção e foco. Só aparecem no que se toca ou no que está escolhido, nunca como enfeite, faixa ou fundo de seção.
@@ -426,9 +426,29 @@ Sistema em camadas com sombras frias (tingidas de azul-noite no claro, pretas no
 - **Folha** (`--s-folha`): sombra projetada para cima. Folha que sobe de baixo.
 
 ### Materiais
-O cofre é um gradiente radial (120% × 90% a partir de 20% da largura, no topo) de `cofre-1` para `cofre-2`: a luz cai do alto. A barra de baixo é de vidro: `vidro` com desfoque de 20px e saturação de 170%, com o conteúdo passando por trás.
+O cofre é um gradiente radial (120% × 90% a partir de 20% da largura, no topo) de `cofre-1` para `cofre-2`: a luz cai do alto. Fundo do app: o chão com duas manchas suaves e paradas, azul-noite no alto à esquerda e lavanda à direita (no escuro, um brilho azul e um azul-noite fundo). Elas não se movem nem rolam; dão ao vidro algo para refletir quando passa sobre um cartão branco.
+
+### Materiais de vidro
+Aprovado por Pedro em 29/10/2026 (fundo com luz, intensidade marcante). O vidro é uma camada que flutua sobre o conteúdo, nunca enfeite. Três espessuras, sempre pelos tokens:
+
+| Material | Onde | Claro | Escuro | Desfoque · saturação |
+|---|---|---|---|---|
+| `vidro-fino` | topo, só depois que o conteúdo passa por baixo | 246,247,250 a 72% | 18,21,30 a 80% | 20px · 180% |
+| `vidro-normal` | barra de baixo, seleção em massa, avisos, rodapé de ação (Lançar, Importar) | 72% | 80% | 24px · 190% |
+| `vidro-espesso` | folhas e diálogo (onde aparece valor) | 80% | 85% | 32px · 190% |
+
+Todo vidro leva um fio de luz de 1px no alto (`vidro-luz`, branco a 90% no claro e 12% no escuro), um contorno quase invisível (`vidro-contorno`), sombra macia em duas camadas (`vidro-sombra`) e um ruído fino parado (`vidro-ruido`, 5%) para não parecer plástico. O véu atrás de folha e diálogo escurece e desfoca 3px.
+
+As opacidades saem de uma conta de contraste: o texto sobre o vidro fica AA com o pior fundo passando por baixo (cofre azul-noite, roxo do Nubank, amarelo do BB, branco). Por isso o texto de apoio sobre o vidro usa `no-vidro-suave` (#3a4150 no claro, #c9cfdb no escuro), mais forte que o `suave`.
+
 
 ### Named Rules
+**The Vidro Flutua Rule.** Vidro só no que flutua sobre o conteúdo: barra de baixo, topo depois de rolar, folhas, diálogo, seleção em massa, avisos, rodapé de ação. Nunca na lista da fatura, em formulário, texto longo, valor linha a linha, no cofre ou nos cartões de banco (atrás deles só há o fundo parado).
+
+**The Cor no Sólido Rule.** Cor e ação principal ficam sobre superfície sólida, nunca sobre o vidro: o botão "Atribuir a…" e o aviso de erro são sólidos. Dinheiro só aparece sobre o vidro espesso.
+
+**The Três Camadas Rule.** No máximo três vidros visíveis ao mesmo tempo (topo, barra e uma folha ou diálogo). O desfoque nunca é animado: só opacidade e deslocamento.
+
 **The Encosta no Chão Rule.** Em repouso, cartões usam só a sombra de cartão. A sombra do painel é só do cofre; sombra elevada é para o que está por cima de outra coisa, nunca para destacar um cartão comum.
 
 ## Shapes
@@ -549,7 +569,8 @@ Ao abrir, o foco vai para o primeiro controle e o fundo fica fora do alcance (`i
 - **Do** manter todo alvo de toque com 44 ou mais e as ações na metade de baixo da tela.
 - **Do** usar no máximo uma faixa de aviso por tela e levar as notas do total para dentro do cofre.
 - **Do** oferecer Desfazer ou confirmação em toda ação destrutiva.
-- **Do** desligar deslocamento e mola quando o celular pede menos movimento, e a transparência quando pede menos transparência.
+- **Do** desligar deslocamento e mola quando o celular pede menos movimento, e trocar todo vidro por superfície sólida quando pede menos transparência.
+- **Do** usar só os tokens de material (`vidro-fino`, `vidro-normal`, `vidro-espesso`) para vidro; nada de desfoque ou transparência soltos.
 
 ### Don't:
 - **Don't** usar vermelho de alerta para dinheiro, gráfico que não responde a uma pergunta, cara de "dashboard de IA" ou gamificação; a régua é o único gráfico.
