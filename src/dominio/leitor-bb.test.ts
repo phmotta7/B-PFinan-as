@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lerBbPdf, ErroDeLeitura, type ItemPdf } from './leitores';
+import { lerBbPdf, lojaDoBb, ErroDeLeitura, type ItemPdf } from './leitores';
 
 // Fatura fictícia no mesmo desenho do PDF do Ourocard: duas colunas na página 1, a cidade na linha de baixo,
 // títulos de categoria entre as compras, e uma página de "lançamentos em processamento" no fim.
@@ -42,8 +42,8 @@ describe('lerBbPdf (fatura do BB em PDF)', () => {
   const de = (loja: string) => r.linhas.filter(l => l.loja === loja);
 
   it('lê as duas colunas da página e as páginas seguintes', () => {
-    expect(r.linhas.map(l => l.loja)).toEqual(['PIX - FULANO DE TAL', 'IOF DIARIO SAQUE PIX', 'JUROS SAQUE PIX', 'LOJA ONLINE', 'FEIRA EXEMPLO', 'IFD*iFood',
-      'MERCADO EXEMPLO 12', 'LOJA PARCELADA', 'DL *UberRides Sao Paulo', 'SALAO EXEMPLO', 'SALAO EXEMPLO']);
+    expect(r.linhas.map(l => l.loja)).toEqual(['PIX - FULANO DE TAL', 'IOF DIARIO SAQUE PIX', 'JUROS SAQUE PIX', 'LOJA ONLINE', 'FEIRA EXEMPLO', 'iFood',
+      'MERCADO EXEMPLO 12', 'LOJA PARCELADA', 'Uber', 'SALAO EXEMPLO', 'SALAO EXEMPLO']);
   });
   it('junta a linha de baixo (cidade ou resto do nome) à descrição, mas não o título de categoria', () => {
     expect(de('PIX - FULANO DE TAL')[0].descricao).toBe('PIX - FULANO DE TAL SOBRENOME');
@@ -51,7 +51,7 @@ describe('lerBbPdf (fatura do BB em PDF)', () => {
     expect(de('FEIRA EXEMPLO')[0].descricao).toBe('FEIRA EXEMPLO');
   });
   it('tira a cidade do nome da loja', () => {
-    expect(de('IFD*iFood')[0].descricao).toBe('IFD*iFood OSASCO');
+    expect(de('iFood')[0].descricao).toBe('IFD*iFood OSASCO');
   });
   it('reconhece a parcela e deixa a loja sem a cidade que vem depois do PARC', () => {
     expect(de('LOJA ONLINE')[0]).toMatchObject({ tipo: 'parcela', parcela: { atual: 2, total: 4 }, valor: 20824, data: '2026-08-31' });
@@ -73,11 +73,41 @@ describe('lerBbPdf (fatura do BB em PDF)', () => {
     const [a, b] = de('SALAO EXEMPLO');
     expect(a.digital).not.toBe(b.digital);
   });
+  it('liga o IOF do saque Pix ao saque do mesmo dia, para ir para quem sacou (§4.7)', () => {
+    expect(de('IOF DIARIO SAQUE PIX')[0].iofDe).toBe('PIX - FULANO DE TAL');
+  });
   it('data mais de 45 dias à frente é do ano passado', () => {
     const virada = lerBbPdf([...L(1, 700, [[20, 'OUROCARD']]), ...L(1, 600, [[26, 'Data'], [256, 'Valor']]), ...L(1, 500, [[24, '20/12'], [53, 'LOJA'], [220, 'R$'], [269, '10,00']])], 'bb', '2027-01-10');
     expect(virada.linhas[0].data).toBe('2026-12-20');
   });
   it('recusa um PDF que não é do BB', () => {
     expect(() => lerBbPdf(L(1, 500, [[24, 'Fatura de outro banco']]), 'bb', '2026-10-30')).toThrow(ErroDeLeitura);
+  });
+});
+
+describe('lojaDoBb (nome da loja como a pessoa reconhece)', () => {
+  it('troca o nome do intermediário pela marca conhecida', () => {
+    expect(lojaDoBb('DL *UberRides Sao Paulo')).toBe('Uber');
+    expect(lojaDoBb('DL*UberRides')).toBe('Uber');
+    expect(lojaDoBb('IFD*iFood')).toBe('iFood');
+    expect(lojaDoBb('MAGALU*Magalu')).toBe('Magalu');
+    expect(lojaDoBb('Globo Globoplay')).toBe('Globoplay');
+  });
+  it('nos marketplaces, guarda a loja e o vendedor', () => {
+    expect(lojaDoBb('SHOPEE *Viane')).toBe('Shopee · Viane');
+    expect(lojaDoBb('SHEIN *SHEIN')).toBe('Shein');
+  });
+  it('tira o intermediário do pagamento da frente do nome', () => {
+    expect(lojaDoBb('MP*RCORTINTAS')).toBe('RCORTINTAS');
+    expect(lojaDoBb('CAPPTA *DRY CAPAS')).toBe('DRY CAPAS');
+    expect(lojaDoBb('JIM.COM 58245')).toBe('JIM.COM 58245');
+  });
+  it('tira o começo da cidade colado no fim, quando a linha de baixo completa a cidade', () => {
+    expect(lojaDoBb('JIM.COM PAZ TENIS E BEACAMPO', 'GRANDE')).toBe('PAZ TENIS E BEA');
+    expect(lojaDoBb('ASSAI ATACADISTA LJ24 CAMPO', 'GRANDE')).toBe('ASSAI ATACADISTA LJ24');
+    expect(lojaDoBb('SAMUEL NUNES MONTEIRO', 'CAMPO GRANDE')).toBe('SAMUEL NUNES MONTEIRO');
+  });
+  it('não confunde nome de lugar com a marca', () => {
+    expect(lojaDoBb('SUPERMERCADO UBERLANDIA')).toBe('SUPERMERCADO UBERLANDIA');
   });
 });

@@ -169,6 +169,7 @@ export function lerBbPdf(itens: ItemPdf[], cartao: string, hoje: string): Leitur
 
   type Linha = { y: number; itens: ItemPdf[] };
   const lidas: Omit<LinhaLida, 'digital'>[] = [], ignoradas: LinhaIgnorada[] = [];
+  const restos: string[] = []; // a linha de baixo de cada compra lida (cidade ou resto do nome)
   let colunas: number[] = [];
   let emProcessamento = false;
   const paginas = [...new Set(limpos.map(i => i.pagina))].sort((a, b) => a - b);
@@ -207,6 +208,7 @@ export function lerBbPdf(itens: ItemPdf[], cartao: string, hoje: string): Leitur
             const resto = meus.map(i => i.texto).join(' ');
             const alvo = anterior.alvo === 'lida' ? lidas[anterior.idx] : ignoradas[anterior.idx];
             alvo.descricao = `${alvo.descricao} ${resto}`;
+            if (anterior.alvo === 'lida') restos[anterior.idx] = resto;
           }
           anterior = null;
           continue;
@@ -233,5 +235,41 @@ export function lerBbPdf(itens: ItemPdf[], cartao: string, hoje: string): Leitur
     }
   }
   if (!lidas.length && !ignoradas.length) throw new ErroDeLeitura('Não encontrei nenhuma compra neste PDF. Confira se é a fatura do cartão do BB.');
+  lidas.forEach((l, i) => { if (l.tipo !== 'iof' && l.tipo !== 'juros') l.loja = lojaDoBb(l.loja, restos[i]); });
+  // IOF do saque Pix: o BB escreve "IOF … SAQUE PIX"; liga ao saque do mesmo dia, para ir para quem sacou (§4.7)
+  for (const l of lidas) {
+    if (l.tipo !== 'iof' || !/saque/i.test(l.iofDe ?? '')) continue;
+    const saque = lidas.find(o => o.tipo === 'compra' && o.data === l.data && /^pix\b/i.test(o.loja));
+    if (saque) l.iofDe = saque.loja;
+  }
   return { linhas: comDigitais(cartao, lidas), ignoradas };
+}
+
+// Nome da loja como a pessoa reconhece. O BB escreve o nome com o intermediário do pagamento na frente ("DL*UberRides",
+// "IFD*iFood", "MP*LOJA") e às vezes o começo da cidade colado no fim ("…CAMPO" com "GRANDE" na linha de baixo).
+// Um nome limpo deixa a loja igual à compra lançada à mão, e a conferência acha a duplicidade.
+const MARCAS: [RegExp, string][] = [[/uber\s*\*|uberrides|uber\s*trip|^uber\b/i, 'Uber'], [/ifood|^ifd\s*\*/i, 'iFood'], [/^magalu\s*\*|magazine\s*luiza/i, 'Magalu'],
+  [/netflix/i, 'Netflix'], [/spotify/i, 'Spotify'], [/globoplay/i, 'Globoplay'], [/melimais/i, 'Meli+']];
+const MERCADOS = /^(shopee|shein|aliexpress|amazon)\s*\*\s*(.+)$/i;
+const INTERMEDIARIO = /^(?:mp|pg|zp|hna|cappta|ec|pag|pagseguro|sumup|ebn|dl)\s*\*\s*|^jim\.com\s+/i;
+const CIDADES: [string, string][] = [['CAMPO', 'GRANDE'], ['SAO', 'PAULO'], ['RIO DE', 'JANEIR'], ['RIO', 'DE JANEIR'], ['BELO', 'HORIZONTE'], ['PORTO', 'ALEGRE'], ['VILA', 'OLIMPIA']];
+const capitalizar = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+
+export function lojaDoBb(nome: string, resto?: string): string {
+  const marca = MARCAS.find(([re]) => re.test(nome));
+  if (marca) return marca[1];
+  const mercado = nome.match(MERCADOS);
+  if (mercado) {
+    const loja = capitalizar(mercado[1]), vendedor = mercado[2].trim();
+    return vendedor.toLowerCase() === mercado[1].toLowerCase() ? loja : `${loja} · ${vendedor}`;
+  }
+  let limpo = nome;
+  const semIntermediario = limpo.replace(INTERMEDIARIO, '');
+  if (/[a-z]{3}/i.test(semIntermediario)) limpo = semIntermediario;
+  if (resto) for (const [comeco, fim] of CIDADES) {
+    if (!resto.toUpperCase().startsWith(fim)) continue;
+    const corte = limpo.toUpperCase().lastIndexOf(comeco);
+    if (corte > 0 && corte + comeco.length === limpo.length) { limpo = limpo.slice(0, corte); break; }
+  }
+  return limpo.replace(/\s+/g, ' ').trim() || nome;
 }
