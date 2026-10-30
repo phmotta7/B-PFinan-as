@@ -708,3 +708,5 @@ h2.dia{margin:0}
   [data-sonner-toast]{transition:opacity 150ms linear!important;transform:none!important}
   .dialogo{transition:opacity 120ms linear!important;transform:translateY(-50%)!important}
 }
+/* "Para conferir" na régua: preenchimento suave em vez de contorno, que vira um colchete quando a fatia é estreita */
+.regua-fatia.c{background:rgba(255,255,255,.28);box-shadow:none}
