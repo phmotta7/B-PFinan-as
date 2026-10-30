@@ -22,22 +22,23 @@
         "tinta": "#eef0f5",
         "suave": "#a5adbd",
         "apagado": "#9aa2b2",
-        "acao": "#4d5fd6",
-        "acao-forte": "#3f50c0",
+        "acao": "#b8c2f2",
+        "acao-forte": "#a3afec",
         "acao-texto": "#a9b6ff",
         "acao-leve": "#232945",
         "foco": "#a9b6ff",
         "ok": "#6fd3a6",
         "ok-leve": "#173328",
         "atencao": "#f2c46b",
-        "atencao-leve": "#3a2e15",
+        "atencao-leve": "#1d212c",
         "erro": "#ff8f87",
         "erro-leve": "#3d1c1a",
         "no-erro": "#0d0f15",
         "inverso": "#eef0f5",
         "no-inverso": "#0d0f15",
         "acao-inverso": "#2b3a8f",
-        "sem-dono": "#9aa2b2"
+        "sem-dono": "#9aa2b2",
+        "no-acao": "#121a40"
       },
       "darkNote": "Cofre à noite: chão quase preto azulado (nunca preto puro), camadas separadas por claridade."
     },
@@ -57,7 +58,7 @@
           "#bbc6ea",
           "#eaeefb"
         ],
-        "dark": "#4d5fd6"
+        "dark": "#b8c2f2"
       },
       "acao-forte": {
         "role": "primary",
@@ -74,7 +75,7 @@
           "#bcc6e5",
           "#ebeef9"
         ],
-        "dark": "#3f50c0"
+        "dark": "#a3afec"
       },
       "acao-texto": {
         "role": "primary",
@@ -141,7 +142,8 @@
           "#a1a1a1",
           "#c7c7c7",
           "#eeeeee"
-        ]
+        ],
+        "dark": "#121a40"
       },
       "chao": {
         "role": "neutral",
@@ -423,7 +425,7 @@
           "#cec7b8",
           "#f1eee9"
         ],
-        "dark": "#3a2e15"
+        "dark": "#1d212c"
       },
       "erro": {
         "role": "tertiary",

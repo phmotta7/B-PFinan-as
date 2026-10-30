@@ -356,12 +356,14 @@ Segue o celular e pode ser forçado em Mais (Claro, Escuro, Do celular). Fundo q
 | veu | rgba(0,0,0,.55) |
 | cofre-1 / cofre-2 | #232a4d / #141936 |
 | tinta / suave / apagado | #eef0f5 / #a5adbd / #9aa2b2 |
-| acao / acao-forte / acao-texto / acao-leve / foco | #4d5fd6 / #3f50c0 / #a9b6ff / #232945 / #a9b6ff |
+| acao / acao-forte / no-acao / acao-texto / acao-leve / foco | #b8c2f2 / #a3afec / #121a40 / #a9b6ff / #232945 / #a9b6ff (o botão principal vira um azul claro com texto azul-noite; nada de azul saturado brilhando no escuro) |
 | ok / ok-leve | #6fd3a6 / #173328 |
-| atencao / atencao-leve | #f2c46b / #3a2e15 |
+| atencao / atencao-leve | #f2c46b / #1d212c (o aviso é um cartão elevado com um fio âmbar de 1px, não uma faixa marrom) |
 | erro / erro-leve / no-erro | #ff8f87 / #3d1c1a / #0d0f15 |
 | inverso / no-inverso / acao-inverso | #eef0f5 / #0d0f15 / #2b3a8f |
 | sem-dono | #9aa2b2 |
+| nubank / bb / bb-tinta (plástico dos cartões) | #6a1aa8 / #c9b400 / #002a62 |
+| borda-campo | #5b6273 (no claro, #8a92a3): contorno de campo e chip com 3:1 sobre o cartão |
 
 No escuro, o círculo de cada pessoa ganha um anel fino branco translúcido (`--anel-pessoa`, 22%) para não sumir no fundo; Eliete depende dele. Dentro do cofre, o anel é sempre branco a 35%, nos dois temas.
 
@@ -511,12 +513,29 @@ Coleção Lucide: quadro de 24, traço de 1,75, pontas e cantos arredondados, se
 - Números e listas não animam: valor é informação e aparece pronto.
 - Menos movimento (pedido no celular): nada se desloca nem encolhe, nada de mola, a régua não desliza; só troca de opacidade em 150ms.
 
-### Ainda a refinar no estilo Cofre
-Estas peças existem no app, mas ainda não foram redesenhadas no novo estilo; vão ser refeitas tela a tela e não servem de modelo:
-- Cartões de plástico dos bancos na tela Cartões.
-- Estados vazios.
-- Tela de abertura (splash) e ícone do app.
-- Formas do esqueleto de carregamento.
+### Cartões de banco (tela Cartões)
+O plástico usa a cor do banco chapada com o mesmo material do cofre: uma luz radial suave no alto à esquerda, um fio de luz de 1px na borda de cima e a sombra de painel. Altura mínima 180, raio 18. O valor encolhe com a largura do cartão para nunca vazar.
+
+### Estados vazios
+Centro da área, um ícone Lucide próprio da situação num círculo de 48 em `acao-leve`, título curto, uma frase e, quando houver, um único botão. A escolha de arquivo no Importar não é um vazio: é um cartão comum com título, texto e botão.
+
+### Lojas sem logo
+Placa quadrada de raio 10 com as duas primeiras letras (ou as iniciais de duas palavras), em `chao` com texto `suave`. Nunca um círculo, que é a forma reservada às pessoas.
+
+### "Para conferir"
+Na legenda do cofre, um selo próprio com o ícone de cópia, e na régua uma fatia vazada (só contorno). Nunca a cor de uma pessoa nem o listrado do "sem dono".
+
+### Nomes e números longos
+Nome de pessoa encolhe com reticências (o nome completo fica no `title`); total do cofre encolhe com a largura do painel (`15.5cqi`, até 56/64); valor negativo leva o sinal de menos (−) no número, no tamanho dele.
+
+### Login
+A única tela em que o cofre aparece sem total: a marca, o nome, uma frase e uma régua das quatro cores, sobre o painel escuro. É exceção à Um Cofre Rule porque não há outro bloco na tela.
+
+### Acessibilidade de folha e diálogo
+Ao abrir, o foco vai para o primeiro controle e o fundo fica fora do alcance (`inert`); Tab não sai da folha ou do diálogo; Esc fecha o de cima; ao fechar, o foco volta para quem abriu. O diálogo fechado fica invisível também para o teclado.
+
+### Ainda a refinar
+- Tela de abertura (splash) e ícone do app (a marca ainda usa o azul antigo #2d47d6; uma versão azul-noite fica para depois, com o Pedro).
 
 ## Do's and Don'ts
 
