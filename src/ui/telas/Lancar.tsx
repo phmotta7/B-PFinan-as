@@ -91,7 +91,7 @@ export function Lancar() {
       </>) : null}
       <div className="resumo-ct"><p><Calendar size={20} strokeWidth={1.75} aria-hidden="true" /><span><b>{cartao.apelido} · {data === hoje ? 'hoje' : ddmm(data)}</b> · entra na fatura {mesCurto(destino)}{fechaNoDia ? `, porque o cartão fecha ${data === hoje ? 'hoje' : 'neste dia'}` : ''}</span></p>
         {alterar ? null : <button className="bt discreto" onClick={() => setAlterar(true)}>Alterar</button>}</div>
-      <div className="rodape"><button className="bt principal cheio" disabled={salvando} aria-busy={salvando} onClick={salvar}>{salvando ? <><span className="giro" aria-hidden="true" />Lançando</> : `Lançar ${valor ? reais(valor) : ''}`}</button></div>
+      <div className="rodape vidro-normal"><button className="bt principal cheio" disabled={salvando} aria-busy={salvando} onClick={salvar}>{salvando ? <><span className="giro" aria-hidden="true" />Lançando</> : `Lançar ${valor ? reais(valor) : ''}`}</button></div>
     </main>
   </>);
 }

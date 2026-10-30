@@ -131,6 +131,6 @@ function Mapa({ texto, nome, aoConfirmar }: { texto: string; nome: string; aoCon
     {sel('Formato da data', m.formatoData, [['dd/mm/aaaa', 'dia/mês/ano'], ['mm/dd/aaaa', 'mês/dia/ano'], ['aaaa-mm-dd', 'ano-mês-dia']], v => setM({ ...m, formatoData: v as FormatoData }))}
     {sel('Decimal', m.decimal, [[',', 'vírgula (18,00)'], ['.', 'ponto (18.00)']], v => setM({ ...m, decimal: v as ',' | '.' }))}
     {sel('Compras aparecem como', m.compraPositiva ? '+' : '-', [['+', 'valor positivo'], ['-', 'valor negativo']], v => setM({ ...m, compraPositiva: v === '+' }))}
-    <div className="rodape"><button className="bt principal cheio" onClick={() => aoConfirmar({ ...m, pularLinhas: pular })}>Ver as linhas lidas</button></div>
+    <div className="rodape vidro-normal"><button className="bt principal cheio" onClick={() => aoConfirmar({ ...m, pularLinhas: pular })}>Ver as linhas lidas</button></div>
   </>);
 }

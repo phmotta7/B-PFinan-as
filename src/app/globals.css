@@ -740,47 +740,31 @@ h2.dia{margin:0}
    abre mais e o texto de apoio fica mais escuro (vibrância), como faz a Apple. */
 :root{
   --vidro-tinta:246,247,250;
-  --vidro-fino-alfa:.86;    --vidro-fino-desfoque:16px;    --vidro-fino-saturacao:160%;
-  --vidro-normal-alfa:.88;  --vidro-normal-desfoque:20px;  --vidro-normal-saturacao:170%;
-  --vidro-espesso-alfa:.92; --vidro-espesso-desfoque:28px; --vidro-espesso-saturacao:180%;
-  --vidro-luz:rgba(255,255,255,.75);          /* fio de luz de 1px no alto */
-  --vidro-contorno:rgba(17,20,40,.06);        /* contorno quase invisível que separa do fundo */
-  --vidro-sombra:0 1px 1px rgba(17,20,40,.04),0 12px 32px -12px rgba(17,20,40,.18);
-  --vidro-ruido-opacidade:.035;
-  --no-vidro-suave:var(--suave);
-  --no-vidro-acao:var(--acao-texto);
-}
-:root[data-vidro="marcante"]{
   --vidro-fino-alfa:.72;   --vidro-fino-desfoque:20px;    --vidro-fino-saturacao:180%;
   --vidro-normal-alfa:.72; --vidro-normal-desfoque:24px;  --vidro-normal-saturacao:190%;
   --vidro-espesso-alfa:.8; --vidro-espesso-desfoque:32px; --vidro-espesso-saturacao:190%;
-  --vidro-luz:rgba(255,255,255,.9);
+  --vidro-luz:rgba(255,255,255,.9);           /* fio de luz de 1px no alto */
+  --vidro-contorno:rgba(17,20,40,.06);        /* contorno quase invisível que separa do fundo */
+  --vidro-sombra:0 1px 1px rgba(17,20,40,.04),0 12px 32px -12px rgba(17,20,40,.18);
   --vidro-ruido-opacidade:.05;
-  --no-vidro-suave:#3a4150;
+  --no-vidro-suave:#3a4150;                   /* texto de apoio sobre o vidro: mais escuro que o suave (vibrância) */
+  --no-vidro-acao:var(--acao-texto);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --vidro-tinta:18,21,30;
-    --vidro-fino-alfa:.82; --vidro-normal-alfa:.85; --vidro-espesso-alfa:.9;
-    --vidro-luz:rgba(255,255,255,.08); --vidro-contorno:rgba(255,255,255,.05);
-    --vidro-sombra:0 1px 1px rgba(0,0,0,.3),0 16px 40px -12px rgba(0,0,0,.6);
-    --vidro-ruido-opacidade:.05;
-  }
-  :root[data-vidro="marcante"]:not([data-theme="light"]){
     --vidro-fino-alfa:.8; --vidro-normal-alfa:.8; --vidro-espesso-alfa:.85;
-    --vidro-luz:rgba(255,255,255,.12); --no-vidro-suave:#c9cfdb;
+    --vidro-luz:rgba(255,255,255,.12); --vidro-contorno:rgba(255,255,255,.05);
+    --vidro-sombra:0 1px 1px rgba(0,0,0,.3),0 16px 40px -12px rgba(0,0,0,.6);
+    --no-vidro-suave:#c9cfdb;
   }
 }
 :root[data-theme="dark"]{
   --vidro-tinta:18,21,30;
-  --vidro-fino-alfa:.82; --vidro-normal-alfa:.85; --vidro-espesso-alfa:.9;
-  --vidro-luz:rgba(255,255,255,.08); --vidro-contorno:rgba(255,255,255,.05);
-  --vidro-sombra:0 1px 1px rgba(0,0,0,.3),0 16px 40px -12px rgba(0,0,0,.6);
-  --vidro-ruido-opacidade:.05;
-}
-:root[data-theme="dark"][data-vidro="marcante"]{
   --vidro-fino-alfa:.8; --vidro-normal-alfa:.8; --vidro-espesso-alfa:.85;
-  --vidro-luz:rgba(255,255,255,.12); --no-vidro-suave:#c9cfdb;
+  --vidro-luz:rgba(255,255,255,.12); --vidro-contorno:rgba(255,255,255,.05);
+  --vidro-sombra:0 1px 1px rgba(0,0,0,.3),0 16px 40px -12px rgba(0,0,0,.6);
+  --no-vidro-suave:#c9cfdb;
 }
 
 /* Ruído fino para o vidro não parecer plástico (desenhado uma vez, fica parado) */
@@ -806,12 +790,11 @@ h2.dia{margin:0}
 }
 
 /* ---------- Fundo do app ---------- */
-/* Opção "luz": duas manchas suaves de azul-noite e lavanda, paradas; o conteúdo rola por cima delas.
-   Opção "plano": o chão continua liso; o vidro mostra só o próprio conteúdo passando por baixo. */
+/* Duas manchas suaves de azul-noite e lavanda, paradas atrás de tudo; o conteúdo rola por cima delas e o vidro tem o que refletir. */
 :root{--fundo-mancha-1:rgba(43,58,143,.09);--fundo-mancha-2:rgba(184,194,242,.42);--fundo-mancha-3:rgba(43,58,143,.05)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--fundo-mancha-1:rgba(77,95,214,.16);--fundo-mancha-2:rgba(35,42,77,.55);--fundo-mancha-3:rgba(120,135,230,.07)}}
 :root[data-theme="dark"]{--fundo-mancha-1:rgba(77,95,214,.16);--fundo-mancha-2:rgba(35,42,77,.55);--fundo-mancha-3:rgba(120,135,230,.07)}
-:root[data-fundo="luz"] .tela{background:
+.tela{background:
   radial-gradient(70% 45% at 8% -5%,var(--fundo-mancha-1),transparent 70%),
   radial-gradient(60% 40% at 105% 22%,var(--fundo-mancha-2),transparent 70%),
   radial-gradient(80% 50% at 30% 105%,var(--fundo-mancha-3),transparent 70%),
@@ -854,17 +837,12 @@ h2.dia{margin:0}
 .veu{-webkit-backdrop-filter:blur(3px) saturate(115%);backdrop-filter:blur(3px) saturate(115%)}
 @media (prefers-reduced-transparency: reduce){.veu{-webkit-backdrop-filter:none;backdrop-filter:none}}
 
-/* No escuro, o texto do vidro marcante usa a tinta clara de sempre e o tom de ação mais claro */
-:root{--no-vidro-acao:var(--acao-texto)}
 
-/* ---------- "Talvez", só para mostrar: ?talvez=cofre e ?talvez=cartoes ---------- */
-/* Cofre de vidro: o azul-noite deixa passar um pouco da luz do fundo; o número continua sobre tinta escura densa (82%) */
-:root[data-talvez~="cofre"] .heroi{background-color:rgba(20,25,54,.82);background-image:radial-gradient(120% 90% at 20% 0%,rgba(35,42,77,.72),rgba(20,25,54,.86));-webkit-backdrop-filter:blur(28px) saturate(160%);backdrop-filter:blur(28px) saturate(160%);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1px rgba(255,255,255,.06),var(--s-painel)}
-/* Cartões de vidro: a cor do banco a 84%, com a luz do fundo passando por trás */
-:root[data-talvez~="cartoes"] .plastico.nubank{background-color:color-mix(in srgb,var(--nubank) 84%,transparent);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%)}
-:root[data-talvez~="cartoes"] .plastico.bb{background-color:color-mix(in srgb,var(--bb) 86%,transparent);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%)}
 .toast-acao{white-space:nowrap}
 /* Com a seleção em massa aberta, o aviso sobe e fica acima da barra (antes um cobria o outro) */
 [data-sonner-toaster]{transition:transform var(--d-curta) var(--ease-saida)}
 .tela:has(.massa.on) [data-sonner-toaster]{transform:translateY(-72px)}
 @media (prefers-reduced-motion: reduce){[data-sonner-toaster]{transition:none}}
+
+/* Rodapé de ação (Lançar, Importar): vidro normal flutuando sobre o formulário, com o fio de luz no alto */
+.rodape.vidro-normal{background-image:none;box-shadow:inset 0 1px 0 var(--vidro-luz),0 -1px 0 var(--vidro-contorno)}
