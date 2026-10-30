@@ -1,0 +1,132 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Length 727 >>
+stream
+BT /F1 8 Tf 1 0 0 1 40 748 Tm (Olá, Fulana, esta é sua fatura de) Tj ET
+BT /F1 8 Tf 1 0 0 1 399 748 Tm (OUROCARD FACIL VISA) Tj ET
+BT /F1 8 Tf 1 0 0 1 522 748 Tm (Final 0000) Tj ET
+BT /F1 8 Tf 1 0 0 1 399 728 Tm (Resumo da fatura) Tj ET
+BT /F1 8 Tf 1 0 0 1 240 725 Tm (Vencimento) Tj ET
+BT /F1 8 Tf 1 0 0 1 240 703 Tm (10/11/2026) Tj ET
+BT /F1 8 Tf 1 0 0 1 399 703 Tm (Pagamentos/Créditos) Tj ET
+BT /F1 8 Tf 1 0 0 1 514 703 Tm (R$ -1.250,00) Tj ET
+BT /F1 8 Tf 1 0 0 1 399 689 Tm (Compras nacionais) Tj ET
+BT /F1 8 Tf 1 0 0 1 518 689 Tm (R$ 686,09) Tj ET
+BT /F1 8 Tf 1 0 0 1 399 647 Tm (Total) Tj ET
+BT /F1 8 Tf 1 0 0 1 518 647 Tm (R$ 686,09) Tj ET
+BT /F1 8 Tf 1 0 0 1 26 13 Tm (Página 1/2 - exemplo fictício para testes) Tj ET
+endstream
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 3 0 R >>
+endobj
+5 0 obj
+<< /Length 2330 >>
+stream
+BT /F1 8 Tf 1 0 0 1 40 432 Tm (Fatura fechada em) Tj ET
+BT /F1 8 Tf 1 0 0 1 155 432 Tm (28/10/2026) Tj ET
+BT /F1 8 Tf 1 0 0 1 50 354 Tm (Lançamentos nesta fatura) Tj ET
+BT /F1 8 Tf 1 0 0 1 48 250 Tm (Data) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 250 Tm (Descrição) Tj ET
+BT /F1 8 Tf 1 0 0 1 442 250 Tm (País) Tj ET
+BT /F1 8 Tf 1 0 0 1 524 250 Tm (Valor) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 234 Tm (SALDO FATURA ANTERIOR) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 234 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 507 234 Tm (R$ 1.250,00) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 218 Tm (Pagamentos/Créditos) Tj ET
+BT /F1 8 Tf 1 0 0 1 48 202 Tm (13/10) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 202 Tm (PGTO DEBITO CONTA 1234 000000001 100) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 202 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 504 202 Tm (R$ -1.250,00) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 186 Tm (Restaurantes) Tj ET
+BT /F1 8 Tf 1 0 0 1 47 170 Tm (05/10) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 170 Tm (IFD*iFood) Tj ET
+BT /F1 8 Tf 1 0 0 1 139 170 Tm (OSASCO) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 170 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 519 170 Tm (R$ 38,90) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 154 Tm (Supermercados) Tj ET
+BT /F1 8 Tf 1 0 0 1 48 138 Tm (04/10) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 138 Tm (PAO DE ACUCAR) Tj ET
+BT /F1 8 Tf 1 0 0 1 175 138 Tm (CAMPO GRANDE) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 138 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 518 138 Tm (R$ 98,37) Tj ET
+BT /F1 8 Tf 1 0 0 1 48 122 Tm (05/10) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 122 Tm (COMPER 86) Tj ET
+BT /F1 8 Tf 1 0 0 1 145 122 Tm (CAMPO GRANDE) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 122 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 518 122 Tm (R$ 74,19) Tj ET
+BT /F1 8 Tf 1 0 0 1 48 106 Tm (02/10) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 106 Tm (DROGASIL 1234 CAMPO GRANDE) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 106 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 518 106 Tm (R$ 62,40) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 90 Tm (Transporte) Tj ET
+BT /F1 8 Tf 1 0 0 1 48 74 Tm (07/10) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 74 Tm (DL) Tj ET
+BT /F1 8 Tf 1 0 0 1 108 74 Tm (*UberRides Sao Paulo) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 74 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 519 74 Tm (R$ 17,93) Tj ET
+BT /F1 8 Tf 1 0 0 1 48 58 Tm (09/10) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 58 Tm (DL*UberRides) Tj ET
+BT /F1 8 Tf 1 0 0 1 147 58 Tm (Sao Paulo) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 58 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 519 58 Tm (R$ 16,40) Tj ET
+BT /F1 8 Tf 1 0 0 1 25 13 Tm (Página 2/2) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 5 0 R >>
+endobj
+7 0 obj
+<< /Length 991 >>
+stream
+BT /F1 8 Tf 1 0 0 1 82 766 Tm (Serviços) Tj ET
+BT /F1 8 Tf 1 0 0 1 48 750 Tm (08/10) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 750 Tm (RENNER CAMPO GRANDE) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 750 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 518 750 Tm (R$ 79,90) Tj ET
+BT /F1 8 Tf 1 0 0 1 48 734 Tm (11/10) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 734 Tm (NETFLIX.COM) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 734 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 518 734 Tm (R$ 44,90) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 718 Tm (Compras parceladas) Tj ET
+BT /F1 8 Tf 1 0 0 1 47 702 Tm (30/09) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 702 Tm (CENTAURO PARC 01/03 SAO PAULO) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 702 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 514 702 Tm (R$ 100,00) Tj ET
+BT /F1 8 Tf 1 0 0 1 47 686 Tm (06/07) Tj ET
+BT /F1 8 Tf 1 0 0 1 82 686 Tm (MAGALU*Magalu PARC 04/08 FRANCA) Tj ET
+BT /F1 8 Tf 1 0 0 1 446 686 Tm (BR) Tj ET
+BT /F1 8 Tf 1 0 0 1 515 686 Tm (R$ 153,10) Tj ET
+BT /F1 8 Tf 1 0 0 1 48 638 Tm (Total da Fatura) Tj ET
+BT /F1 8 Tf 1 0 0 1 496 638 Tm (R$ 686,09) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 7 0 R >>
+endobj
+9 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000106 00000 n 
+0000000175 00000 n 
+0000000952 00000 n 
+0000001078 00000 n 
+0000003459 00000 n 
+0000003585 00000 n 
+0000004626 00000 n 
+0000004752 00000 n 
+trailer
+<< /Size 10 /Root 9 0 R >>
+startxref
+4801
+%%EOF

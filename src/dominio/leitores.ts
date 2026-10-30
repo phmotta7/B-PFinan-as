@@ -14,7 +14,11 @@ export type LinhaLida = {
   digital: string; // impressão digital (RN-IM-01)
 };
 export type LinhaIgnorada = { data: string; descricao: string; valor: Centavos; motivo: string };
-export type Leitura = { linhas: LinhaLida[]; ignoradas: LinhaIgnorada[] };
+export type Leitura = {
+  linhas: LinhaLida[]; ignoradas: LinhaIgnorada[];
+  vencimento?: string; // AAAA-MM-DD, quando o arquivo diz (fatura fechada do BB)
+  conferencia?: { impresso: Centavos; lido: Centavos }; // total impresso no arquivo × o que o app leu
+};
 
 export class ErroDeLeitura extends Error {}
 
@@ -151,8 +155,11 @@ export function lerCsvGenerico(texto: string, cartao: string, mapa: MapaDeColuna
 export type ItemPdf = { pagina: number; x: number; y: number; texto: string };
 
 const DATA_CURTA = /^(\d{2})\/(\d{2})$/;
-const VALOR_BR = /^-?[\d.]*\d,\d{2}$/;
+const DATA_LONGA = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+// O valor pode vir sozinho ("74,19", fatura aberta) ou com a moeda colada ("R$ 74,19", fatura fechada)
+const VALOR_BR = /^(?:(R\$|US\$|U\$S|USD|EUR|€|GBP|£)\s*)?(-?[\d.]*\d,\d{2})$/i;
 const MOEDA = /^(R\$|US\$|U\$S|USD|EUR|€|GBP|£)$/i;
+const PAIS = /^[A-Z]{2}$/; // coluna "País" da fatura fechada ("BR")
 
 /** O PDF só traz dia e mês: o ano é o de hoje, a não ser que a data caia mais de 45 dias no futuro (aí é do ano passado). */
 function comAno(dia: string, mes: string, hoje: string): string {
@@ -162,10 +169,33 @@ function comAno(dia: string, mes: string, hoje: string): string {
   return new Date(data + 'T12:00:00') > limite ? `${ano - 1}-${mes}-${dia}` : data;
 }
 
+/** Data completa (dd/mm/aaaa) logo depois de um rótulo: na mesma linha, à direita, ou logo abaixo, na mesma coluna. */
+function dataPerto(itens: ItemPdf[], rotulo: RegExp): string | undefined {
+  const r = itens.find(i => rotulo.test(i.texto));
+  if (!r) return undefined;
+  const achada = itens.filter(i => i.pagina === r.pagina && DATA_LONGA.test(i.texto)
+    && ((Math.abs(i.y - r.y) <= 3 && i.x > r.x) || (Math.abs(i.x - r.x) <= 15 && i.y < r.y && r.y - i.y <= 40)))
+    .sort((a, b) => Math.abs(a.y - r.y) - Math.abs(b.y - r.y))[0];
+  const m = achada?.texto.match(DATA_LONGA);
+  return m ? `${m[3]}-${m[2]}-${m[1]}` : undefined;
+}
+/** Valor em reais na mesma linha de um rótulo ("Total da Fatura … R$ 3.865,19"). */
+function valorNaLinha(itens: ItemPdf[], rotulo: RegExp): Centavos | undefined {
+  const r = itens.find(i => rotulo.test(i.texto));
+  const v = r && itens.filter(i => i.pagina === r.pagina && Math.abs(i.y - r.y) <= 3 && i.x > r.x).map(i => i.texto.match(VALOR_BR)).find(Boolean);
+  return v ? paraCentavos(v[2], ',') : undefined;
+}
+
 export function lerBbPdf(itens: ItemPdf[], cartao: string, hoje: string): Leitura {
   const limpos = itens.map(i => ({ ...i, texto: i.texto.replace(/\s+/g, ' ').trim() })).filter(i => i.texto);
   if (!/ourocard|banco do brasil/i.test(limpos.map(i => i.texto).join(' ')))
     throw new ErroDeLeitura('Não reconheci este PDF como fatura do cartão do Banco do Brasil.');
+  // A fatura fechada traz o fechamento, o vencimento e o total; a aberta ("Lançamentos Futuros") não
+  const fechamento = dataPerto(limpos, /^fatura fechada em$/i);
+  const vencimento = dataPerto(limpos, /^vencimento$/i);
+  const totalImpresso = valorNaLinha(limpos, /^total da fatura$/i);
+  const saldoAnterior = valorNaLinha(limpos, /^saldo fatura anterior$/i) ?? 0;
+  hoje = fechamento ?? hoje; // o ano das compras vem do fechamento, quando o PDF diz
 
   type Linha = { y: number; itens: ItemPdf[] };
   const lidas: Omit<LinhaLida, 'digital'>[] = [], ignoradas: LinhaIgnorada[] = [];
@@ -214,17 +244,18 @@ export function lerBbPdf(itens: ItemPdf[], cartao: string, hoje: string): Leitur
           continue;
         }
         const meio = meus.slice(1, iValor);
-        const moeda = meio.find(i => MOEDA.test(i.texto))?.texto ?? 'R$';
-        const partes = meio.filter(i => !MOEDA.test(i.texto));
+        const valorTexto = meus[iValor].texto.match(VALOR_BR)!;
+        const moeda = valorTexto[1] ?? meio.find(i => MOEDA.test(i.texto))?.texto ?? 'R$';
+        const partes = meio.filter((i, k) => !MOEDA.test(i.texto) && !(k > 0 && PAIS.test(i.texto)));
         const descricao = partes.map(i => i.texto).join(' ');
         // Nome da loja: sem a cidade, que o BB põe num pedaço separado bem à direita do começo do nome
         const loja = partes.filter((i, k) => k === 0 || i.x - partes[0].x < 45).map(i => i.texto).join(' ');
-        const valor = paraCentavos(meus[iValor].texto, ',');
+        const valor = paraCentavos(valorTexto[2], ',');
         const quando = comAno(data[1], data[2], hoje);
         const ignorar = (motivo: string) => { ignoradas.push({ data: quando, descricao, valor, motivo }); anterior = { y: l.y, idx: ignoradas.length - 1, alvo: 'ignorada' }; };
         if (processamentoNaColuna) { ignorar('Ainda em processamento no banco. Entra quando o BB lançar na fatura.'); continue; }
         if (/^(pgto|pagamento)\b/i.test(descricao)) { ignorar('É o pagamento da fatura, não uma compra.'); continue; }
-        if (!/^R\$$/.test(moeda)) { ignorar(`Valor em ${moeda}. Confira o valor em reais na fatura fechada e lance à mão.`); continue; }
+        if (!/^R\$$/i.test(moeda)) { ignorar(`Valor em ${moeda}. Confira o valor em reais na fatura fechada e lance à mão.`); continue; }
         const lida = classificar(quando, loja, valor);
         // Na parcelada, o BB põe a cidade logo depois do "PARC 02/04": a loja é só o que vem antes
         const nomeLoja = lida.parcela ? loja.split(/\s+PARC\b/i)[0] : lida.loja;
@@ -242,7 +273,11 @@ export function lerBbPdf(itens: ItemPdf[], cartao: string, hoje: string): Leitur
     const saque = lidas.find(o => o.tipo === 'compra' && o.data === l.data && /^pix\b/i.test(o.loja));
     if (saque) l.iofDe = saque.loja;
   }
-  return { linhas: comDigitais(cartao, lidas), ignoradas };
+  // Conferência: saldo anterior + pagamentos + o que foi lido tem de dar o total impresso
+  const pagamentos = ignoradas.filter(l => /pagamento/i.test(l.motivo)).reduce((s, l) => s + l.valor, 0);
+  const conferencia = totalImpresso === undefined ? undefined
+    : { impresso: totalImpresso, lido: saldoAnterior + pagamentos + lidas.reduce((s, l) => s + l.valor, 0) };
+  return { linhas: comDigitais(cartao, lidas), ignoradas, ...(vencimento ? { vencimento } : {}), ...(conferencia ? { conferencia } : {}) };
 }
 
 // Nome da loja como a pessoa reconhece. O BB escreve o nome com o intermediário do pagamento na frente ("DL*UberRides",
@@ -253,7 +288,8 @@ const MARCAS: [RegExp, string][] = [[/uber\s*\*|uberrides|uber\s*trip|^uber\b/i,
 const MERCADOS = /^(shopee|shein|aliexpress|amazon)\s*\*\s*(.+)$/i;
 const INTERMEDIARIO = /^(?:mp|pg|zp|hna|cappta|ec|pag|pagseguro|sumup|ebn|dl)\s*\*\s*|^jim\.com\s+/i;
 const CIDADES: [string, string][] = [['CAMPO', 'GRANDE'], ['SAO', 'PAULO'], ['RIO DE', 'JANEIR'], ['RIO', 'DE JANEIR'], ['BELO', 'HORIZONTE'], ['PORTO', 'ALEGRE'], ['VILA', 'OLIMPIA']];
-const capitalizar = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+const CIDADES_INTEIRAS = ['CAMPO GRANDE', 'SAO PAULO', 'RIO DE JANEIRO', 'RIO DE JANEIR', 'BELO HORIZONTE', 'PORTO ALEGRE', 'OSASCO', 'CURITIBA', 'BRASILIA', 'DOURADOS'];
+const capitalizar =(s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
 export function lojaDoBb(nome: string, resto?: string): string {
   const marca = MARCAS.find(([re]) => re.test(nome));
@@ -270,6 +306,11 @@ export function lojaDoBb(nome: string, resto?: string): string {
     if (!resto.toUpperCase().startsWith(fim)) continue;
     const corte = limpo.toUpperCase().lastIndexOf(comeco);
     if (corte > 0 && corte + comeco.length === limpo.length) { limpo = limpo.slice(0, corte); break; }
+  }
+  // Na fatura fechada a cidade vem inteira no fim do mesmo pedaço, às vezes colada no nome ("…BEACAMPO GRANDE")
+  for (const cidade of CIDADES_INTEIRAS) {
+    const sem = limpo.slice(0, limpo.length - cidade.length);
+    if (limpo.toUpperCase().endsWith(cidade) && /[a-z]{3}/i.test(sem)) { limpo = sem; break; }
   }
   return limpo.replace(/\s+/g, ' ').trim() || nome;
 }

@@ -2,7 +2,7 @@
 const fs=require('fs'),path=require('path');
 const cfg={
   nubank:{bg:'#ffffff',box:[0,0,263.84,145.57],pad:.2},
-  bb:{bg:'#fde100',box:[2,3,40,37],pad:.18},
+  bb:{bg:'#fde100',box:[11.56,5.25,31.52,31.52],pad:.23}, // só o símbolo, centrado (o recorte antigo pegava o começo do nome e deixava o símbolo à direita)
   drogasil:{bg:'#ffffff',box:[0,5,70,76],pad:.2},
   magalu:{bg:'#ffffff',box:[0,0,490.35,139.88],pad:.12},
   uber:{bg:'#000000',box:[0,0,926.9,321.78],pad:.18,fill:'#ffffff'},

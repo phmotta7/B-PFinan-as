@@ -150,6 +150,7 @@ Fluxo geral (igual para qualquer formato):
 - A linha com data (dd/mm) e valor é uma compra; a linha logo abaixo, sem data nem valor, completa a descrição. A loja é o nome sem a cidade; na parcelada, o que vem antes de `PARC X/Y`.
 - O PDF não traz o ano: vale o ano de hoje, ou o anterior se a data cair mais de 45 dias no futuro. Nas parcelas, a data é a da compra original.
 - Ignoradas, com o motivo na pré-visualização: o pagamento da fatura (`PGTO…`), os "Lançamentos em processamento" (ainda não lançados pelo banco) e valores em moeda estrangeira (lançar à mão com o valor em reais da fatura fechada).
+- Dois desenhos de PDF: a fatura **aberta** ("Lançamentos Futuros", sem total) e a **fechada** (uma coluna, "Data · Descrição · País · Valor", valor com "R$" colado, cidade no fim do nome). Na fechada, o app lê o vencimento (é ele que escolhe o mês da fatura), usa a data de fechamento para dar o ano às compras e confere a soma: saldo anterior + pagamentos + linhas lidas tem de dar o "Total da Fatura"; a prévia mostra se bate ou não.
 - Por enquanto o PDF só é aceito no cartão do BB; os outros continuam em CSV.
 
 #### 4.4.3 Idempotência

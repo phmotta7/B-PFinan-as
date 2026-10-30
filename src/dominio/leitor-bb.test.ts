@@ -85,6 +85,50 @@ describe('lerBbPdf (fatura do BB em PDF)', () => {
   });
 });
 
+// Fatura fechada: uma coluna, "Data · Descrição · País · Valor", valor com o "R$" colado, cidade no fim do nome,
+// e no resumo o vencimento, a data de fechamento e o total impresso.
+const FECHADA: ItemPdf[] = [
+  ...L(1, 748, [[40, 'Olá, Fulana, esta é sua fatura de'], [399, 'OUROCARD FACIL VISA'], [522, 'Final 0000']]),
+  ...L(1, 725, [[240, 'Vencimento']]), ...L(1, 703, [[240, '10/11/2026'], [399, 'Pagamentos/Créditos'], [514, 'R$ -1.000,00']]),
+  ...L(2, 432, [[40, 'Fatura fechada em'], [155, '28/10/2026']]),
+  ...L(2, 420, [[40, 'Fechamento da próxima fatura'], [156, '30/11/2026']]),
+  ...L(2, 250, [[48, 'Data'], [82, 'Descrição'], [442, 'País'], [524, 'Valor']]),
+  ...L(2, 234, [[82, 'SALDO FATURA ANTERIOR'], [446, 'BR'], [507, 'R$ 1.000,00']]),
+  ...L(2, 218, [[82, 'Pagamentos/Créditos']]),
+  ...L(2, 202, [[48, '13/10'], [82, 'PGTO DEBITO CONTA 1234 000000001 100'], [446, 'BR'], [504, 'R$ -1.000,00']]),
+  ...L(2, 186, [[82, 'Restaurantes']]),
+  ...L(2, 170, [[47, '04/10'], [82, 'IFD*iFood'], [139, 'OSASCO'], [446, 'BR'], [519, 'R$ 12,49']]),
+  ...L(3, 766, [[82, 'Outros lançamentos']]),
+  ...L(3, 750, [[48, '01/10'], [82, 'JUROS SAQUE PIX'], [182, 'BR'], [523, 'R$ 9,01']]),
+  ...L(3, 734, [[48, '17/10'], [82, 'ASSAI ATACADISTA LJ24 CAMPO GRANDE'], [446, 'BR'], [517, 'R$ 90,03']]),
+  ...L(3, 718, [[82, 'Compras parceladas']]),
+  ...L(3, 702, [[47, '08/03'], [82, 'LOJA PARCELADA PARC 08/10 DOURADOS'], [446, 'BR'], [514, 'R$ 228,35']]),
+  ...L(3, 686, [[48, '20/12'], [82, 'LOJA DO ANO PASSADO'], [446, 'BR'], [514, 'R$ 0,00']]),
+  ...L(4, 638, [[48, 'Total da Fatura'], [496, 'R$ 339,88']]),
+];
+
+describe('lerBbPdf, fatura fechada', () => {
+  const r = lerBbPdf(FECHADA, 'bb', '2027-01-15');
+  it('lê o valor com o "R$" colado e deixa o país e a cidade fora do nome', () => {
+    expect(r.linhas.map(l => [l.loja, l.valor])).toEqual([['iFood', 1249], ['JUROS SAQUE PIX', 901], ['ASSAI ATACADISTA LJ24', 9003], ['LOJA PARCELADA', 22835], ['LOJA DO ANO PASSADO', 0]]);
+    expect(r.linhas[2].descricao).toBe('ASSAI ATACADISTA LJ24 CAMPO GRANDE');
+  });
+  it('não lê o saldo anterior como compra e separa o pagamento', () => {
+    expect(r.ignoradas.map(l => l.descricao)).toEqual(['PGTO DEBITO CONTA 1234 000000001 100']);
+  });
+  it('acha o vencimento e usa o fechamento, não o dia de hoje, para dar o ano às compras', () => {
+    expect(r.vencimento).toBe('2026-11-10');
+    expect(r.linhas.find(l => l.loja === 'iFood')!.data).toBe('2026-10-04');
+    expect(r.linhas.find(l => l.loja === 'LOJA DO ANO PASSADO')!.data).toBe('2025-12-20');
+  });
+  it('confere o total impresso: saldo anterior + pagamento + compras', () => {
+    expect(r.conferencia).toEqual({ impresso: 33988, lido: 33988 });
+  });
+  it('a fatura aberta não tem total nem vencimento para conferir', () => {
+    expect(lerBbPdf(FATURA, 'bb', '2026-10-30')).not.toHaveProperty('conferencia');
+  });
+});
+
 describe('lojaDoBb (nome da loja como a pessoa reconhece)', () => {
   it('troca o nome do intermediário pela marca conhecida', () => {
     expect(lojaDoBb('DL *UberRides Sao Paulo')).toBe('Uber');
@@ -106,6 +150,10 @@ describe('lojaDoBb (nome da loja como a pessoa reconhece)', () => {
     expect(lojaDoBb('JIM.COM PAZ TENIS E BEACAMPO', 'GRANDE')).toBe('PAZ TENIS E BEA');
     expect(lojaDoBb('ASSAI ATACADISTA LJ24 CAMPO', 'GRANDE')).toBe('ASSAI ATACADISTA LJ24');
     expect(lojaDoBb('SAMUEL NUNES MONTEIRO', 'CAMPO GRANDE')).toBe('SAMUEL NUNES MONTEIRO');
+  });
+  it('tira a cidade inteira do fim, mesmo colada no nome', () => {
+    expect(lojaDoBb('JIM.COM PAZ TENIS E BEACAMPO GRANDE')).toBe('PAZ TENIS E BEA');
+    expect(lojaDoBb('DELLAS STUDIO DE BELEZ CAMPO GRANDE')).toBe('DELLAS STUDIO DE BELEZ');
   });
   it('não confunde nome de lugar com a marca', () => {
     expect(lojaDoBb('SUPERMERCADO UBERLANDIA')).toBe('SUPERMERCADO UBERLANDIA');

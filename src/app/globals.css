@@ -384,7 +384,7 @@ h1,h2,h3,p{margin:0}
 .passos li.atual b{font-weight:700}
 .passos li.atual .bola{background:var(--acao);color:var(--no-acao);box-shadow:none}
 /* Ação fixa embaixo das telas sem barra (Lançar, Importar) */
-.conteudo.sem-barra:has(> .rodape),.conteudo.sem-barra:has(> .passo > .rodape){padding-bottom:0}
+.conteudo.sem-barra:has(> .rodape),.conteudo.sem-barra:has(> .etapa-importar > .rodape){padding-bottom:0}
 .rodape{position:sticky;bottom:0;margin:8px -16px 0;padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(to bottom,transparent,var(--chao) 22%);z-index:3}
 .resumo-ct{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--cartao);border-radius:var(--r-bloco);box-shadow:var(--s-cartao);padding:6px 6px 6px 14px}
 .resumo-ct p{display:flex;align-items:center;gap:8px;font:var(--t-apoio);color:var(--suave)}
@@ -902,10 +902,11 @@ h2.dia{margin:0}
 /* Voltar de tela: o conteúdo chega da esquerda, o espelho do avançar */
 .coluna[data-entrada="volta"] > .conteudo{animation:entra-volta var(--d-curta) var(--ease-saida)}
 @keyframes entra-volta{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
-/* Passos do Importar: avançar chega da direita, voltar da esquerda */
-.passo{display:flex;flex-direction:column;gap:14px}
-.passo[data-dir="frente"]{animation:entra-lado var(--d-curta) var(--ease-saida)}
-.passo[data-dir="volta"]{animation:entra-volta var(--d-curta) var(--ease-saida)}
+/* Passos do Importar (classe própria, porque .passo já tem outro estilo): avançar chega da direita, voltar da esquerda */
+.etapa-importar{display:flex;flex-direction:column;gap:14px}
+.conteudo:has(> .etapa-importar){overflow-x:hidden} /* o deslize lateral do passo não cria barra de rolagem */
+.etapa-importar[data-dir="frente"]{animation:entra-lado var(--d-curta) var(--ease-saida)}
+.etapa-importar[data-dir="volta"]{animation:entra-volta var(--d-curta) var(--ease-saida)}
 /* Barra de baixo: a cor do lugar atual troca suave; o ícone encolhe de leve no toque; nas telas com rodapé ela desce e some */
 .barra{transition:transform var(--d-curta) var(--ease-saida),opacity var(--d-curta) var(--ease-saida)}
 .barra.fora{transform:translateY(100%);opacity:0;pointer-events:none}
@@ -926,7 +927,7 @@ h2.dia{margin:0}
 .sanfona[data-aberta] > div{opacity:1}
 .sanfona > div > :first-child{margin-top:12px}
 @media (prefers-reduced-motion: reduce){
-  .coluna[data-entrada="volta"] > .conteudo,.passo[data-dir]{animation:acende 120ms linear}
+  .coluna[data-entrada="volta"] > .conteudo,.etapa-importar[data-dir]{animation:acende 120ms linear}
   .barra{transition:opacity 150ms linear}.barra.fora{transform:none}
   .barra button:not(.lancar):active svg{transform:none}
   .rodape{animation:acende 150ms linear both}
