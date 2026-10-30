@@ -933,3 +933,6 @@ h2.dia{margin:0}
   .rodape{animation:acende 150ms linear both}
   .sanfona{transition:none}.sanfona > div{transition:opacity 150ms linear}
 }
+
+/* Folha "De quem é?": o "Mudar o nome" fica alinhado ao texto da folha (o botão discreto tem 10px de respiro) */
+.folha .mudar-nome{align-self:flex-start;margin:-4px 0 -4px -10px}

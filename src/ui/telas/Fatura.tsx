@@ -1,11 +1,11 @@
 'use client';
 // Fatura (T4): linhas por dia, filtros, totais por pessoa, marcação individual e em massa (§4.6).
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { FileUp, X, Check, Copy } from 'lucide-react';
+import { FileUp, X, Check, Copy, Pencil } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Divisao, Folha, Logo, LogoBanco, SeletorMes, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
 import { faturaDe, linhasDaFatura, situacaoDaFatura, totaisDaFatura, type LinhaFatura } from '@/dados/consultas';
-import { marcar } from '@/dados/operacoes';
+import { marcar, salvar } from '@/dados/operacoes';
 import { datasDaFatura, somarMeses } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
 import type { Escopo, Pessoa, Retrato } from '@/dados/tipos';
@@ -130,10 +130,11 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
   const [escopo, setEscopo] = useState<Escopo | null>(null);
   const [todas, setTodas] = useState(false);
   const [aberta, setAberta] = useState<string[] | null>(null);
+  const [nome, setNome] = useState<string | null>(null); // null = não está editando o nome
   // "Outras…": a caixa de categorias cresce de onde estava e as novas acendem
   const cats = useRef<HTMLDivElement>(null), fotoCats = useRef<ReturnType<typeof fotografar> | null>(null);
   useLayoutEffect(() => { if (todas && fotoCats.current) { crescer(cats.current, fotoCats.current); fotoCats.current = null; } }, [todas]);
-  if (compras !== aberta) { setAberta(compras); const c = compras?.length === 1 ? r.compra.find(x => x.id === compras[0]) : null; setEscolha(c?.pagador ?? null); setEscopo(c?.escopo ?? null); setTodas(false); }
+  if (compras !== aberta) { setAberta(compras); const c = compras?.length === 1 ? r.compra.find(x => x.id === compras[0]) : null; setEscolha(c?.pagador ?? null); setEscopo(c?.escopo ?? null); setTodas(false); setNome(null); }
   const cs = (compras ?? []).map(id => r.compra.find(c => c.id === id)).filter(Boolean) as Retrato['compra'];
   const um = cs.length === 1 ? cs[0] : null;
   const valor = cs.reduce((s, c) => s + (c.parcelas > 1 ? Math.round(c.valorTotal / c.parcelas) : c.valorTotal), 0);
@@ -141,7 +142,19 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
   const ehUsuario = pessoa?.tipo === 'usuario';
   const e = escopo ?? (escolha ? escopoPadrao(escolha) : 'pessoal');
 
-  const salvar = async (pagador: string, esc: Escopo | null, categoria: string | null) => {
+  // Nome da compra: a pessoa troca "CleberSalvado" por "iPad". Vale para todas as parcelas, que são a mesma compra.
+  const noBanco = (() => {
+    const lid = um && r.parcela_cartao.find(x => x.compra === um.id && x.linhaImportada)?.linhaImportada;
+    const d = r.linha_importada.find(l => l.id === lid)?.dados.descricao;
+    return typeof d === 'string' ? d : null;
+  })();
+  const renomear = async () => {
+    const novo = nome?.trim();
+    if (!um || !novo || novo === um.descricao) return setNome(null);
+    setNome(null);
+    await executar(salvar(r, 'compra', { ...um, descricao: novo }), um.parcelas > 1 ? `Nome trocado para ${novo} nas ${um.parcelas} parcelas.` : `Nome trocado para ${novo}.`);
+  };
+  const salvarPessoa = async (pagador: string, esc: Escopo | null, categoria: string | null) => {
     const p = r.pessoa.find(x => x.id === pagador)!;
     if (p.tipo === 'usuario' && esc) lembrarEscopo(pagador, esc);
     if (categoria) usarCategoria(pagador, r.categoria.find(c => c.id === categoria)?.nome ?? '');
@@ -150,15 +163,24 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
   };
   return (
     <Folha aberta={!!compras?.length} aoFechar={aoFechar} titulo={um ? 'De quem é?' : `De quem são as ${cs.length}?`} sub={um ? `${um.descricao} · ${reais(valor)}` : reais(valor)}>
+      {um ? (nome === null
+        ? <button className="bt discreto mudar-nome" onClick={() => setNome(um.descricao)}><Pencil size={16} strokeWidth={1.75} aria-hidden="true" />Mudar o nome</button>
+        : <form className="campo" onSubmit={ev => { ev.preventDefault(); renomear(); }}>
+            <label htmlFor="f-nome-compra">Nome da compra</label>
+            <div className="entrada"><input id="f-nome-compra" value={nome} onChange={ev => setNome(ev.target.value)} autoFocus autoComplete="off" enterKeyHint="done" maxLength={60} /></div>
+            {noBanco ? <p className="ajuda">No banco: {noBanco}{um.parcelas > 1 ? `. O nome novo vale para as ${um.parcelas} parcelas.` : ''}</p> : um.parcelas > 1 ? <p className="ajuda">O nome novo vale para as {um.parcelas} parcelas.</p> : null}
+            <div className="acoes"><button type="button" className="bt secundario medio" onClick={() => setNome(null)}>Cancelar</button>
+              <button type="submit" className="bt principal medio" disabled={!nome.trim() || nome.trim() === um.descricao}>Salvar nome</button></div>
+          </form>) : null}
       <div className="pessoas" role="group" aria-label="Pessoa">{r.pessoa.map(p => (
-        <button key={p.id} aria-pressed={escolha === p.id} onClick={() => { setEscolha(p.id); setEscopo(null); if (p.tipo !== 'usuario') salvar(p.id, null, null); }}><Selo pessoa={p} grande /></button>))}
+        <button key={p.id} aria-pressed={escolha === p.id} onClick={() => { setEscolha(p.id); setEscopo(null); if (p.tipo !== 'usuario') salvarPessoa(p.id, null, null); }}><Selo pessoa={p} grande /></button>))}
       </div>
       {ehUsuario ? (<>
         <div className="campo"><span className="rot">Para quê</span>
           <div className="seg" data-v={e === 'casal' ? 1 : 0} role="group" aria-label="Para quê"><span className="pino" aria-hidden="true" />
             <button aria-pressed={e !== 'casal'} onClick={() => setEscopo('pessoal')}>Pessoal</button><button aria-pressed={e === 'casal'} onClick={() => setEscopo('casal')}>Casal</button></div></div>
         <div className="campo"><span className="rot">Categoria · toque para salvar</span>
-          <div className="cats" ref={cats}>{categoriasVisiveis(r, escolha, um?.categoria ?? null, todas).map(c => <button key={c.id} className="chip" aria-pressed={um?.categoria === c.id} onClick={() => salvar(escolha!, e, c.id)}>{c.nome}</button>)}
+          <div className="cats" ref={cats}>{categoriasVisiveis(r, escolha, um?.categoria ?? null, todas).map(c => <button key={c.id} className="chip" aria-pressed={um?.categoria === c.id} onClick={() => salvarPessoa(escolha!, e, c.id)}>{c.nome}</button>)}
             {todas ? null : <button className="chip" onClick={() => { fotoCats.current = fotografar(cats.current); setTodas(true); }}>Outras…</button>}</div></div>
       </>) : null}
     </Folha>

@@ -71,11 +71,19 @@ export function importarFatura(r: Retrato, q: PedidoImportacao) {
 
   // Candidatos à conciliação: compras manuais à vista ainda não conciliadas e parcelas previstas do cartão
   const comprasCartao = r.compra.filter(c => c.cartao === q.cartao);
+  // Nome para comparar: o que a pessoa deu à compra e o que veio do banco (se ela renomeou "CleberSalvado" para "iPad",
+  // a próxima parcela, que o banco ainda chama de CleberSalvado, continua sendo reconhecida)
+  const nomeDoBanco = (compra: string) => {
+    const lid = r.parcela_cartao.find(x => x.compra === compra && x.linhaImportada)?.linhaImportada;
+    const loja = r.linha_importada.find(l => l.id === lid)?.dados.loja;
+    return typeof loja === 'string' ? loja : '';
+  };
+  const nomes = (c: Compra) => [c.descricao, nomeDoBanco(c.id)].filter(Boolean).join(' ');
   const lancados: Lancamento[] = [
     ...comprasCartao.filter(c => c.origem === 'manual' && !c.conciliada && c.parcelas === 1).map(c => ({ id: 'c:' + c.id, tipo: 'manual' as const, data: c.data, loja: c.descricao, valor: c.valorTotal })),
     ...r.parcela_cartao.filter(x => x.status === 'prevista').flatMap(x => {
       const c = comprasCartao.find(y => y.id === x.compra); if (!c || c.parcelas === 1) return [];
-      return [{ id: 'p:' + x.id, tipo: 'prevista' as const, data: c.data, loja: c.descricao, valor: x.valor, parcela: { atual: x.numero, total: c.parcelas }, fatura: r.fatura.find(f => f.id === x.fatura)?.mes }];
+      return [{ id: 'p:' + x.id, tipo: 'prevista' as const, data: c.data, loja: nomes(c), valor: x.valor, parcela: { atual: x.numero, total: c.parcelas }, fatura: r.fatura.find(f => f.id === x.fatura)?.mes }];
     }),
   ];
   const importadas: Importada[] = novas.map(l => ({ id: l.digital, data: l.data, loja: l.loja, valor: l.valor, parcela: l.parcela }));
