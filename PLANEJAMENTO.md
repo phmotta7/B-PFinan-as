@@ -43,7 +43,7 @@
 4. **Fase 2**: acompanhamento de investimentos.
 
 ### 1.3 Fora do escopo (por decisão)
-- Divisão de contas entre Pedro e Bruna (não há "rachar"; a única dívida entre eles é a fatura do cartão).
+- Divisão de contas fora do cartão entre Pedro e Bruna (contas da casa, Pix): não há "rachar" fora da fatura. **Mudou em 31/10/2026:** as compras do cartão podem ser divididas entre pessoas (§4.6.1).
 - Atribuição automática de dono por estabelecimento (gera conflitos, ex.: Drogasil usada por várias pessoas).
 - Controle de saldo de contas bancárias.
 - Open Finance / conexão direta com bancos.
@@ -64,6 +64,7 @@
 | **Titular** | Dono do cartão ou da dívida no banco (hoje, sempre a Bruna). |
 | **Pagador** | Quem efetivamente arca com o valor de um lançamento (Pedro, Bruna, Eliete ou Lucimar). |
 | **Escopo** | Para quê foi o gasto: **Pessoal** ou **Casal**. Só se aplica a Pedro e Bruna. |
+| **Divisão** | Compra do cartão repartida entre duas ou mais pessoas (ex.: metade Pedro, metade Bruna). Cada uma paga só a sua parte (§4.6.1). |
 | **Carteira** | Visão derivada de pagador + escopo: carteira Pedro, carteira Bruna, carteira Casal. |
 | **Ciclo / Fatura** | Período entre dois fechamentos de um cartão. A fatura é identificada pelo **mês de vencimento** (ex.: "Fatura Nov/26" vence em novembro). |
 | **Competência** | Mês ao qual um gasto pertence para fins de análise. Compra de cartão → mês de vencimento da fatura. Outros lançamentos → mês da data. |
@@ -179,6 +180,15 @@ Ordem de tentativa para cada linha importada:
 - Sem regra automática por estabelecimento (decisão Q12).
 - Contador no topo: "12 de 47 linhas sem dono".
 
+#### 4.6.1 Divisão de compras — decidido com o Pedro em 31/10/2026
+- Na folha "De quem é?", **Dividir entre pessoas**: escolhe duas ou mais pessoas (qualquer uma: Pedro, Bruna, Eliete, Lucimar).
+- **Uma compra**: começa meio a meio (partes iguais) e dá para ajustar quanto cada um paga; só salva quando a soma fecha com o valor da compra. **Várias de uma vez** (seleção em massa): partes iguais em cada uma.
+- A divisão vale para a **compra inteira**: numa parcelada, cada parcela é repartida na mesma proporção. Centavo que sobra numa conta que não fecha fica com a **primeira pessoa** da divisão.
+- **Escopo**: se Pedro e Bruna dividem, a compra é **Casal**. Se só um deles está na divisão, a parte dele segue o Pessoal/Casal escolhido.
+- IOF e estorno ligados à compra seguem a mesma divisão (§4.7). Marcar a compra para uma pessoa só desfaz a divisão.
+- Na lista da fatura, a linha mostra o selo de cada pessoa; o filtro de cada pessoa inclui as compras em que ela tem parte; o total de cada pessoa (régua) soma só a parte dela.
+- Guardado em `compra.divisao` (lista de pessoa + valor da compra inteira); o `pagador` passa a ser a primeira pessoa da divisão.
+
 ### 4.7 Encargos
 | Tipo | Quem paga (padrão) | Observação |
 |---|---|---|
@@ -195,7 +205,7 @@ Ordem de tentativa para cada linha importada:
 ### 5.1 Definição
 - **Fechamento** = cobrança mensal de **uma pessoa** (devedor) para o **titular** (Bruna), referente a um **mês de vencimento**.
 - Composição do fechamento de uma pessoa no mês M:
-  - todas as parcelas/encargos com **pagador = essa pessoa** nas faturas dos cartões da Bruna que **vencem em M**;
+  - todas as parcelas/encargos com **pagador = essa pessoa** nas faturas dos cartões da Bruna que **vencem em M** e, nas compras divididas, **a parte dela** (§4.6.1); na mensagem, a linha diz "– metade de R$ X" (ou "1/3 de…", "sua parte de…");
   - todas as parcelas de **dívidas** em nome da Bruna cujo **responsável é essa pessoa** e que vencem em M (empréstimo do Pedro, Shopee — ver §8);
   - estornos com pagador = essa pessoa (abatem).
 - A Bruna não tem fechamento consigo mesma: seus próprios itens são simplesmente gastos dela.

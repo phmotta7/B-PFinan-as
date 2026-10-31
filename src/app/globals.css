@@ -936,3 +936,16 @@ h2.dia{margin:0}
 
 /* Folha "De quem é?": o "Mudar o nome" fica alinhado ao texto da folha (o botão discreto tem 10px de respiro) */
 .folha .mudar-nome{align-self:flex-start;margin:-4px 0 -4px -10px}
+
+/* ================= Divisão de compras (31/10/2026) ================= */
+/* Na linha da fatura, cada pessoa da divisão aparece com o próprio selo (círculo + nome) */
+.selos{display:inline-flex;gap:10px;min-width:0;overflow:hidden}
+/* Na folha: uma linha por pessoa com o valor que ela paga, e embaixo se a soma fecha com o total */
+.divisao{display:flex;flex-direction:column;gap:8px}
+.divisao-linha{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,150px);gap:12px;align-items:center}
+.divisao-linha .selo{font-size:15px}
+.divisao-linha .entrada{min-height:48px;padding:0 12px}
+.divisao-linha .entrada > span{font:600 14px/1 var(--fonte);color:var(--suave)}
+.divisao-linha .entrada input{padding:12px 0;text-align:right;font-variant-numeric:tabular-nums lining-nums;font-weight:600}
+.divisao-pe{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.divisao-pe .bt.discreto{margin-right:-10px}

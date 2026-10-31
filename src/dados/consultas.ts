@@ -2,6 +2,7 @@
 import { calcularFechamento, type ItemFatura, type ParcelaDivida } from '@/dominio/fechamento';
 import { montarMensagem } from '@/dominio/mensagem';
 import { somarMeses, type Mes } from '@/dominio/ciclo';
+import { partesDaLinha } from '@/dominio/divisao';
 import type { Compra, Fatura, ParcelaCartao, Pessoa, Retrato } from './tipos';
 
 export type LinhaFatura = { parcela: ParcelaCartao; compra: Compra; valor: number; data: string; numero: number; total: number; prevista: boolean; pendente: boolean };
@@ -29,7 +30,7 @@ export function totaisDaFatura(linhas: LinhaFatura[]) {
     total += l.valor;
     if (l.pendente) { pendentes++; valorPendente += l.valor; }
     else if (!l.compra.pagador) { semDono++; valorSemDono += l.valor; }
-    else porPessoa.set(l.compra.pagador, (porPessoa.get(l.compra.pagador) ?? 0) + l.valor);
+    else for (const p of partesDaLinha(l.compra, l.valor)) porPessoa.set(p.pessoa, (porPessoa.get(p.pessoa) ?? 0) + p.valor);
   }
   return { total, porPessoa, semDono, valorSemDono, pendentes, valorPendente, quantidade: linhas.length };
 }
@@ -40,8 +41,15 @@ export function situacaoDaFatura(f: Fatura, hoje: string) {
   return hoje >= f.dataFechamento ? 'fechada' : 'aberta';
 }
 
-const itemDe = (r: Retrato, l: LinhaFatura, titular: string): ItemFatura => ({
-  id: l.parcela.id, cartao: l.compra.cartao, titular, pagador: l.compra.pagador ?? '', valor: l.valor, data: l.data,
+// Compra dividida vira um item por pessoa, com a parte dela; o item lembra o valor inteiro para a mensagem dizer "metade de…"
+const itensDe = (r: Retrato, l: LinhaFatura, titular: string): ItemFatura[] => {
+  const partes = partesDaLinha(l.compra, l.valor);
+  if (partes.length < 2) return [itemDe(r, l, titular, l.compra.pagador ?? '', l.valor)];
+  const igual = partes.every(p => Math.abs(p.valor - partes[0].valor) <= 1);
+  return partes.map(p => ({ ...itemDe(r, l, titular, p.pessoa, p.valor), id: `${l.parcela.id}:${p.pessoa}`, dividida: { total: l.valor, partes: partes.length, igual } }));
+};
+const itemDe = (r: Retrato, l: LinhaFatura, titular: string, pagador: string, valor: number): ItemFatura => ({
+  id: l.parcela.id, cartao: l.compra.cartao, titular, pagador, valor, data: l.data,
   dataCompra: l.compra.data, loja: l.compra.descricao, tipo: l.compra.tipo === 'multa' ? 'juros' : l.compra.tipo,
   parcela: l.total > 1 ? { atual: l.numero, total: l.total } : undefined,
   iofDe: l.compra.tipo === 'iof' && l.compra.compraOrigem ? r.compra.find(c => c.id === l.compra.compraOrigem)?.descricao : undefined,
@@ -51,7 +59,7 @@ const itemDe = (r: Retrato, l: LinhaFatura, titular: string): ItemFatura => ({
 export function itensDoMes(r: Retrato, mes: Mes, credor: string): ItemFatura[] {
   return r.cartao.filter(c => c.titular === credor).flatMap(c => {
     const f = faturaDe(r, c.id, mes); if (!f) return [];
-    return linhasDaFatura(r, f.id).filter(l => !l.pendente).map(l => itemDe(r, l, c.titular));
+    return linhasDaFatura(r, f.id).filter(l => !l.pendente).flatMap(l => itensDe(r, l, c.titular));
   });
 }
 export function parcelasDeDividaNoMes(r: Retrato, mes: Mes): ParcelaDivida[] {

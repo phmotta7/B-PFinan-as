@@ -4,6 +4,7 @@ import { dividirEmParcelas } from '@/dominio/parcelas';
 import { conciliar, parcelasFuturas, type Importada, type Lancamento } from '@/dominio/conciliacao';
 import type { Leitura } from '@/dominio/leitores';
 import type { Centavos } from '@/dominio/dinheiro';
+import { partesIguais, type Parte } from '@/dominio/divisao';
 import { mudancaVazia, type Compra, type Escopo, type Fatura, type Mudanca, type ParcelaCartao, type Retrato, type Tabela, type Tabelas } from './tipos';
 
 export const novoId = () => (globalThis.crypto?.randomUUID?.() ?? `id-${Math.random().toString(36).slice(2)}-${Date.now()}`);
@@ -42,12 +43,12 @@ class Pacote {
 }
 
 // ---------- Lançar compra no cartão (§4.3) ----------
-export type NovaCompra = { cartao: string; data: string; descricao: string; valorTotal: Centavos; parcelas: number; pagador: string | null; escopo: Escopo | null; categoria: string | null; observacao?: string | null };
+export type NovaCompra = { cartao: string; data: string; descricao: string; valorTotal: Centavos; parcelas: number; pagador: string | null; escopo: Escopo | null; categoria: string | null; observacao?: string | null; divisao?: Parte[] | null };
 export function lancarCompra(r: Retrato, n: NovaCompra): Mudanca {
   const p = new Pacote(r);
   const cartao = r.cartao.find(c => c.id === n.cartao)!;
   const compra: Compra = { id: novoId(), cartao: n.cartao, data: n.data, descricao: n.descricao.trim(), valorTotal: n.valorTotal, parcelas: n.parcelas, tipo: 'compra',
-    pagador: n.pagador, escopo: n.escopo, categoria: n.categoria, observacao: n.observacao ?? null, origem: 'manual', conciliada: false };
+    pagador: n.pagador, escopo: n.escopo, categoria: n.categoria, observacao: n.observacao ?? null, origem: 'manual', conciliada: false, divisao: n.divisao ?? null };
   p.inserir('compra', compra);
   const m1 = faturaDaCompra(cartao, n.data); // RN-CA-02
   dividirEmParcelas(n.valorTotal, n.parcelas).forEach((valor, i) => // RN-CA-10, RN-CA-11, RN-CA-12
@@ -125,7 +126,7 @@ export function importarFatura(r: Retrato, q: PedidoImportacao) {
     const alvo = (dados?.iofDe ?? c.descricao).toLowerCase();
     const origem = [...criadas, ...p.todos('compra')].filter(o => o.id !== c.id && o.tipo !== 'iof' && o.tipo !== 'estorno' && o.descricao.toLowerCase() === alvo)
       .sort((a, b) => Math.abs(Date.parse(a.data) - Date.parse(c.data)) - Math.abs(Date.parse(b.data) - Date.parse(c.data)))[0];
-    if (origem) p.atualizar('compra', { ...p.ver('compra', c.id)!, compraOrigem: origem.id, pagador: origem.pagador ?? null, escopo: origem.escopo ?? null });
+    if (origem) p.atualizar('compra', { ...p.ver('compra', c.id)!, compraOrigem: origem.id, pagador: origem.pagador ?? null, escopo: origem.escopo ?? null, divisao: origem.divisao ?? null });
   }
   p.atualizar('importacao', { ...importacao, total, linhasNovas: novas.length, linhasRepetidas: q.leitura.linhas.length - novas.length });
   return { mudanca: p.m, resumo: { novas: novas.length, repetidas: q.leitura.linhas.length - novas.length, ignoradas: q.leitura.ignoradas.length, fatura: fatura.id } };
@@ -134,7 +135,7 @@ export function importarFatura(r: Retrato, q: PedidoImportacao) {
 // ---------- Conferência da importação (§4.5) ----------
 function absorver(p: Pacote, importada: Compra, manualId: string) {
   const manual = p.ver('compra', manualId)!;
-  p.atualizar('compra', { ...importada, pagador: manual.pagador, escopo: manual.escopo, categoria: manual.categoria, observacao: manual.observacao, pendencia: null });
+  p.atualizar('compra', { ...importada, pagador: manual.pagador, escopo: manual.escopo, categoria: manual.categoria, observacao: manual.observacao, divisao: manual.divisao ?? null, pendencia: null });
   for (const x of p.todos('parcela_cartao').filter(x => x.compra === manualId)) p.apagar('parcela_cartao', x.id);
   p.apagar('compra', manualId);
 }
@@ -155,7 +156,7 @@ export function escolherCandidata(r: Retrato, compraId: string, candidata: strin
   if (!candidata) { p.atualizar('compra', { ...c, pendencia: null }); return p.m; }
   const cand = p.ver('compra', candidata)!;
   if (cand.parcelas === 1) absorver(p, c, candidata);
-  else p.atualizar('compra', { ...c, pagador: cand.pagador, escopo: cand.escopo, categoria: cand.categoria, pendencia: null });
+  else p.atualizar('compra', { ...c, pagador: cand.pagador, escopo: cand.escopo, categoria: cand.categoria, divisao: cand.divisao ?? null, pendencia: null });
   return p.m;
 }
 /** RN-CO-03: parcela esperada e não encontrada → próxima fatura. */
@@ -190,7 +191,25 @@ export function marcar(r: Retrato, compras: string[], m: { pagador: string; esco
   for (const id of ids) {
     const c = p.ver('compra', id)!;
     const pb = r.pessoa.find(x => x.id === m.pagador)?.tipo === 'usuario';
-    p.atualizar('compra', { ...c, pagador: m.pagador, escopo: pb ? m.escopo ?? 'pessoal' : null, categoria: m.categoria ?? c.categoria ?? null });
+    p.atualizar('compra', { ...c, pagador: m.pagador, escopo: pb ? m.escopo ?? 'pessoal' : null, categoria: m.categoria ?? c.categoria ?? null, divisao: null });
+  }
+  return p.m;
+}
+
+/** Dividir compras entre pessoas (decidido em 31/10/2026). Sem valores, partes iguais; com valores (uma compra só), os valores dados.
+ *  Se Pedro e Bruna dividem, a compra é do casal. O pagador fica sendo a primeira pessoa, para quem lê só o pagador. */
+export function dividir(r: Retrato, compras: string[], d: { pessoas: string[]; valores?: Centavos[]; escopo: Escopo | null; categoria: string | null }): Mudanca {
+  if (d.pessoas.length < 2) return marcar(r, compras, { pagador: d.pessoas[0], escopo: d.escopo, categoria: d.categoria });
+  const p = new Pacote(r);
+  const usuarios = d.pessoas.filter(id => r.pessoa.find(x => x.id === id)?.tipo === 'usuario').length;
+  const escopo: Escopo | null = usuarios >= 2 ? 'casal' : usuarios === 1 ? d.escopo ?? 'pessoal' : null;
+  for (const id of compras) {
+    const c = p.ver('compra', id)!;
+    const divisao = d.valores && compras.length === 1 ? d.pessoas.map((pessoa, i) => ({ pessoa, valor: d.valores![i] ?? 0 })) : partesIguais(c.valorTotal, d.pessoas);
+    const dados = { pagador: d.pessoas[0], escopo, divisao };
+    p.atualizar('compra', { ...c, ...dados, categoria: d.categoria ?? c.categoria ?? null });
+    // IOF e estorno ligados seguem a mesma divisão (§4.7)
+    p.todos('compra').filter(x => x.compraOrigem === id && !x.pagador).forEach(x => p.atualizar('compra', { ...x, ...dados }));
   }
   return p.m;
 }

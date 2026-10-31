@@ -207,7 +207,9 @@ export function Exportar() {
     for (const p of r.parcela_cartao) {
       const c = r.compra.find(x => x.id === p.compra)!, f = r.fatura.find(x => x.id === p.fatura)!;
       linhas.push([r.cartao.find(x => x.id === c.cartao)?.apelido ?? '', f.mes, c.data, c.descricao, c.parcelas > 1 ? `${p.numero}/${c.parcelas}` : '', (p.valor / 100).toFixed(2).replace('.', ','),
-        r.pessoa.find(x => x.id === c.pagador)?.nome ?? 'sem dono', c.escopo ?? '', r.categoria.find(x => x.id === c.categoria)?.nome ?? '', p.status]);
+        // Compra dividida: "Pedro 50% + Bruna 50%" na coluna de quem paga
+        c.divisao && c.divisao.length > 1 ? c.divisao.map(d => `${r.pessoa.find(x => x.id === d.pessoa)?.nome ?? '?'} ${Math.round((d.valor * 100) / (c.valorTotal || 1))}%`).join(' + ')
+          : r.pessoa.find(x => x.id === c.pagador)?.nome ?? 'sem dono', c.escopo ?? '', r.categoria.find(x => x.id === c.categoria)?.nome ?? '', p.status]);
     }
     return linhas.map(l => l.map(v => /[;"\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v).join(';')).join('\n');
   };

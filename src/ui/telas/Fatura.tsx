@@ -1,14 +1,16 @@
 'use client';
 // Fatura (T4): linhas por dia, filtros, totais por pessoa, marcação individual e em massa (§4.6).
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { FileUp, X, Check, Copy, Pencil } from 'lucide-react';
+import { FileUp, X, Check, Copy, Pencil, Users, CircleAlert } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Divisao, Folha, Logo, LogoBanco, SeletorMes, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
 import { faturaDe, linhasDaFatura, situacaoDaFatura, totaisDaFatura, type LinhaFatura } from '@/dados/consultas';
-import { marcar, salvar } from '@/dados/operacoes';
+import { dividir, marcar, salvar } from '@/dados/operacoes';
 import { datasDaFatura, somarMeses } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
-import type { Escopo, Pessoa, Retrato } from '@/dados/tipos';
+import type { Compra, Escopo, Pessoa, Retrato } from '@/dados/tipos';
+import { faltaDividir, partesDaLinha, partesIguais } from '@/dominio/divisao';
+import { lerValorDigitado } from '@/dominio/dinheiro';
 import { crescer, destacar, fotografar } from '../movimento';
 
 export function Fatura() {
@@ -28,12 +30,15 @@ export function Fatura() {
   const sit = fatura ? situacaoDaFatura(fatura, hoje) : hoje >= d.fechamento ? 'fechada' : 'aberta';
   const t = totaisDaFatura(linhas);
   const nome = (id?: string | null) => r.pessoa.find(p => p.id === id);
+  // Compra dividida aparece no filtro de cada pessoa que tem parte nela
+  const temParte = (l: LinhaFatura, pessoa: string) => !l.pendente && partesDaLinha(l.compra, l.valor).some(p => p.pessoa === pessoa);
+  const donos = (l: LinhaFatura) => partesDaLinha(l.compra, l.valor).map(p => nome(p.pessoa)).filter(Boolean) as Pessoa[];
   const mudarMes = (k: number) => { setFiltro('todas'); ir({ tela: 'fatura', cartao: cartao.id, mes: somarMeses(mes, k) }); };
 
   const filtros: [string, string, number][] = [['todas', 'Todas', t.quantidade], ['sem', 'Sem dono', t.semDono],
-    ...r.pessoa.map(p => [p.id, p.nome, linhas.filter(l => l.compra.pagador === p.id && !l.pendente).length] as [string, string, number]),
+    ...r.pessoa.map(p => [p.id, p.nome, linhas.filter(l => temParte(l, p.id)).length] as [string, string, number]),
     ['parc', 'Parceladas', linhas.filter(l => l.total > 1).length], ['enc', 'Encargos', linhas.filter(l => l.compra.tipo !== 'compra' && l.compra.tipo !== 'parcela').length]];
-  const visiveis = linhas.filter(l => filtro === 'todas' || (filtro === 'sem' ? !l.compra.pagador && !l.pendente : filtro === 'parc' ? l.total > 1 : filtro === 'enc' ? l.compra.tipo !== 'compra' && l.compra.tipo !== 'parcela' : l.compra.pagador === filtro && !l.pendente));
+  const visiveis = linhas.filter(l => filtro === 'todas' || (filtro === 'sem' ? !l.compra.pagador && !l.pendente : filtro === 'parc' ? l.total > 1 : filtro === 'enc' ? l.compra.tipo !== 'compra' && l.compra.tipo !== 'parcela' : temParte(l, filtro)));
   const grupos = new Map<string, LinhaFatura[]>(); visiveis.forEach(l => grupos.set(l.data, [...(grupos.get(l.data) ?? []), l]));
 
   const tocar = (l: LinhaFatura) => {
@@ -78,7 +83,7 @@ export function Fatura() {
         {visiveis.length ? (
           <div className="lista" onClick={e => { const l = daLinha(e); if (l) tocar(l); }} onPointerDown={e => { const l = daLinha(e); if (l) apertar(l); }}
             onPointerUp={soltar} onPointerCancel={soltar} onPointerLeave={soltar}>{[...grupos.entries()].map(([dia, ls]) => (
-            <div key={dia}><h2 className="dia">{diaLongo(dia)}</h2>{ls.map(l => <Linha key={l.parcela.id} l={l} pessoa={nome(l.compra.pagador)} marcada={!!selecao?.has(l.compra.id)} emSelecao={!!selecao} />)}</div>))}
+            <div key={dia}><h2 className="dia">{diaLongo(dia)}</h2>{ls.map(l => <Linha key={l.parcela.id} l={l} pessoas={donos(l)} marcada={!!selecao?.has(l.compra.id)} emSelecao={!!selecao} />)}</div>))}
           </div>
         ) : <div className="vazio"><IconeVazio icone={Check} /><h2>Nada neste filtro</h2><p>{filtro === 'sem' ? 'Todas as linhas já têm dono.' : 'Nenhuma linha combina com este filtro.'}</p><button className="bt secundario medio" onClick={() => setFiltro('todas')}>Ver todas</button></div>}
         </div></div>
@@ -93,21 +98,25 @@ export function Fatura() {
   </>);
 }
 
-const Linha = memo(function Linha({ l, pessoa, marcada, emSelecao }: { l: LinhaFatura; pessoa?: Pessoa; marcada: boolean; emSelecao: boolean }) {
-  const nome = `${l.compra.descricao}, ${reais(l.valor)}, ${l.total > 1 ? `parcela ${l.numero} de ${l.total}, ` : ''}${l.pendente ? 'para conferir' : pessoa ? pessoa.nome : 'sem dono'}`;
-  // Quando a linha ganha outro dono (ou muda de Pessoal para Casal), ela acende para mostrar onde mudou
-  const ref = useRef<HTMLButtonElement>(null), dono = `${pessoa?.id ?? ''}|${l.compra.escopo ?? ''}|${l.pendente}`, antes = useRef(dono);
+const Linha = memo(function Linha({ l, pessoas, marcada, emSelecao }: { l: LinhaFatura; pessoas: Pessoa[]; marcada: boolean; emSelecao: boolean }) {
+  const pessoa = pessoas[0], dividida = pessoas.length > 1;
+  const quem = dividida ? `dividida entre ${pessoas.map(p => p.nome).join(' e ')}` : pessoa ? pessoa.nome : 'sem dono';
+  const nome = `${l.compra.descricao}, ${reais(l.valor)}, ${l.total > 1 ? `parcela ${l.numero} de ${l.total}, ` : ''}${l.pendente ? 'para conferir' : quem}`;
+  // Quando a linha ganha outro dono (ou muda de Pessoal para Casal, ou é dividida), ela acende para mostrar onde mudou
+  const ref = useRef<HTMLButtonElement>(null), dono = `${pessoas.map(p => p.id).join('+')}|${l.compra.escopo ?? ''}|${l.pendente}`, antes = useRef(dono);
   useEffect(() => { if (antes.current !== dono) { antes.current = dono; destacar(ref.current); } }, [dono]);
   return (
     <button ref={ref} className={`lin${l.compra.tipo === 'iof' ? ' filho' : ''}`} data-l={l.parcela.id} aria-pressed={emSelecao ? marcada : undefined} aria-label={nome}>
       <Logo loja={l.compra.descricao} vazio={l.compra.tipo === 'iof'} />
       <span className="d"><b>{l.compra.descricao}</b>
         <small>{l.total > 1 ? <span className="parc num">{l.numero}/{l.total}</span> : ddmm(l.data)}{l.prevista ? <span className="mini">prevista</span> : null}
-          {l.pendente ? <span className="pil at" style={{ padding: '2px 8px' }}>Conferir</span> : <Selo pessoa={pessoa} extra={l.compra.escopo === 'casal' ? ' · Casal' : ''} />}</small></span>
+          {l.pendente ? <span className="pil at" style={{ padding: '2px 8px' }}>Conferir</span>
+            : dividida ? <span className="selos">{pessoas.map(p => <Selo key={p.id} pessoa={p} />)}</span>
+            : <Selo pessoa={pessoa} extra={l.compra.escopo === 'casal' ? ' · Casal' : ''} />}</small></span>
       <span className="r"><span className="v num">{reais(l.valor)}</span></span>
     </button>
   );
-}, (a, b) => a.l.compra === b.l.compra && a.l.parcela === b.l.parcela && a.l.data === b.l.data && a.pessoa === b.pessoa && a.marcada === b.marcada && a.emSelecao === b.emSelecao);
+}, (a, b) => a.l.compra === b.l.compra && a.l.parcela === b.l.parcela && a.l.data === b.l.data && a.pessoas.length === b.pessoas.length && a.pessoas.every((p, i) => p === b.pessoas[i]) && a.marcada === b.marcada && a.emSelecao === b.emSelecao);
 
 // ---------- Folha "De quem é?" (assinatura): E e L num toque; P e B pedem escopo e categoria (D4, D6) ----------
 const RECENTES_PADRAO = ['Mercado', 'Alimentação fora', 'Transporte', 'Saúde', 'Compras pessoais'];
@@ -131,11 +140,13 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
   const [todas, setTodas] = useState(false);
   const [aberta, setAberta] = useState<string[] | null>(null);
   const [nome, setNome] = useState<string | null>(null); // null = não está editando o nome
+  const [dividindo, setDividindo] = useState(false);
   // "Outras…": a caixa de categorias cresce de onde estava e as novas acendem
   const cats = useRef<HTMLDivElement>(null), fotoCats = useRef<ReturnType<typeof fotografar> | null>(null);
   useLayoutEffect(() => { if (todas && fotoCats.current) { crescer(cats.current, fotoCats.current); fotoCats.current = null; } }, [todas]);
-  if (compras !== aberta) { setAberta(compras); const c = compras?.length === 1 ? r.compra.find(x => x.id === compras[0]) : null; setEscolha(c?.pagador ?? null); setEscopo(c?.escopo ?? null); setTodas(false); setNome(null); }
-  const cs = (compras ?? []).map(id => r.compra.find(c => c.id === id)).filter(Boolean) as Retrato['compra'];
+  if (compras !== aberta) { setAberta(compras); const c = compras?.length === 1 ? r.compra.find(x => x.id === compras[0]) : null; setEscolha(c?.pagador ?? null); setEscopo(c?.escopo ?? null); setTodas(false); setNome(null); setDividindo((c?.divisao?.length ?? 0) > 1); }
+  const ultimas = useRef<string[]>([]); if (compras?.length) ultimas.current = compras;
+  const cs = (compras ?? ultimas.current).map(id => r.compra.find(c => c.id === id)).filter(Boolean) as Retrato['compra'];
   const um = cs.length === 1 ? cs[0] : null;
   const valor = cs.reduce((s, c) => s + (c.parcelas > 1 ? Math.round(c.valorTotal / c.parcelas) : c.valorTotal), 0);
   const pessoa = r.pessoa.find(p => p.id === escolha);
@@ -172,9 +183,11 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
             <div className="acoes"><button type="button" className="bt secundario medio" onClick={() => setNome(null)}>Cancelar</button>
               <button type="submit" className="bt principal medio" disabled={!nome.trim() || nome.trim() === um.descricao}>Salvar nome</button></div>
           </form>) : null}
+      {dividindo ? <Dividir key={(compras ?? []).join()} cs={cs} aoCancelar={() => setDividindo(false)} aoSalvar={aoSalvar} /> : (<>
       <div className="pessoas" role="group" aria-label="Pessoa">{r.pessoa.map(p => (
         <button key={p.id} aria-pressed={escolha === p.id} onClick={() => { setEscolha(p.id); setEscopo(null); if (p.tipo !== 'usuario') salvarPessoa(p.id, null, null); }}><Selo pessoa={p} grande /></button>))}
       </div>
+      <button className="bt secundario medio" onClick={() => setDividindo(true)}><Users size={20} strokeWidth={1.75} aria-hidden="true" />Dividir entre pessoas</button>
       {ehUsuario ? (<>
         <div className="campo"><span className="rot">Para quê</span>
           <div className="seg" data-v={e === 'casal' ? 1 : 0} role="group" aria-label="Para quê"><span className="pino" aria-hidden="true" />
@@ -183,6 +196,64 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
           <div className="cats" ref={cats}>{categoriasVisiveis(r, escolha, um?.categoria ?? null, todas).map(c => <button key={c.id} className="chip" aria-pressed={um?.categoria === c.id} onClick={() => salvarPessoa(escolha!, e, c.id)}>{c.nome}</button>)}
             {todas ? null : <button className="chip" onClick={() => { fotoCats.current = fotografar(cats.current); setTodas(true); }}>Outras…</button>}</div></div>
       </>) : null}
+      </>)}
     </Folha>
   );
+}
+
+// ---------- Dividir a compra entre pessoas (decidido em 31/10/2026) ----------
+// Uma compra: meio a meio com um toque, e dá para ajustar quanto cada um paga. Várias de uma vez: partes iguais em cada uma.
+const emTexto = (c: number) => (c / 100).toFixed(2).replace('.', ',');
+const juntar = (nomes: string[]) => nomes.length < 2 ? nomes.join('') : `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}`;
+function Dividir({ cs, aoCancelar, aoSalvar }: { cs: Compra[]; aoCancelar: () => void; aoSalvar: () => void }) {
+  const { r, executar } = useApp();
+  const um = cs.length === 1 ? cs[0] : null;
+  const total = um?.valorTotal ?? 0;
+  const iguais = (lista: string[]) => Object.fromEntries(partesIguais(total, lista).map(p => [p.pessoa, emTexto(p.valor)]));
+  const [quem, setQuem] = useState<string[]>(() => um?.divisao && um.divisao.length > 1 ? um.divisao.map(p => p.pessoa) : []);
+  const [valores, setValores] = useState<Record<string, string>>(() => Object.fromEntries((um?.divisao ?? []).map(p => [p.pessoa, emTexto(p.valor)])));
+  const [escopo, setEscopo] = useState<Escopo>('pessoal');
+  const [cat, setCat] = useState<string | null>(um?.categoria ?? null);
+  const alternar = (id: string) => { const nova = quem.includes(id) ? quem.filter(x => x !== id) : [...quem, id]; setQuem(nova); setValores(iguais(nova)); };
+  const nomeDe = (id: string) => r.pessoa.find(p => p.id === id)?.nome ?? '';
+  const partes = quem.map(p => ({ pessoa: p, valor: lerValorDigitado(valores[p] ?? '') }));
+  const falta = um ? faltaDividir(total, partes) : 0;
+  const usuarios = quem.filter(id => r.pessoa.find(p => p.id === id)?.tipo === 'usuario');
+  const pode = quem.length >= 2 && falta === 0 && (!um || partes.every(p => p.valor > 0));
+  const confirmar = async () => {
+    if (!pode) return;
+    aoSalvar();
+    const nomes = juntar(quem.map(nomeDe));
+    await executar(dividir(r, cs.map(c => c.id), { pessoas: quem, valores: um ? partes.map(p => p.valor) : undefined, escopo: usuarios.length === 1 ? escopo : null, categoria: cat }),
+      um ? `${um.descricao} dividida entre ${nomes}.` : `${cs.length} linhas divididas entre ${nomes}.`);
+  };
+  return (<>
+    <div className="campo"><span className="rot" id="r-div">Dividir entre · toque em quem participa</span>
+      <div className="pessoas" role="group" aria-labelledby="r-div">{r.pessoa.map(p => (
+        <button key={p.id} aria-pressed={quem.includes(p.id)} onClick={() => alternar(p.id)}><Selo pessoa={p} grande /></button>))}</div></div>
+    {um && quem.length >= 2 ? (
+      <div className="campo"><span className="rot">Quanto cada um paga</span>
+        <div className="divisao">{quem.map(id => (
+          <div key={id} className="divisao-linha"><Selo pessoa={r.pessoa.find(p => p.id === id)} />
+            <div className="entrada"><span aria-hidden="true">R$</span><input inputMode="decimal" autoComplete="off" aria-label={`Parte de ${nomeDe(id)}`} value={valores[id] ?? ''}
+              onChange={ev => setValores({ ...valores, [id]: ev.target.value.replace(/[^\d,.]/g, '') })} /></div></div>))}</div>
+        <div className="divisao-pe">
+          {falta === 0 ? <span className="pil ok"><Check size={14} strokeWidth={2.25} aria-hidden="true" />Fecha com {reais(total)}</span>
+            : <span className="pil at"><CircleAlert size={14} strokeWidth={2.25} aria-hidden="true" />{falta > 0 ? `Faltam ${reais(falta)}` : `Passou ${reais(-falta)}`}</span>}
+          <button className="bt discreto" onClick={() => setValores(iguais(quem))}>Partes iguais</button></div>
+        {um.parcelas > 1 ? <p className="ajuda">Valores da compra inteira, {reais(total)} em {um.parcelas}x. Cada parcela é dividida na mesma proporção.</p> : null}
+      </div>) : null}
+    {!um && quem.length >= 2 ? <p className="ajuda">Cada uma das {cs.length} linhas fica dividida em partes iguais.</p> : null}
+    {usuarios.length === 1 ? (
+      <div className="campo"><span className="rot">Para quê, na parte de {nomeDe(usuarios[0])}</span>
+        <div className="seg" data-v={escopo === 'casal' ? 1 : 0} role="group"><span className="pino" aria-hidden="true" />
+          <button aria-pressed={escopo !== 'casal'} onClick={() => setEscopo('pessoal')}>Pessoal</button><button aria-pressed={escopo === 'casal'} onClick={() => setEscopo('casal')}>Casal</button></div></div>
+    ) : usuarios.length >= 2 ? <p className="ajuda">{juntar(usuarios.map(nomeDe))} dividindo: a compra conta como Casal.</p> : null}
+    {usuarios.length ? (
+      <div className="campo"><span className="rot">Categoria (opcional)</span>
+        <div className="cats">{categoriasVisiveis(r, usuarios[0], cat, false).map(c => <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(cat === c.id ? null : c.id)}>{c.nome}</button>)}</div></div>
+    ) : null}
+    <div className="acoes"><button className="bt secundario medio" onClick={aoCancelar}>Voltar</button>
+      <button className="bt principal medio" disabled={!pode} onClick={confirmar}>{quem.length >= 2 ? `Dividir entre ${quem.length}` : 'Escolha 2 ou mais'}</button></div>
+  </>);
 }

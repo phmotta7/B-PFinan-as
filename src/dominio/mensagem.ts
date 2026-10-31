@@ -10,10 +10,16 @@ const ddmm = (d: string) => `${d.slice(8, 10)}/${d.slice(5, 7)}`;
 function serie(atual: number, total: number, valor: Centavos) {
   return atual >= total ? ' – última parcela' : ` – faltam ${total - atual}x – restante ${formatarReais(valor * (total - atual))}`;
 }
+// Compra dividida: diz de quanto é a parte (" – metade de R$ 468,20", " – 1/3 de…", " – sua parte de…")
+function parte(i: ItemFatura): string {
+  if (!i.dividida) return '';
+  const quanto = !i.dividida.igual ? 'sua parte' : i.dividida.partes === 2 ? 'metade' : `1/${i.dividida.partes}`;
+  return ` – ${quanto} de ${formatarReais(i.dividida.total)}`;
+}
 function linha(i: ItemFatura): string {
-  if (i.tipo === 'estorno') return `• Estorno ${i.loja} – ${formatarReais(i.valor)} (${ddmm(i.data)})`;
-  if (i.parcela) return `• ${i.loja} – ${i.parcela.atual}/${i.parcela.total} – ${formatarReais(i.valor)}${serie(i.parcela.atual, i.parcela.total, i.valor)} (${ddmm(i.dataCompra ?? i.data)})`;
-  return `• ${i.loja} – ${formatarReais(i.valor)} (${ddmm(i.data)})`;
+  if (i.tipo === 'estorno') return `• Estorno ${i.loja} – ${formatarReais(i.valor)}${parte(i)} (${ddmm(i.data)})`;
+  if (i.parcela) return `• ${i.loja} – ${i.parcela.atual}/${i.parcela.total} – ${formatarReais(i.valor)}${parte(i)}${serie(i.parcela.atual, i.parcela.total, i.valor)} (${ddmm(i.dataCompra ?? i.data)})`;
+  return `• ${i.loja} – ${formatarReais(i.valor)}${parte(i)} (${ddmm(i.data)})`;
 }
 
 export type DadosMensagem = {

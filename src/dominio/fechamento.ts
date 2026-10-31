@@ -7,6 +7,7 @@ export type ItemFatura = {
   id: string; cartao: string; titular: string; pagador: string;
   valor: Centavos; data: string; dataCompra?: string; loja: string; tipo: TipoLinha;
   parcela?: Parcela; iofDe?: string;
+  dividida?: { total: Centavos; partes: number; igual: boolean }; // a pessoa paga só uma parte desta linha
 };
 export type ParcelaDivida = { id: string; nome: string; responsavel: string; titular: string; valor: Centavos; atual: number; total: number };
 export type Pagamento = { valor: Centavos; data: string };

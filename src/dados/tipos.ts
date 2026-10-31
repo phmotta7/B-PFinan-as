@@ -1,5 +1,6 @@
 // Registros guardados (espelham as tabelas do Supabase, em camelCase). Dinheiro em centavos.
 import type { Centavos } from '@/dominio/dinheiro';
+import type { Parte } from '@/dominio/divisao';
 import type { Mes } from '@/dominio/ciclo';
 import type { TipoLinha } from '@/dominio/leitores';
 import type { MapaDeColunas } from '@/dominio/leitores';
@@ -15,6 +16,7 @@ export type Compra = {
   id: string; cartao: string; data: string; descricao: string; valorTotal: Centavos; parcelas: number;
   tipo: TipoLinha | 'multa'; compraOrigem?: string | null; pagador?: string | null; escopo?: Escopo | null; categoria?: string | null;
   observacao?: string | null; origem: 'manual' | 'importacao'; conciliada: boolean; pendencia?: Pendencia | null;
+  divisao?: Parte[] | null; // compra dividida entre pessoas (o pagador é a primeira delas); ver dominio/divisao.ts
 };
 export type ParcelaCartao = { id: string; compra: string; fatura: string; numero: number; valor: Centavos; status: 'prevista' | 'confirmada'; linhaImportada?: string | null };
 export type Importacao = { id: string; formato: 'nubank_csv' | 'csv_generico' | 'bb_pdf'; cartao: string; fatura: string; arquivoNome: string; total: Centavos; linhasNovas: number; linhasRepetidas: number; linhasIgnoradas: number; criadoEm: string };
