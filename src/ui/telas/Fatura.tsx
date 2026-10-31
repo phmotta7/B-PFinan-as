@@ -212,6 +212,10 @@ function Dividir({ cs, aoCancelar, aoSalvar }: { cs: Compra[]; aoCancelar: () =>
   const [valores, setValores] = useState<Record<string, string>>(() => Object.fromEntries((um?.divisao ?? []).map(p => [p.pessoa, emTexto(p.valor)])));
   const [escopo, setEscopo] = useState<Escopo>('pessoal');
   const [cat, setCat] = useState<string | null>(um?.categoria ?? null);
+  // "Outras…": todas as categorias, inclusive as criadas em Mais; a caixa cresce de onde estava, como no resto do app
+  const [todas, setTodas] = useState(false);
+  const cats = useRef<HTMLDivElement>(null), fotoCats = useRef<ReturnType<typeof fotografar> | null>(null);
+  useLayoutEffect(() => { if (todas && fotoCats.current) { crescer(cats.current, fotoCats.current); fotoCats.current = null; } }, [todas]);
   const alternar = (id: string) => { const nova = quem.includes(id) ? quem.filter(x => x !== id) : [...quem, id]; setQuem(nova); setValores(iguais(nova)); };
   const nomeDe = (id: string) => r.pessoa.find(p => p.id === id)?.nome ?? '';
   const partes = lerPartes(quem, valores);
@@ -220,6 +224,7 @@ function Dividir({ cs, aoCancelar, aoSalvar }: { cs: Compra[]; aoCancelar: () =>
   const pode = quem.length >= 2 && falta === 0 && (!um || partes.every(p => p.valor > 0));
   const confirmar = async () => {
     if (!pode) return;
+    if (cat && usuarios[0]) usarCategoria(usuarios[0], r.categoria.find(c => c.id === cat)?.nome ?? '');
     aoSalvar();
     const nomes = juntar(quem.map(nomeDe));
     await executar(dividir(r, cs.map(c => c.id), { pessoas: quem, valores: um ? partes.map(p => p.valor) : undefined, escopo: usuarios.length === 1 ? escopo : null, categoria: cat }),
@@ -238,7 +243,8 @@ function Dividir({ cs, aoCancelar, aoSalvar }: { cs: Compra[]; aoCancelar: () =>
     ) : usuarios.length >= 2 ? <p className="ajuda">{juntar(usuarios.map(nomeDe))} dividindo: a compra conta como Casal.</p> : null}
     {usuarios.length ? (
       <div className="campo"><span className="rot">Categoria (opcional)</span>
-        <div className="cats">{categoriasVisiveis(r, usuarios[0], cat, false).map(c => <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(cat === c.id ? null : c.id)}>{c.nome}</button>)}</div></div>
+        <div className="cats" ref={cats}>{categoriasVisiveis(r, usuarios[0], cat, todas).map(c => <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(cat === c.id ? null : c.id)}>{c.nome}</button>)}
+          {todas ? null : <button className="chip" onClick={() => { fotoCats.current = fotografar(cats.current); setTodas(true); }}>Outras…</button>}</div></div>
     ) : null}
     <div className="acoes"><button className="bt secundario medio" onClick={aoCancelar}>Voltar</button>
       <button className="bt principal medio" disabled={!pode} onClick={confirmar}>{quem.length >= 2 ? `Dividir entre ${quem.length}` : 'Escolha 2 ou mais'}</button></div>
