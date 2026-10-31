@@ -1,7 +1,7 @@
 'use client';
 // Lançar compra no cartão (T7, §4.3). Lembra o último cartão e a última pessoa; escopo padrão D6; categoria obrigatória só para Pedro e Bruna (D4).
 import { useLayoutEffect, useRef, useState } from 'react';
-import { Calendar, CircleAlert, CreditCard } from 'lucide-react';
+import { Calendar, CircleAlert, CreditCard, Users } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Selo, Topo, ddmm, reais } from '../comum';
 import { categoriasVisiveis, lembrarEscopo, usarCategoria } from './Fatura';
@@ -12,6 +12,8 @@ import { datasDaFatura, faturaDaCompra, somarMeses } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
 import type { Escopo } from '@/dados/tipos';
 import { crescer, fotografar } from '../movimento';
+import { QuantoCadaUm, juntar, lerPartes, valoresIguais } from '../divisao';
+import { faltaDividir } from '@/dominio/divisao';
 
 const ler = (k: string, padrao: string) => { try { return localStorage.getItem(k) ?? padrao; } catch { return padrao; } };
 const gravar = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* sem armazenamento */ } };
@@ -36,30 +38,45 @@ export function Lancar() {
   const [alterar, setAlterar] = useState(false);
   const [tentou, setTentou] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  // Divisão (PLANEJAMENTO §4.6.1): várias pessoas; os valores seguem o meio a meio até alguém ajustar à mão
+  const [dividindo, setDividindo] = useState(false);
+  const [quem, setQuem] = useState<string[]>([]);
+  const [valoresAjustados, setValoresAjustados] = useState<Record<string, string> | null>(null);
 
   const valor = lerValorDigitado(texto);
   const pessoa = r.pessoa.find(p => p.id === dono);
-  const ehUsuario = pessoa?.tipo === 'usuario';
+  const valores = valoresAjustados ?? valoresIguais(valor, quem);
+  const divisao = lerPartes(quem, valores);
+  const usuarios = quem.filter(id => r.pessoa.find(p => p.id === id)?.tipo === 'usuario');
+  const nomeDe = (id: string) => r.pessoa.find(p => p.id === id)?.nome ?? '';
+  // Quem dá a categoria e o Pessoal/Casal: a pessoa escolhida; na divisão, o primeiro de Pedro e Bruna que estiver nela
+  const ehUsuario = dividindo ? usuarios.length > 0 : pessoa?.tipo === 'usuario';
+  const donoDaCategoria = dividindo ? usuarios[0] ?? quem[0] ?? null : dono;
+  const alternar = (id: string) => { setQuem(quem.includes(id) ? quem.filter(x => x !== id) : [...quem, id]); setValoresAjustados(null); };
   const cartao = r.cartao.find(c => c.id === cartaoId) ?? r.cartao.find(c => c.ativo);
   if (!cartao) return <><Topo titulo="Lançar compra" voltar={voltar} /><main className="conteudo"><div className="vazio"><IconeVazio icone={CreditCard} /><h2>Cadastre um cartão primeiro</h2><p>Em Mais → Cartões.</p></div></main></>;
   const destino = faturaDaCompra(cartao, data);
   const fechaNoDia = data === datasDaFatura(cartao, somarMeses(destino, -1)).fechamento; // RN-CA-02: no dia do fechamento vai para a seguinte
   const partes = valor ? dividirEmParcelas(valor, n) : [];
-  const erros = { valor: !valor ? 'Digite o valor da compra.' : '', desc: !desc.trim() ? 'Diga o que foi comprado, para reconhecer na fatura.' : '', cat: ehUsuario && !cat ? 'Escolha a categoria. Para Pedro e Bruna ela é obrigatória.' : '' };
+  const erros = { valor: !valor ? 'Digite o valor da compra.' : '', desc: !desc.trim() ? 'Diga o que foi comprado, para reconhecer na fatura.' : '', cat: ehUsuario && !cat ? 'Escolha a categoria. Para Pedro e Bruna ela é obrigatória.' : '',
+    div: !dividindo ? '' : quem.length < 2 ? 'Escolha duas ou mais pessoas para dividir.' : valor && (faltaDividir(valor, divisao) !== 0 || divisao.some(d => d.valor <= 0)) ? 'A soma das partes precisa fechar com o valor da compra.' : '' };
   const mostra = (k: keyof typeof erros) => tentou && erros[k];
   const datas = [[hoje, `Hoje, ${ddmm(hoje)}`], [menosDias(hoje, 1), `Ontem, ${ddmm(menosDias(hoje, 1))}`], [menosDias(hoje, 2), ddmm(menosDias(hoje, 2))]];
 
   const salvar = async () => {
     setTentou(true);
-    if (erros.valor || erros.desc || erros.cat) { document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus(); return; }
+    if (erros.valor || erros.desc || erros.cat || erros.div) { document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus(); return; }
     setSalvando(true);
-    gravar('bp-ultimo-dono', dono); gravar('bp-ultimo-cartao', cartao.id);
-    if (ehUsuario) lembrarEscopo(dono, escopo);
-    if (cat) usarCategoria(dono, r.categoria.find(c => c.id === cat)?.nome ?? '');
-    const ok = await executar(lancarCompra(r, { cartao: cartao.id, data, descricao: desc, valorTotal: valor, parcelas: n, pagador: dono, escopo: ehUsuario ? escopo : null, categoria: cat }),
-      `Lançado: ${desc.trim()}, ${reais(valor)}${n > 1 ? ` em ${n}x` : ''}, fatura ${mesCurto(destino)}.`);
+    gravar('bp-ultimo-cartao', cartao.id);
+    if (!dividindo) gravar('bp-ultimo-dono', dono);
+    if (!dividindo && ehUsuario) lembrarEscopo(dono, escopo);
+    if (cat && donoDaCategoria) usarCategoria(donoDaCategoria, r.categoria.find(c => c.id === cat)?.nome ?? '');
+    // Na divisão: o pagador é a primeira pessoa; Pedro e Bruna juntos = Casal; só um deles = o Pessoal/Casal escolhido
+    const escopoFinal = dividindo ? (usuarios.length >= 2 ? 'casal' : usuarios.length === 1 ? escopo : null) : ehUsuario ? escopo : null;
+    const ok = await executar(lancarCompra(r, { cartao: cartao.id, data, descricao: desc, valorTotal: valor, parcelas: n, pagador: dividindo ? quem[0] : dono, escopo: escopoFinal, categoria: cat, divisao: dividindo ? divisao : null }),
+      `Lançado: ${desc.trim()}, ${reais(valor)}${n > 1 ? ` em ${n}x` : ''}, fatura ${mesCurto(destino)}${dividindo ? `, dividida entre ${juntar(quem.map(nomeDe))}` : ''}.`);
     setSalvando(false);
-    if (ok) { if (podeVoltar) voltar(); else { setTexto(''); setDesc(''); setN(1); setCat(null); setTentou(false); } }
+    if (ok) { if (podeVoltar) voltar(); else { setTexto(''); setDesc(''); setN(1); setCat(null); setTentou(false); setDividindo(false); setQuem([]); setValoresAjustados(null); } }
   };
 
   return (<>
@@ -78,13 +95,21 @@ export function Lancar() {
       <div className="campo"><label htmlFor="f-desc">Descrição</label>
         <div className={`entrada ${mostra('desc') ? 'erro' : ''}`}><input id="f-desc" placeholder="Ex.: Tênis Centauro" autoComplete="off" enterKeyHint="done" value={desc} onChange={e => setDesc(e.target.value)} aria-invalid={!!mostra('desc')} /></div>
         {mostra('desc') ? <p className="ajuda erro"><CircleAlert size={16} aria-hidden="true" />{erros.desc}</p> : null}</div>
-      <div className="campo"><span className="rot" id="r-pg">De quem é</span>
-        <div className="pessoas" role="group" aria-labelledby="r-pg">{r.pessoa.map(p => <button key={p.id} aria-pressed={dono === p.id} onClick={() => { setDono(p.id); setEscopo(ler('bp-esc-' + p.id, 'pessoal') as Escopo); }}><Selo pessoa={p} grande /></button>)}</div></div>
-      {ehUsuario ? <div className="campo"><span className="rot" id="r-esc">Para quê</span>
+      <div className="campo"><span className="rot" id="r-pg">{dividindo ? 'Dividir entre · toque em quem participa' : 'De quem é'}</span>
+        {dividindo
+          ? <div className="pessoas" role="group" aria-labelledby="r-pg">{r.pessoa.map(p => <button key={p.id} aria-pressed={quem.includes(p.id)} onClick={() => alternar(p.id)}><Selo pessoa={p} grande /></button>)}</div>
+          : <div className="pessoas" role="group" aria-labelledby="r-pg">{r.pessoa.map(p => <button key={p.id} aria-pressed={dono === p.id} onClick={() => { setDono(p.id); setEscopo(ler('bp-esc-' + p.id, 'pessoal') as Escopo); }}><Selo pessoa={p} grande /></button>)}</div>}
+        <button className="bt secundario medio" onClick={() => { if (dividindo) { setDividindo(false); } else { setDividindo(true); setQuem([dono]); setValoresAjustados(null); } }}>
+          <Users size={20} strokeWidth={1.75} aria-hidden="true" />{dividindo ? 'Não dividir' : 'Dividir entre pessoas'}</button>
+        {mostra('div') ? <p className="ajuda erro"><CircleAlert size={16} aria-hidden="true" />{erros.div}</p> : null}</div>
+      {dividindo && quem.length >= 2 && valor ? <QuantoCadaUm pessoas={r.pessoa} quem={quem} valores={valores} mudar={setValoresAjustados} iguais={() => setValoresAjustados(null)} total={valor} parcelas={n} /> : null}
+      {dividindo && quem.length >= 2 && !valor ? <p className="ajuda">Digite o valor da compra para ver quanto cada um paga.</p> : null}
+      {dividindo && usuarios.length >= 2 ? <p className="ajuda">{juntar(usuarios.map(nomeDe))} dividindo: a compra conta como Casal.</p> : null}
+      {(dividindo ? usuarios.length === 1 : ehUsuario) ? <div className="campo"><span className="rot" id="r-esc">{dividindo ? `Para quê, na parte de ${nomeDe(usuarios[0])}` : 'Para quê'}</span>
         <div className="seg" data-v={escopo === 'casal' ? 1 : 0} role="group" aria-labelledby="r-esc"><span className="pino" aria-hidden="true" />
           <button aria-pressed={escopo !== 'casal'} onClick={() => setEscopo('pessoal')}>Pessoal</button><button aria-pressed={escopo === 'casal'} onClick={() => setEscopo('casal')}>Casal</button></div></div> : null}
       <div className="campo"><span className="rot" id="r-cat">Categoria{ehUsuario ? '' : ' (opcional)'}</span>
-        <div className="cats" role="group" aria-labelledby="r-cat" ref={cats}>{categoriasVisiveis(r, dono, cat, todas).map(c => <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(cat === c.id ? null : c.id)}>{c.nome}</button>)}
+        <div className="cats" role="group" aria-labelledby="r-cat" ref={cats}>{categoriasVisiveis(r, donoDaCategoria, cat, todas).map(c => <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(cat === c.id ? null : c.id)}>{c.nome}</button>)}
           {todas ? null : <button className="chip" onClick={() => { fotoCats.current = fotografar(cats.current); setTodas(true); }}>Outras…</button>}</div>
         {mostra('cat') ? <p className="ajuda erro"><CircleAlert size={16} aria-hidden="true" />{erros.cat}</p> : null}</div>
       {alterar ? (<>

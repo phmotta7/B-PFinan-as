@@ -181,7 +181,7 @@ Ordem de tentativa para cada linha importada:
 - Contador no topo: "12 de 47 linhas sem dono".
 
 #### 4.6.1 Divisão de compras — decidido com o Pedro em 31/10/2026
-- Na folha "De quem é?", **Dividir entre pessoas**: escolhe duas ou mais pessoas (qualquer uma: Pedro, Bruna, Eliete, Lucimar).
+- Na folha "De quem é?" e na tela **Lançar**, **Dividir entre pessoas**: escolhe duas ou mais pessoas (qualquer uma: Pedro, Bruna, Eliete, Lucimar).
 - **Uma compra**: começa meio a meio (partes iguais) e dá para ajustar quanto cada um paga; só salva quando a soma fecha com o valor da compra. **Várias de uma vez** (seleção em massa): partes iguais em cada uma.
 - A divisão vale para a **compra inteira**: numa parcelada, cada parcela é repartida na mesma proporção. Centavo que sobra numa conta que não fecha fica com a **primeira pessoa** da divisão.
 - **Escopo**: se Pedro e Bruna dividem, a compra é **Casal**. Se só um deles está na divisão, a parte dele segue o Pessoal/Casal escolhido.

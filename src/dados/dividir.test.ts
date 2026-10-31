@@ -1,7 +1,7 @@
 // Compra dividida entre pessoas: cada uma paga só a sua parte, na fatura, no fechamento e na mensagem do WhatsApp.
 import { describe, expect, it } from 'vitest';
 import { aplicar } from './mudanca';
-import { dividir, marcar } from './operacoes';
+import { dividir, lancarCompra, marcar } from './operacoes';
 import { faturaDe, fechamentosDoMes, linhasDaFatura, mensagemDe, totaisDaFatura } from './consultas';
 import { retratoCenario, IDS } from './cenario';
 
@@ -58,5 +58,15 @@ describe('dividir uma compra', () => {
     const r2 = aplicar(r, dividir(r, [linha.compra.id], { pessoas: [IDS.pedro, IDS.bruna], escopo: null, categoria: null }));
     const r3 = aplicar(r2, marcar(r2, [linha.compra.id], { pagador: IDS.lucimar, escopo: null, categoria: null }));
     expect(r3.compra.find(x => x.id === linha.compra.id)).toMatchObject({ pagador: IDS.lucimar, divisao: null });
+  });
+
+  it('compra lançada já dividida (tela Lançar): em 3x, cada parcela é repartida e o fechamento do Pedro leva a parte dele', () => {
+    const r = retratoCenario();
+    const antes = doPedro(r).total;
+    const m = lancarCompra(r, { cartao: IDS.bb, data: '2026-10-20', descricao: 'Geladeira', valorTotal: 300000, parcelas: 3, pagador: IDS.pedro, escopo: 'casal', categoria: null,
+      divisao: [{ pessoa: IDS.pedro, valor: 150000 }, { pessoa: IDS.bruna, valor: 150000 }] });
+    const r2 = aplicar(r, m);
+    expect(r2.compra.find(c => c.descricao === 'Geladeira')).toMatchObject({ divisao: [{ pessoa: IDS.pedro, valor: 150000 }, { pessoa: IDS.bruna, valor: 150000 }] });
+    expect(doPedro(r2).total - antes).toBe(50000); // metade da 1ª parcela, que vence em novembro
   });
 });

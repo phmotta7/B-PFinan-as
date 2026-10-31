@@ -1,7 +1,7 @@
 'use client';
 // Fatura (T4): linhas por dia, filtros, totais por pessoa, marcação individual e em massa (§4.6).
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { FileUp, X, Check, Copy, Pencil, Users, CircleAlert } from 'lucide-react';
+import { FileUp, X, Check, Copy, Pencil, Users } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Divisao, Folha, Logo, LogoBanco, SeletorMes, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
 import { faturaDe, linhasDaFatura, situacaoDaFatura, totaisDaFatura, type LinhaFatura } from '@/dados/consultas';
@@ -9,8 +9,8 @@ import { dividir, marcar, salvar } from '@/dados/operacoes';
 import { datasDaFatura, somarMeses } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
 import type { Compra, Escopo, Pessoa, Retrato } from '@/dados/tipos';
-import { faltaDividir, partesDaLinha, partesIguais } from '@/dominio/divisao';
-import { lerValorDigitado } from '@/dominio/dinheiro';
+import { faltaDividir, partesDaLinha } from '@/dominio/divisao';
+import { QuantoCadaUm, juntar, lerPartes, valoresIguais, emTexto } from '../divisao';
 import { crescer, destacar, fotografar } from '../movimento';
 
 export function Fatura() {
@@ -203,20 +203,18 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
 
 // ---------- Dividir a compra entre pessoas (decidido em 31/10/2026) ----------
 // Uma compra: meio a meio com um toque, e dá para ajustar quanto cada um paga. Várias de uma vez: partes iguais em cada uma.
-const emTexto = (c: number) => (c / 100).toFixed(2).replace('.', ',');
-const juntar = (nomes: string[]) => nomes.length < 2 ? nomes.join('') : `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}`;
 function Dividir({ cs, aoCancelar, aoSalvar }: { cs: Compra[]; aoCancelar: () => void; aoSalvar: () => void }) {
   const { r, executar } = useApp();
   const um = cs.length === 1 ? cs[0] : null;
   const total = um?.valorTotal ?? 0;
-  const iguais = (lista: string[]) => Object.fromEntries(partesIguais(total, lista).map(p => [p.pessoa, emTexto(p.valor)]));
+  const iguais = (lista: string[]) => valoresIguais(total, lista);
   const [quem, setQuem] = useState<string[]>(() => um?.divisao && um.divisao.length > 1 ? um.divisao.map(p => p.pessoa) : []);
   const [valores, setValores] = useState<Record<string, string>>(() => Object.fromEntries((um?.divisao ?? []).map(p => [p.pessoa, emTexto(p.valor)])));
   const [escopo, setEscopo] = useState<Escopo>('pessoal');
   const [cat, setCat] = useState<string | null>(um?.categoria ?? null);
   const alternar = (id: string) => { const nova = quem.includes(id) ? quem.filter(x => x !== id) : [...quem, id]; setQuem(nova); setValores(iguais(nova)); };
   const nomeDe = (id: string) => r.pessoa.find(p => p.id === id)?.nome ?? '';
-  const partes = quem.map(p => ({ pessoa: p, valor: lerValorDigitado(valores[p] ?? '') }));
+  const partes = lerPartes(quem, valores);
   const falta = um ? faltaDividir(total, partes) : 0;
   const usuarios = quem.filter(id => r.pessoa.find(p => p.id === id)?.tipo === 'usuario');
   const pode = quem.length >= 2 && falta === 0 && (!um || partes.every(p => p.valor > 0));
@@ -231,18 +229,7 @@ function Dividir({ cs, aoCancelar, aoSalvar }: { cs: Compra[]; aoCancelar: () =>
     <div className="campo"><span className="rot" id="r-div">Dividir entre · toque em quem participa</span>
       <div className="pessoas" role="group" aria-labelledby="r-div">{r.pessoa.map(p => (
         <button key={p.id} aria-pressed={quem.includes(p.id)} onClick={() => alternar(p.id)}><Selo pessoa={p} grande /></button>))}</div></div>
-    {um && quem.length >= 2 ? (
-      <div className="campo"><span className="rot">Quanto cada um paga</span>
-        <div className="divisao">{quem.map(id => (
-          <div key={id} className="divisao-linha"><Selo pessoa={r.pessoa.find(p => p.id === id)} />
-            <div className="entrada"><span aria-hidden="true">R$</span><input inputMode="decimal" autoComplete="off" aria-label={`Parte de ${nomeDe(id)}`} value={valores[id] ?? ''}
-              onChange={ev => setValores({ ...valores, [id]: ev.target.value.replace(/[^\d,.]/g, '') })} /></div></div>))}</div>
-        <div className="divisao-pe">
-          {falta === 0 ? <span className="pil ok"><Check size={14} strokeWidth={2.25} aria-hidden="true" />Fecha com {reais(total)}</span>
-            : <span className="pil at"><CircleAlert size={14} strokeWidth={2.25} aria-hidden="true" />{falta > 0 ? `Faltam ${reais(falta)}` : `Passou ${reais(-falta)}`}</span>}
-          <button className="bt discreto" onClick={() => setValores(iguais(quem))}>Partes iguais</button></div>
-        {um.parcelas > 1 ? <p className="ajuda">Valores da compra inteira, {reais(total)} em {um.parcelas}x. Cada parcela é dividida na mesma proporção.</p> : null}
-      </div>) : null}
+    {um && quem.length >= 2 ? <QuantoCadaUm pessoas={r.pessoa} quem={quem} valores={valores} mudar={setValores} iguais={() => setValores(iguais(quem))} total={total} parcelas={um.parcelas} /> : null}
     {!um && quem.length >= 2 ? <p className="ajuda">Cada uma das {cs.length} linhas fica dividida em partes iguais.</p> : null}
     {usuarios.length === 1 ? (
       <div className="campo"><span className="rot">Para quê, na parte de {nomeDe(usuarios[0])}</span>
