@@ -963,3 +963,20 @@ h2.dia{margin:0}
 .a-pagar span{white-space:nowrap}
 .a-pagar b{font-size:18px;font-weight:700;white-space:nowrap}
 .a-pagar small{font:var(--t-apoio);font-size:13px;color:var(--suave)}
+
+/* Sugestões tiradas do histórico (02/11/2026): a pessoa confirma, nada é marcado sozinho */
+.aviso .botoes{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px}
+.mini.sugere{color:var(--acao-texto);font-style:italic}
+.sugestao{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font:inherit;color:var(--acao-texto);background:var(--acao-leve);border:0;border-radius:var(--r-bloco);padding:12px 12px 12px 14px;cursor:pointer;min-height:56px}
+.sugestao > span:first-of-type{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.sugestao b{font-weight:600;color:var(--tinta)}
+.sugestao small{font:var(--t-apoio);font-size:13px;color:var(--suave)}
+.sugestao .pil{background:var(--acao);color:var(--no-acao)}
+.sugestao:active{transform:scale(.98)}
+.devem-vir .arquivo{padding:8px 14px}
+.devem-vir .v{font-weight:600;color:var(--tinta);white-space:nowrap}
+.devem-vir .ajuda{display:flex;gap:6px;align-items:flex-start;color:var(--suave);font:var(--t-apoio);font-size:13px}
+.devem-vir .ajuda svg{flex:none;margin-top:1px}
+.massa .bt{flex:none;white-space:nowrap}
+.massa p{min-width:0}
+.massa .bt.discreto{color:inherit;padding:0 8px}

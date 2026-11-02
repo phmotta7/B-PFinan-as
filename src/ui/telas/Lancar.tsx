@@ -1,10 +1,11 @@
 'use client';
-// Lançar compra no cartão (T7, §4.3). Lembra o último cartão e a última pessoa; escopo padrão D6; categoria obrigatória só para Pedro e Bruna (D4).
+// Lançar compra no cartão (T7, §4.3). Começa em quem está usando e no cartão da última compra lançada por essa pessoa; escopo padrão D6 (pelo histórico); categoria obrigatória só para Pedro e Bruna (D4).
 import { useLayoutEffect, useRef, useState } from 'react';
 import { Calendar, CircleAlert, CreditCard, Users } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Selo, Topo, ddmm, reais } from '../comum';
-import { categoriasVisiveis, lembrarEscopo, usarCategoria } from './Fatura';
+import { categoriasVisiveis } from './Fatura';
+import { cartaoRecente, escopoRecente } from '@/dados/sugestoes';
 import { lancarCompra } from '@/dados/operacoes';
 import { lerValorDigitado } from '@/dominio/dinheiro';
 import { dividirEmParcelas } from '@/dominio/parcelas';
@@ -15,8 +16,6 @@ import { crescer, fotografar } from '../movimento';
 import { QuantoCadaUm, juntar, lerPartes, valoresIguais } from '../divisao';
 import { faltaDividir } from '@/dominio/divisao';
 
-const ler = (k: string, padrao: string) => { try { return localStorage.getItem(k) ?? padrao; } catch { return padrao; } };
-const gravar = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* sem armazenamento */ } };
 // Parcelado no lançamento manual: de 2x a 12x (decisão D13)
 const PARCELAS = Array.from({ length: 11 }, (_, i) => i + 2);
 const menosDias = (d: string, n: number) => { const x = new Date(d + 'T12:00:00'); x.setDate(x.getDate() - n); return x.toISOString().slice(0, 10); };
@@ -25,15 +24,15 @@ export function Lancar() {
   const { r, hoje, voltar, podeVoltar, executar, usuario } = useApp();
   const [texto, setTexto] = useState('');
   const [desc, setDesc] = useState('');
-  const [dono, setDono] = useState(() => ler('bp-ultimo-dono', usuario?.id ?? r.pessoa[0]?.id ?? ''));
-  const [escopo, setEscopo] = useState<Escopo>(() => (ler('bp-esc-' + dono, 'pessoal') as Escopo));
+  const [dono, setDono] = useState(() => usuario?.id ?? r.pessoa[0]?.id ?? '');
+  const [escopo, setEscopo] = useState<Escopo>(() => escopoRecente(r, dono));
   const [cat, setCat] = useState<string | null>(null);
   const [todas, setTodas] = useState(false);
   // "Outras…": a caixa de categorias cresce de onde estava e as novas acendem
   const cats = useRef<HTMLDivElement>(null), fotoCats = useRef<ReturnType<typeof fotografar> | null>(null);
   useLayoutEffect(() => { if (todas && fotoCats.current) { crescer(cats.current, fotoCats.current); fotoCats.current = null; } }, [todas]);
   const [n, setN] = useState(1);
-  const [cartaoId, setCartaoId] = useState(() => ler('bp-ultimo-cartao', r.cartao.find(c => c.ativo)?.id ?? ''));
+  const [cartaoId, setCartaoId] = useState(() => cartaoRecente(r, usuario?.id) ?? r.cartao.find(c => c.ativo)?.id ?? '');
   const [data, setData] = useState(hoje);
   const [alterar, setAlterar] = useState(false);
   const [tentou, setTentou] = useState(false);
@@ -67,10 +66,6 @@ export function Lancar() {
     setTentou(true);
     if (erros.valor || erros.desc || erros.cat || erros.div) { document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus(); return; }
     setSalvando(true);
-    gravar('bp-ultimo-cartao', cartao.id);
-    if (!dividindo) gravar('bp-ultimo-dono', dono);
-    if (!dividindo && ehUsuario) lembrarEscopo(dono, escopo);
-    if (cat && donoDaCategoria) usarCategoria(donoDaCategoria, r.categoria.find(c => c.id === cat)?.nome ?? '');
     // Na divisão: o pagador é a primeira pessoa; Pedro e Bruna juntos = Casal; só um deles = o Pessoal/Casal escolhido
     const escopoFinal = dividindo ? (usuarios.length >= 2 ? 'casal' : usuarios.length === 1 ? escopo : null) : ehUsuario ? escopo : null;
     const ok = await executar(lancarCompra(r, { cartao: cartao.id, data, descricao: desc, valorTotal: valor, parcelas: n, pagador: dividindo ? quem[0] : dono, escopo: escopoFinal, categoria: cat, divisao: dividindo ? divisao : null }),
@@ -98,7 +93,7 @@ export function Lancar() {
       <div className="campo"><span className="rot" id="r-pg">{dividindo ? 'Dividir entre · toque em quem participa' : 'De quem é'}</span>
         {dividindo
           ? <div className="pessoas" role="group" aria-labelledby="r-pg">{r.pessoa.map(p => <button key={p.id} aria-pressed={quem.includes(p.id)} onClick={() => alternar(p.id)}><Selo pessoa={p} grande /></button>)}</div>
-          : <div className="pessoas" role="group" aria-labelledby="r-pg">{r.pessoa.map(p => <button key={p.id} aria-pressed={dono === p.id} onClick={() => { setDono(p.id); setEscopo(ler('bp-esc-' + p.id, 'pessoal') as Escopo); }}><Selo pessoa={p} grande /></button>)}</div>}
+          : <div className="pessoas" role="group" aria-labelledby="r-pg">{r.pessoa.map(p => <button key={p.id} aria-pressed={dono === p.id} onClick={() => { setDono(p.id); setEscopo(escopoRecente(r, p.id)); }}><Selo pessoa={p} grande /></button>)}</div>}
         <button className="bt secundario medio" onClick={() => { if (dividindo) { setDividindo(false); } else { setDividindo(true); setQuem([dono]); setValoresAjustados(null); } }}>
           <Users size={20} strokeWidth={1.75} aria-hidden="true" />{dividindo ? 'Não dividir' : 'Dividir entre pessoas'}</button>
         {mostra('div') ? <p className="ajuda erro"><CircleAlert size={16} aria-hidden="true" />{erros.div}</p> : null}</div>

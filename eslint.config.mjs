@@ -18,6 +18,7 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "design/**", // páginas e scripts de apoio do design, fora do app
     ],
   },
 ];

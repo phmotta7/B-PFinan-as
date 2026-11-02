@@ -179,9 +179,12 @@ Ordem de tentativa para cada linha importada:
 
 ### 4.6 Marcação
 - Cada linha tem: **pagador** (Pedro / Bruna / Eliete / Lucimar), **escopo** (Pessoal / Casal, só para Pedro e Bruna) e **categoria**.
-- **Seleção em massa**: checkbox nas linhas + barra de ação "Atribuir a… / Escopo… / Categoria…".
-- Filtros: sem dono, por pessoa, por categoria, parceladas, encargos.
-- Sem regra automática por estabelecimento (decisão Q12).
+- **Seleção em massa**: checkbox nas linhas + barra de ação "Pessoa…" e "Categoria…" (esta troca a categoria e/ou o Pessoal/Casal sem mudar a pessoa; Pessoal/Casal só vale nas linhas de Pedro ou Bruna). "Todas (N)" seleciona todas as linhas do filtro.
+- Filtros: sem dono, sugeridas, por pessoa, parceladas, encargos, sem categoria (linhas de Pedro ou Bruna) e por categoria.
+- Sem regra automática por estabelecimento (decisão Q12). **Sugestões pelo histórico (02/11/2026)**, que a pessoa confirma (RN-OF-05: nada é marcado em silêncio):
+  - **RN-MA-01**: linha sem dono cuja loja já foi marcada antes (nome comparado sem maiúscula, acento e pontuação, pelo nome dado no app ou pelo nome do banco) ganha a sugestão "parece Bruna": pessoa, Pessoal/Casal, categoria e divisão da **última vez**. Se as duas últimas vezes foram de pessoas diferentes (ex.: Uber de cada um), não há sugestão.
+  - **RN-MA-02**: a fatura mostra "N linhas sem dono parecem com compras já marcadas" e **Aceitar** marca todas de uma vez (com Desfazer); a folha "De quem é?" mostra "Como da última vez: …" para aceitar só aquela. Divisão da última vez vale na mesma proporção para o valor novo.
+  - **RN-MA-03**: na folha, a categoria usada da última vez **naquela loja** vem primeiro; as categorias recentes e o último Pessoal/Casal de cada pessoa saem do histórico de compras (iguais nos dois celulares, não mais guardados no aparelho). O Lançar começa em quem está usando o app e no cartão da última compra que essa pessoa lançou.
 - Contador no topo: "12 de 47 linhas sem dono".
 
 #### 4.6.1 Divisão de compras — decidido com o Pedro em 31/10/2026
@@ -192,6 +195,10 @@ Ordem de tentativa para cada linha importada:
 - IOF e estorno ligados à compra seguem a mesma divisão (§4.7). Marcar a compra para uma pessoa só desfaz a divisão.
 - Na lista da fatura, a linha mostra o selo de cada pessoa; o filtro de cada pessoa inclui as compras em que ela tem parte; o total de cada pessoa (régua) soma só a parte dela.
 - Guardado em `compra.divisao` (lista de pessoa + valor da compra inteira); o `pagador` passa a ser a primeira pessoa da divisão.
+
+#### 4.6.2 Devem vir nesta fatura (02/11/2026)
+- **RN-CA-15**: na fatura ainda não importada, a compra à vista que veio **com o mesmo valor e a mesma loja nas duas faturas anteriores** do cartão (assinaturas, academia) e ainda não está nesta aparece em "Devem vir nesta fatura", com a soma. É só aviso: não entra no total nem é gravada; quem vale é a fatura do banco ao ser importada. É uma prévia do módulo de Recorrentes (§6.6, Etapa 2), que vai substituir esta regra.
+- **Lembrete no calendário** (Mais): baixa um arquivo de calendário com o dia seguinte ao fechamento de cada cartão nos próximos 12 meses, com aviso às 9h, para lembrar de importar. O app continua sem rotinas agendadas: quem avisa é o calendário do celular.
 
 ### 4.7 Encargos
 | Tipo | Quem paga (padrão) | Observação |

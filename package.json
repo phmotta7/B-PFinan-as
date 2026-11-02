@@ -9,7 +9,10 @@
     "lint": "node node_modules/eslint/bin/eslint.js",
     "test": "node node_modules/vitest/vitest.mjs run",
     "test:watch": "node node_modules/vitest/vitest.mjs",
-    "typecheck": "node node_modules/typescript/bin/tsc --noEmit"
+    "typecheck": "node node_modules/typescript/bin/tsc --noEmit",
+    "regras": "node scripts/conferir-regras.mjs",
+    "conferir": "node scripts/publicar.mjs --so-conferir",
+    "publicar": "node scripts/publicar.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",

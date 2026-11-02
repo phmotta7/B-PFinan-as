@@ -1,0 +1,21 @@
+# Rede de segurança: a cada envio para main (o que a Vercel publica), confere tipos, testes, lint e regras.
+# Se falhar, o GitHub avisa por e-mail; a correção é publicar de novo com o problema resolvido.
+name: Conferir
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  conferir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run conferir

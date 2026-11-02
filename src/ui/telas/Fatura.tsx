@@ -1,11 +1,12 @@
 'use client';
 // Fatura (T4): linhas por dia, filtros, totais por pessoa, marcação individual e em massa (§4.6).
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { FileUp, X, Check, Copy, Pencil, Users, Trash2 } from 'lucide-react';
+import { FileUp, X, Check, Copy, Pencil, Users, Trash2, Sparkles, CalendarClock } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Divisao, Folha, Logo, LogoBanco, SeletorMes, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
 import { aPagarDaFatura, faturaDe, linhasDaFatura, situacaoDaFatura, totaisDaFatura, type LinhaFatura } from '@/dados/consultas';
-import { dividir, excluirCompra, excluirImportacao, marcar, salvar } from '@/dados/operacoes';
+import { aceitarSugestoes, ajustarCompras, dividir, excluirCompra, excluirImportacao, marcar, salvar } from '@/dados/operacoes';
+import { categoriaDaLoja, categoriasRecentes, devemVir, escopoRecente, sugestaoPara, sugestoesDaFatura, type Sugestao } from '@/dados/sugestoes';
 import { datasDaFatura, somarMeses } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
 import type { Compra, Escopo, Pessoa, Retrato } from '@/dados/tipos';
@@ -14,7 +15,7 @@ import { QuantoCadaUm, juntar, lerPartes, valoresIguais, emTexto } from '../divi
 import { crescer, destacar, fotografar } from '../movimento';
 
 export function Fatura() {
-  const { r, hoje, rota, ir, voltar, podeVoltar, mesDeTrabalho } = useApp();
+  const { r, hoje, rota, ir, voltar, podeVoltar, mesDeTrabalho, executar } = useApp();
   const cartao = r.cartao.find(c => c.id === rota.cartao) ?? r.cartao[0];
   const mes = rota.mes ?? mesDeTrabalho;
   const [filtro, setFiltro] = useState(rota.filtro ?? 'todas');
@@ -25,6 +26,8 @@ export function Fatura() {
   const fatura = cartao ? faturaDe(r, cartao.id, mes) : undefined;
   const linhas = useMemo(() => (fatura ? linhasDaFatura(r, fatura.id) : []), [r, fatura]);
   const porId = useMemo(() => new Map(linhas.map(l => [l.parcela.id, l])), [linhas]);
+  const sugs = useMemo(() => (fatura ? sugestoesDaFatura(r, fatura.id) : new Map<string, Sugestao>()), [r, fatura]);
+  const [folhaCat, setFolhaCat] = useState<string[] | null>(null);
   if (!cartao) return null;
   const d = datasDaFatura(cartao, mes);
   const sit = fatura ? situacaoDaFatura(fatura, hoje) : hoje >= d.fechamento ? 'fechada' : 'aberta';
@@ -37,10 +40,18 @@ export function Fatura() {
   const donos = (l: LinhaFatura) => partesDaLinha(l.compra, l.valor).map(p => nome(p.pessoa)).filter(Boolean) as Pessoa[];
   const mudarMes = (k: number) => { setFiltro('todas'); ir({ tela: 'fatura', cartao: cartao.id, mes: somarMeses(mes, k) }); };
 
-  const filtros: [string, string, number][] = [['todas', 'Todas', t.quantidade], ['sem', 'Sem dono', t.semDono],
-    ...r.pessoa.map(p => [p.id, p.nome, linhas.filter(l => temParte(l, p.id)).length] as [string, string, number]),
-    ['parc', 'Parceladas', linhas.filter(l => l.total > 1).length], ['enc', 'Encargos', linhas.filter(l => l.compra.tipo !== 'compra' && l.compra.tipo !== 'parcela').length]];
-  const visiveis = linhas.filter(l => filtro === 'todas' || (filtro === 'sem' ? !l.compra.pagador && !l.pendente : filtro === 'parc' ? l.total > 1 : filtro === 'enc' ? l.compra.tipo !== 'compra' && l.compra.tipo !== 'parcela' : temParte(l, filtro)));
+  const ehEncargo = (l: LinhaFatura) => l.compra.tipo !== 'compra' && l.compra.tipo !== 'parcela';
+  // Sem categoria: linha de Pedro ou Bruna que ainda não tem categoria (para elas a categoria é obrigatória, D4)
+  const semCategoria = (l: LinhaFatura) => !l.pendente && !!l.compra.pagador && !l.compra.categoria && !ehEncargo(l) && donos(l).some(p => p.tipo === 'usuario');
+  const passa = (l: LinhaFatura, f: string) => f === 'todas' || (f === 'sem' ? !l.compra.pagador && !l.pendente : f === 'sug' ? sugs.has(l.compra.id)
+    : f === 'parc' ? l.total > 1 : f === 'enc' ? ehEncargo(l) : f === 'semcat' ? semCategoria(l) : f.startsWith('cat:') ? l.compra.categoria === f.slice(4) : temParte(l, f));
+  const conta_ = (f: string) => linhas.filter(l => passa(l, f)).length;
+  const catsNaFatura = r.categoria.filter(c => linhas.some(l => l.compra.categoria === c.id)).sort((a, b) => a.ordem - b.ordem);
+  const filtros: [string, string, number][] = [['todas', 'Todas', t.quantidade], ['sem', 'Sem dono', t.semDono], ['sug', 'Sugeridas', sugs.size],
+    ...r.pessoa.map(p => [p.id, p.nome, conta_(p.id)] as [string, string, number]),
+    ['parc', 'Parceladas', conta_('parc')], ['enc', 'Encargos', conta_('enc')], ['semcat', 'Sem categoria', conta_('semcat')],
+    ...catsNaFatura.map(c => ['cat:' + c.id, c.nome, conta_('cat:' + c.id)] as [string, string, number])];
+  const visiveis = linhas.filter(l => passa(l, filtro));
   const grupos = new Map<string, LinhaFatura[]>(); visiveis.forEach(l => grupos.set(l.data, [...(grupos.get(l.data) ?? []), l]));
 
   const tocar = (l: LinhaFatura) => {
@@ -63,7 +74,8 @@ export function Fatura() {
       {!linhas.length ? (
         <div className="vazio"><IconeVazio icone={FileUp} /><h2>Nenhuma linha nesta fatura ainda</h2>
           <p>Quando a fatura {mesCurto(mes)} do {cartao.apelido} fechar ({ddmm(d.fechamento)}), baixe o arquivo no app do banco e traga para cá. Compras lançadas no app também aparecem aqui.</p>
-          <div className="acoes"><button className="bt principal medio" onClick={() => ir({ tela: 'importar', cartao: cartao.id })}>Importar</button><button className="bt secundario medio" onClick={() => ir({ tela: 'lancar' })}>Lançar</button></div></div>
+          <div className="acoes"><button className="bt principal medio" onClick={() => ir({ tela: 'importar', cartao: cartao.id })}>Importar</button><button className="bt secundario medio" onClick={() => ir({ tela: 'lancar' })}>Lançar</button></div>
+          <DevemVir cartao={cartao.id} mes={mes} /></div>
       ) : (<>
         <div className="duas">
         <div className="col-a">
@@ -79,17 +91,22 @@ export function Fatura() {
         </Divisao>
         {t.pendentes ? <button className="aviso info" onClick={() => ir({ tela: 'conciliacao' })} style={{ border: 0, textAlign: 'left', cursor: 'pointer', font: 'inherit' }}><Copy size={20} aria-hidden="true" /><div><p>{t.pendentes} {t.pendentes > 1 ? 'linhas esperam' : 'linha espera'} você conferir a importação.</p><span className="bt link" style={{ minHeight: 0 }}>Conferir agora</span></div></button>
           : tudoCerto ? <div className="aviso ok" role="status"><Check size={20} aria-hidden="true" /><div><p>Todas as linhas têm dono. Os fechamentos estão prontos.</p><button className="bt link" onClick={() => ir({ tela: 'fechamentos', mes })}>Ver fechamentos e mandar resumos</button></div></div> : null}
+        {sugs.size ? <div className="aviso info" role="status"><Sparkles size={20} aria-hidden="true" /><div><p>{sugs.size} {sugs.size > 1 ? 'linhas sem dono parecem' : 'linha sem dono parece'} com compras já marcadas. Confira e aceite de uma vez.</p>
+            <span className="botoes"><button className="bt principal medio" onClick={() => executar(aceitarSugestoes(r, sugs), sugs.size > 1 ? `${sugs.size} linhas marcadas como da última vez.` : 'Linha marcada como da última vez.')}>Aceitar {sugs.size > 1 ? `as ${sugs.size}` : ''}</button>
+              {filtro !== 'sug' ? <button className="bt link" onClick={() => setFiltro('sug')}>Ver quais são</button> : null}</span></div></div> : null}
         </div>
         <div className="col-b">
         <div className="filtros" role="group" aria-label="Filtrar linhas">{filtros.filter(([, , n], i) => n || i < 2).map(([k, n, q]) => <button key={k} className="chip" aria-pressed={filtro === k} onClick={() => setFiltro(filtro === k && k !== 'todas' ? 'todas' : k)}>{n} <span className="n">{q}</span></button>)}</div>
         <div className="dica-linha"><p className="dica-lista" aria-live="polite">{selecao ? 'Toque nas linhas para marcar ou desmarcar.' : 'Toque numa linha para dizer de quem é; toque longo para marcar várias.'}</p>
-          {!selecao && visiveis.length ? <button className="bt link" onClick={() => setSelecao(new Set())}>Selecionar</button> : null}</div>
+          {!selecao && visiveis.length ? <button className="bt link" onClick={() => setSelecao(new Set())}>Selecionar</button>
+            : selecao && visiveis.length > 1 ? <button className="bt link" onClick={() => setSelecao(new Set(visiveis.map(l => l.compra.id)))}>Todas ({visiveis.length})</button> : null}</div>
         {visiveis.length ? (
           <div className="lista" onClick={e => { const l = daLinha(e); if (l) tocar(l); }} onPointerDown={e => { const l = daLinha(e); if (l) apertar(l); }}
             onPointerUp={soltar} onPointerCancel={soltar} onPointerLeave={soltar}>{[...grupos.entries()].map(([dia, ls]) => (
-            <div key={dia}><h2 className="dia">{diaLongo(dia)}</h2>{ls.map(l => <Linha key={l.parcela.id} l={l} pessoas={donos(l)} marcada={!!selecao?.has(l.compra.id)} emSelecao={!!selecao} />)}</div>))}
+            <div key={dia}><h2 className="dia">{diaLongo(dia)}</h2>{ls.map(l => <Linha key={l.parcela.id} l={l} pessoas={donos(l)} sugere={sugs.has(l.compra.id) ? nomeSugerido(r, sugs.get(l.compra.id)!) : undefined} marcada={!!selecao?.has(l.compra.id)} emSelecao={!!selecao} />)}</div>))}
           </div>
         ) : <div className="vazio"><IconeVazio icone={Check} /><h2>Nada neste filtro</h2><p>{filtro === 'sem' ? 'Todas as linhas já têm dono.' : 'Nenhuma linha combina com este filtro.'}</p><button className="bt secundario medio" onClick={() => setFiltro('todas')}>Ver todas</button></div>}
+        {sit !== 'importada' ? <DevemVir cartao={cartao.id} mes={mes} /> : null}
         {fatura ? <Arquivos fatura={fatura.id} /> : null}
         </div></div>
       </>)}
@@ -97,9 +114,11 @@ export function Fatura() {
     <div className={`massa vidro-normal ${selecao ? 'on' : ''}`} role="region" aria-label="Seleção" inert={!selecao}>
       <button className="redondo" onClick={() => setSelecao(null)} aria-label="Cancelar seleção"><X size={20} /></button>
       <p className="num">{selecao?.size ?? 0} {selecao?.size === 1 ? 'selecionada' : 'selecionadas'}</p>
-      <button className="bt claro" disabled={!selecao?.size} onClick={() => setFolha([...(selecao ?? [])])}>Atribuir a…</button>
+      <button className="bt discreto" disabled={!selecao?.size} onClick={() => setFolhaCat([...(selecao ?? [])])}>Categoria…</button>
+      <button className="bt claro" disabled={!selecao?.size} onClick={() => setFolha([...(selecao ?? [])])}>Pessoa…</button>
     </div>
     <FolhaPessoa compras={folha} aoFechar={() => setFolha(null)} aoSalvar={() => { setFolha(null); setSelecao(null); }} />
+    <FolhaCategoria compras={folhaCat} aoFechar={() => setFolhaCat(null)} aoSalvar={() => { setFolhaCat(null); setSelecao(null); }} />
   </>);
 }
 
@@ -121,10 +140,10 @@ function Arquivos({ fatura }: { fatura: string }) {
   );
 }
 
-const Linha = memo(function Linha({ l, pessoas, marcada, emSelecao }: { l: LinhaFatura; pessoas: Pessoa[]; marcada: boolean; emSelecao: boolean }) {
+const Linha = memo(function Linha({ l, pessoas, marcada, emSelecao, sugere }: { l: LinhaFatura; pessoas: Pessoa[]; marcada: boolean; emSelecao: boolean; sugere?: string }) {
   const pessoa = pessoas[0], dividida = pessoas.length > 1;
   const quem = dividida ? `dividida entre ${pessoas.map(p => p.nome).join(' e ')}` : pessoa ? pessoa.nome : 'sem dono';
-  const nome = `${l.compra.descricao}, ${reais(l.valor)}, ${l.total > 1 ? `parcela ${l.numero} de ${l.total}, ` : ''}${l.pendente ? 'para conferir' : quem}`;
+  const nome = `${l.compra.descricao}, ${reais(l.valor)}, ${l.total > 1 ? `parcela ${l.numero} de ${l.total}, ` : ''}${l.pendente ? 'para conferir' : quem}${sugere && !pessoa && !l.pendente ? `, parece ${sugere}` : ''}`;
   // Quando a linha ganha outro dono (ou muda de Pessoal para Casal, ou é dividida), ela acende para mostrar onde mudou
   const ref = useRef<HTMLButtonElement>(null), dono = `${pessoas.map(p => p.id).join('+')}|${l.compra.escopo ?? ''}|${l.pendente}`, antes = useRef(dono);
   useEffect(() => { if (antes.current !== dono) { antes.current = dono; destacar(ref.current); } }, [dono]);
@@ -135,26 +154,70 @@ const Linha = memo(function Linha({ l, pessoas, marcada, emSelecao }: { l: Linha
         <small>{l.total > 1 ? <span className="parc num">{l.numero}/{l.total}</span> : ddmm(l.data)}{l.prevista ? <span className="mini">prevista</span> : null}
           {l.pendente ? <span className="pil at" style={{ padding: '2px 8px' }}>Conferir</span>
             : dividida ? <span className="selos">{pessoas.map(p => <Selo key={p.id} pessoa={p} />)}</span>
-            : <Selo pessoa={pessoa} extra={l.compra.escopo === 'casal' ? ' · Casal' : ''} />}</small></span>
+            : <Selo pessoa={pessoa} extra={l.compra.escopo === 'casal' ? ' · Casal' : ''} />}
+          {sugere && !pessoa && !l.pendente ? <span className="mini sugere">parece {sugere}</span> : null}</small></span>
       <span className="r"><span className="v num">{reais(l.valor)}</span></span>
     </button>
   );
-}, (a, b) => a.l.compra === b.l.compra && a.l.parcela === b.l.parcela && a.l.data === b.l.data && a.pessoas.length === b.pessoas.length && a.pessoas.every((p, i) => p === b.pessoas[i]) && a.marcada === b.marcada && a.emSelecao === b.emSelecao);
+}, (a, b) => a.l.compra === b.l.compra && a.l.parcela === b.l.parcela && a.l.data === b.l.data && a.pessoas.length === b.pessoas.length && a.pessoas.every((p, i) => p === b.pessoas[i]) && a.marcada === b.marcada && a.emSelecao === b.emSelecao && a.sugere === b.sugere);
 
 // ---------- Folha "De quem é?" (assinatura): E e L num toque; P e B pedem escopo e categoria (D4, D6) ----------
+// As recentes saem do histórico de compras (iguais nos dois celulares); a categoria usada da última vez na loja vem primeiro
 const RECENTES_PADRAO = ['Mercado', 'Alimentação fora', 'Transporte', 'Saúde', 'Compras pessoais'];
-const lerRecentes = (pessoa: string): string[] => { try { return JSON.parse(localStorage.getItem('bp-cat-' + pessoa) ?? '[]'); } catch { return []; } };
-export const usarCategoria = (pessoa: string, nome: string) => { try { localStorage.setItem('bp-cat-' + pessoa, JSON.stringify([nome, ...lerRecentes(pessoa).filter(x => x !== nome)].slice(0, 5))); } catch { /* sem armazenamento */ } };
-export function categoriasVisiveis(r: Retrato, pessoa: string | null, atual: string | null, todas: boolean) {
+export function categoriasVisiveis(r: Retrato, pessoa: string | null, atual: string | null, todas: boolean, daLoja: string | null = null) {
   const ativas = r.categoria.filter(c => c.ativa && c.tipo === 'despesa').sort((a, b) => a.ordem - b.ordem);
   if (todas || !pessoa) return ativas;
-  const nomes = [...new Set([...lerRecentes(pessoa), ...RECENTES_PADRAO])].slice(0, 5);
-  const lista = nomes.map(n => ativas.find(c => c.nome === n)).filter(Boolean) as typeof ativas;
-  const a = ativas.find(c => c.id === atual);
-  return a && !lista.includes(a) ? [a, ...lista.slice(0, 4)] : lista;
+  const nomes = [...new Set([...categoriasRecentes(r, pessoa), ...RECENTES_PADRAO])];
+  let lista = (nomes.map(n => ativas.find(c => c.nome === n)).filter(Boolean) as typeof ativas).slice(0, 5);
+  for (const id of [atual, daLoja]) { const a = ativas.find(c => c.id === id); if (a) lista = [a, ...lista.filter(x => x !== a)].slice(0, 5); }
+  return lista;
 }
-const escopoPadrao = (pessoa: string): Escopo => { try { return (localStorage.getItem('bp-esc-' + pessoa) as Escopo) || 'pessoal'; } catch { return 'pessoal'; } };
-export const lembrarEscopo = (pessoa: string, e: Escopo) => { try { localStorage.setItem('bp-esc-' + pessoa, e); } catch { /* sem armazenamento */ } };
+const nomeSugerido = (r: Retrato, s: Sugestao) => juntar((s.divisao?.map(p => p.pessoa) ?? [s.pagador]).map(id => r.pessoa.find(p => p.id === id)?.nome ?? ''));
+
+// Assinaturas e contas que vieram igual nas duas faturas anteriores: aparecem antes de a fatura do banco chegar (só aviso)
+function DevemVir({ cartao, mes }: { cartao: string; mes: string }) {
+  const { r } = useApp();
+  const lista = devemVir(r, cartao, mes);
+  if (!lista.length) return null;
+  const total = lista.reduce((s, d) => s + d.valor, 0);
+  return (
+    <div className="arquivos devem-vir"><p className="secao">Devem vir nesta fatura</p>
+      {lista.map(d => (
+        <div key={d.descricao} className="arquivo"><Logo loja={d.descricao} />
+          <span className="d"><b>{d.descricao}</b><small>{mesCurto(d.meses[0])} e {mesCurto(d.meses[1])}{d.pagador ? ` · ${r.pessoa.find(p => p.id === d.pagador)?.nome ?? ''}` : ''}</small></span>
+          <span className="v num">{reais(d.valor)}</span></div>))}
+      <p className="ajuda"><CalendarClock size={16} strokeWidth={1.75} aria-hidden="true" />Vieram com o mesmo valor nos dois últimos meses. Somam {reais(total)}, que ainda não estão no total acima.</p>
+    </div>
+  );
+}
+
+// Categoria e Pessoal/Casal de várias linhas de uma vez, sem trocar a pessoa (§4.6)
+function FolhaCategoria({ compras, aoFechar, aoSalvar }: { compras: string[] | null; aoFechar: () => void; aoSalvar: () => void }) {
+  const { r, executar } = useApp();
+  const [escopo, setEscopo] = useState<Escopo | null>(null);
+  const [cat, setCat] = useState<string | null>(null);
+  const [aberta, setAberta] = useState<string[] | null>(null);
+  if (compras !== aberta) { setAberta(compras); if (compras) { setEscopo(null); setCat(null); } }
+  const n = (compras ?? aberta)?.length ?? 0;
+  const ativas = r.categoria.filter(c => c.ativa && c.tipo === 'despesa').sort((a, b) => a.ordem - b.ordem);
+  const gravar = async () => {
+    const ids = compras ?? []; aoSalvar();
+    const nomeCat = r.categoria.find(c => c.id === cat)?.nome;
+    await executar(ajustarCompras(r, ids, { escopo: escopo ?? undefined, categoria: cat ?? undefined }),
+      `${ids.length > 1 ? `${ids.length} linhas` : '1 linha'}: ${[nomeCat, escopo === 'casal' ? 'Casal' : escopo === 'pessoal' ? 'Pessoal' : null].filter(Boolean).join(' · ')}.`);
+  };
+  return (
+    <Folha aberta={!!compras?.length} aoFechar={aoFechar} titulo={n > 1 ? `Categoria das ${n}` : 'Categoria da linha'} sub="A pessoa de cada linha continua a mesma.">
+      <div className="campo"><span className="rot" id="r-fc-esc">Para quê · vale nas de Pedro ou Bruna</span>
+        <div className="chips" role="group" aria-labelledby="r-fc-esc">{([[null, 'Manter'], ['pessoal', 'Pessoal'], ['casal', 'Casal']] as [Escopo | null, string][]).map(([v, rot]) =>
+          <button key={rot} className="chip" aria-pressed={escopo === v} onClick={() => setEscopo(v)}>{rot}</button>)}</div></div>
+      <div className="campo"><span className="rot" id="r-fc-cat">Categoria</span>
+        <div className="cats" role="group" aria-labelledby="r-fc-cat">{ativas.map(c => <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(cat === c.id ? null : c.id)}>{c.nome}</button>)}</div></div>
+      <div className="acoes"><button className="bt secundario medio" onClick={aoFechar}>Cancelar</button>
+        <button className="bt principal medio" disabled={!escopo && !cat} onClick={gravar}>Salvar</button></div>
+    </Folha>
+  );
+}
 
 export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[] | null; aoFechar: () => void; aoSalvar: () => void }) {
   const { r, executar, confirmar } = useApp();
@@ -174,7 +237,15 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
   const valor = cs.reduce((s, c) => s + (c.parcelas > 1 ? Math.round(c.valorTotal / c.parcelas) : c.valorTotal), 0);
   const pessoa = r.pessoa.find(p => p.id === escolha);
   const ehUsuario = pessoa?.tipo === 'usuario';
-  const e = escopo ?? (escolha ? escopoPadrao(escolha) : 'pessoal');
+  const e = escopo ?? (escolha ? escopoRecente(r, escolha) : 'pessoal');
+  // Como da última vez nesta loja: um toque aceita (a pessoa vê o que vai ser marcado antes)
+  const sug = um && !um.pagador && !um.pendencia ? sugestaoPara(r, um.id) : null;
+  const daLoja = um ? categoriaDaLoja(r, um.id) : null;
+  const aceitar = async () => {
+    if (!um || !sug) return;
+    aoSalvar();
+    await executar(aceitarSugestoes(r, new Map([[um.id, sug]])), `${um.descricao} marcada como da última vez: ${nomeSugerido(r, sug)}.`);
+  };
 
   // Nome da compra: a pessoa troca "CleberSalvado" por "iPad". Vale para todas as parcelas, que são a mesma compra.
   const noBanco = (() => {
@@ -197,8 +268,6 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
   };
   const salvarPessoa = async (pagador: string, esc: Escopo | null, categoria: string | null) => {
     const p = r.pessoa.find(x => x.id === pagador)!;
-    if (p.tipo === 'usuario' && esc) lembrarEscopo(pagador, esc);
-    if (categoria) usarCategoria(pagador, r.categoria.find(c => c.id === categoria)?.nome ?? '');
     aoSalvar();
     await executar(marcar(r, cs.map(c => c.id), { pagador, escopo: esc, categoria }), um ? `${um.descricao} agora é de ${p.nome}${p.tipo === 'usuario' ? ` · ${esc === 'casal' ? 'Casal' : 'Pessoal'}` : ''}` : `${cs.length} linhas agora são de ${p.nome}`);
   };
@@ -214,6 +283,11 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
               <button type="submit" className="bt principal medio" disabled={!nome.trim() || nome.trim() === um.descricao}>Salvar nome</button></div>
           </form>) : null}
       {dividindo ? <Dividir key={(compras ?? []).join()} cs={cs} aoCancelar={() => setDividindo(false)} aoSalvar={aoSalvar} /> : (<>
+      {sug && nome === null ? (
+        <button className="sugestao" onClick={aceitar}><Sparkles size={20} strokeWidth={1.75} aria-hidden="true" />
+          <span><b>Como da última vez: {nomeSugerido(r, sug)}</b><small>{[sug.divisao ? 'dividida' : null, sug.escopo === 'casal' ? 'Casal' : sug.escopo === 'pessoal' ? 'Pessoal' : null,
+            r.categoria.find(c => c.id === sug.categoria)?.nome, sug.vezes > 1 ? `${sug.vezes} vezes nesta loja` : null].filter(Boolean).join(' · ')}</small></span>
+          <span className="pil">Aceitar</span></button>) : null}
       <div className="pessoas" role="group" aria-label="Pessoa">{r.pessoa.map(p => (
         <button key={p.id} aria-pressed={escolha === p.id} onClick={() => { setEscolha(p.id); setEscopo(null); if (p.tipo !== 'usuario') salvarPessoa(p.id, null, null); }}><Selo pessoa={p} grande /></button>))}
       </div>
@@ -223,7 +297,7 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
           <div className="seg" data-v={e === 'casal' ? 1 : 0} role="group" aria-label="Para quê"><span className="pino" aria-hidden="true" />
             <button aria-pressed={e !== 'casal'} onClick={() => setEscopo('pessoal')}>Pessoal</button><button aria-pressed={e === 'casal'} onClick={() => setEscopo('casal')}>Casal</button></div></div>
         <div className="campo"><span className="rot">Categoria · toque para salvar</span>
-          <div className="cats" ref={cats}>{categoriasVisiveis(r, escolha, um?.categoria ?? null, todas).map(c => <button key={c.id} className="chip" aria-pressed={um?.categoria === c.id} onClick={() => salvarPessoa(escolha!, e, c.id)}>{c.nome}</button>)}
+          <div className="cats" ref={cats}>{categoriasVisiveis(r, escolha, um?.categoria ?? null, todas, daLoja).map(c => <button key={c.id} className="chip" aria-pressed={um?.categoria === c.id} onClick={() => salvarPessoa(escolha!, e, c.id)}>{c.nome}</button>)}
             {todas ? null : <button className="chip" onClick={() => { fotoCats.current = fotografar(cats.current); setTodas(true); }}>Outras…</button>}</div></div>
       </>) : null}
       {um && nome === null ? <button className="bt destrutivo medio" onClick={excluir}><Trash2 size={20} strokeWidth={1.75} aria-hidden="true" />Excluir lançamento</button> : null}
@@ -255,7 +329,6 @@ function Dividir({ cs, aoCancelar, aoSalvar }: { cs: Compra[]; aoCancelar: () =>
   const pode = quem.length >= 2 && falta === 0 && (!um || partes.every(p => p.valor > 0));
   const confirmar = async () => {
     if (!pode) return;
-    if (cat && usuarios[0]) usarCategoria(usuarios[0], r.categoria.find(c => c.id === cat)?.nome ?? '');
     aoSalvar();
     const nomes = juntar(quem.map(nomeDe));
     await executar(dividir(r, cs.map(c => c.id), { pessoas: quem, valores: um ? partes.map(p => p.valor) : undefined, escopo: usuarios.length === 1 ? escopo : null, categoria: cat }),

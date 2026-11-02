@@ -1,7 +1,9 @@
 'use client';
 // Mais (D10/D11): Dívidas, conferência, importação e Configurações (T15): pessoas, cartões, categorias, e-mails, exportar.
 import { useState, type ReactNode } from 'react';
-import { ChevronRight, Layers, Copy, FileUp, User, CreditCard, SlidersHorizontal, Mail, Download, Plus, Trash2, Landmark } from 'lucide-react';
+import { ChevronRight, Layers, Copy, FileUp, User, CreditCard, SlidersHorizontal, Mail, Download, Plus, Trash2, Landmark, CalendarClock } from 'lucide-react';
+import { toast } from 'sonner';
+import { calendarioDeFechamentos } from '@/dominio/lembrete';
 import { useApp } from '../estado';
 import { IconeVazio, Folha, LogoBanco, Selo, Topo, reais } from '../comum';
 import { novoId, remover, salvar } from '@/dados/operacoes';
@@ -14,10 +16,19 @@ const Linha = ({ icone, titulo, sub, onClick }: { icone: ReactNode; titulo: stri
   <button className="pend" onClick={onClick}><span className="ico n">{icone}</span><span className="t"><b>{titulo}</b><small>{sub}</small></span><ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" /></button>);
 
 export function Mais() {
-  const { r, ir, sair, confirmar, modo, recomecarDemo } = useApp();
+  const { r, ir, sair, confirmar, modo, recomecarDemo, mesDeTrabalho } = useApp();
   const [tema, setTema] = useState(() => { try { return localStorage.getItem('bp-tema') ?? 'auto'; } catch { return 'auto'; } });
   const mudarTema = (t: string) => { setTema(t); try { localStorage.setItem('bp-tema', t); } catch { /* sem armazenamento */ } if (t === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t); };
   const i = (C: typeof Layers) => <C size={20} strokeWidth={1.75} aria-hidden="true" />;
+  // Arquivo de calendário: o celular abre e oferece adicionar os eventos (com aviso às 9h)
+  const baixarLembretes = () => {
+    const cartoes = r.cartao.filter(c => c.ativo);
+    if (!cartoes.length) return toast('Cadastre um cartão primeiro, em Cartões.');
+    const url = URL.createObjectURL(new Blob([calendarioDeFechamentos(cartoes, mesDeTrabalho)], { type: 'text/calendar' }));
+    const a = document.createElement('a'); a.href = url; a.download = 'bp-faturas.ics'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast(`Abra o arquivo bp-faturas.ics para pôr no calendário os dias de importar (${cartoes.map(c => c.apelido).join(' e ')}).`);
+  };
   return (<>
     <Topo titulo="Mais" />
     <main className="conteudo">
@@ -25,6 +36,7 @@ export function Mais() {
         <Linha icone={i(Layers)} titulo="Dívidas" sub="Empréstimos e parcelamentos que entram no fechamento" onClick={() => ir({ tela: 'dividas' })} />
         <Linha icone={i(Copy)} titulo="Conferir importação" sub="Duplicidades e parcelas da última fatura" onClick={() => ir({ tela: 'conciliacao' })} />
         <Linha icone={i(FileUp)} titulo="Importar fatura" sub="Nubank ou CSV de outro banco" onClick={() => ir({ tela: 'importar' })} />
+        <Linha icone={i(CalendarClock)} titulo="Lembrete no calendário" sub="Avisa no dia de importar cada fatura, pelos próximos 12 meses" onClick={baixarLembretes} />
       </div></div>
       <p className="secao">Configurações</p>
       <div className="cartao"><div>

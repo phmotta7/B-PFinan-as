@@ -56,9 +56,9 @@ export class RepoDemo implements Repositorio {
 // ---------- Supabase ----------
 const snake = (s: string) => s.replace(/[A-Z]/g, c => '_' + c.toLowerCase());
 const camel = (s: string) => s.replace(/_([a-z])/g, (_, c: string) => c.toUpperCase());
-const AUDITORIA = new Set(['casa', 'criado_por', 'atualizado_em', 'atualizado_por']);
+export const AUDITORIA = new Set(['casa', 'criado_por', 'atualizado_em', 'atualizado_por']);
 // Colunas que o próprio banco calcula ("generated always"): o app não lê nem manda; mandar faz o banco recusar a gravação
-const CALCULADAS = new Set(['descricao_normalizada']);
+export const CALCULADAS = new Set(['descricao_normalizada']);
 export const paraBanco = (o: object) => Object.fromEntries(Object.entries(o).filter(([k, v]) => v !== undefined && !CALCULADAS.has(snake(k))).map(([k, v]) => [snake(k), v]));
 const doBanco = (o: Record<string, unknown>) => Object.fromEntries(Object.entries(o).filter(([k]) => !AUDITORIA.has(k) && !CALCULADAS.has(k)).map(([k, v]) => [camel(k), v]));
 

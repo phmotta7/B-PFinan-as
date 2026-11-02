@@ -1,0 +1,8 @@
+# Fim de linha igual em todo arquivo de texto (LF), seja qual for o computador. Sem isto, cada commit feito no Windows
+# aparecia como o arquivo inteiro reescrito e escondia o que mudou de verdade.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.pdf binary
+*.ico binary
+*.woff2 binary

@@ -252,6 +252,42 @@ export function marcar(r: Retrato, compras: string[], m: { pagador: string; esco
   return p.m;
 }
 
+/** Aceitar as sugestões tiradas do histórico (pessoa, Pessoal/Casal, categoria e divisão de cada loja). Só a pessoa aceita; nada é marcado em silêncio. */
+export function aceitarSugestoes(r: Retrato, sugestoes: Map<string, { pagador: string; escopo: Escopo | null; categoria: string | null; divisao: Parte[] | null }>): Mudanca {
+  const p = new Pacote(r);
+  for (const [id, s] of sugestoes) {
+    const c = p.ver('compra', id);
+    if (!c || c.pagador) continue;
+    const divisao = s.divisao && s.divisao.length > 1 ? naProporcao(s.divisao, c.valorTotal) : null;
+    const dados = { pagador: s.pagador, escopo: r.pessoa.some(x => x.tipo === 'usuario' && (x.id === s.pagador || divisao?.some(d => d.pessoa === x.id))) ? s.escopo ?? 'pessoal' : null, divisao };
+    p.atualizar('compra', { ...c, ...dados, categoria: s.categoria ?? c.categoria ?? null });
+    // IOF e estorno ligados seguem a compra de origem (§4.7)
+    p.todos('compra').filter(x => x.compraOrigem === id && !x.pagador).forEach(x => p.atualizar('compra', { ...x, ...dados }));
+  }
+  return p.m;
+}
+// A divisão da última vez, na proporção dela, aplicada ao valor desta compra (meio a meio continua meio a meio)
+function naProporcao(modelo: Parte[], total: Centavos): Parte[] {
+  const soma = modelo.reduce((s, x) => s + x.valor, 0) || 1;
+  const partes = modelo.map(x => ({ pessoa: x.pessoa, valor: Math.floor((total * x.valor) / soma) }));
+  partes[0].valor += total - partes.reduce((s, x) => s + x.valor, 0);
+  return partes;
+}
+
+/** Trocar só a categoria e/ou o Pessoal/Casal de várias linhas, sem mexer na pessoa (barra de seleção, §4.6).
+ *  Pessoal/Casal só vale para compra de Pedro ou Bruna; em compra dividida entre os dois, continua Casal. */
+export function ajustarCompras(r: Retrato, compras: string[], m: { escopo?: Escopo; categoria?: string }): Mudanca {
+  const p = new Pacote(r);
+  const usuario = (id?: string | null) => r.pessoa.find(x => x.id === id)?.tipo === 'usuario';
+  for (const id of compras) {
+    const c = p.ver('compra', id); if (!c) continue;
+    const usuarios = (c.divisao?.length ?? 0) > 1 ? c.divisao!.filter(d => usuario(d.pessoa)).length : usuario(c.pagador) ? 1 : 0;
+    const escopo = m.escopo && usuarios === 1 ? m.escopo : c.escopo ?? null;
+    p.atualizar('compra', { ...c, escopo, categoria: m.categoria ?? c.categoria ?? null });
+  }
+  return p.m;
+}
+
 /** Dividir compras entre pessoas (decidido em 31/10/2026). Sem valores, partes iguais; com valores (uma compra só), os valores dados.
  *  Se Pedro e Bruna dividem, a compra é do casal. O pagador fica sendo a primeira pessoa, para quem lê só o pagador. */
 export function dividir(r: Retrato, compras: string[], d: { pessoas: string[]; valores?: Centavos[]; escopo: Escopo | null; categoria: string | null }): Mudanca {
