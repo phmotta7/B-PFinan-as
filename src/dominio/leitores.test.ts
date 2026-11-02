@@ -52,6 +52,40 @@ describe('lerNubank (§4.4.1)', () => {
   });
 });
 
+// Formato que o Nubank passou a mandar em 11/2026: vírgula decimal, ponto de milhar, valor entre aspas, "- " no crédito
+const NUBANK_VIRGULA = `date,title,amount
+2026-10-31,Assai Atacadista Lj97,"121,30"
+2026-10-28,Pagamento recebido,"- 1.600,00"
+2026-10-24,Comercio de Alimentos,"933,39"
+2026-10-21,IOF por fatura atrasada,"6,13"
+2026-10-21,Multa por fatura atrasada,"30,94"
+2026-10-19,Valor pendente do mês anterior,"1.541,31"
+2026-10-19,Google One,"4,50"
+2026-10-10,Pix no Crédito - Pedro Henrique Moreira Mota - 3/4,"167,63"
+2026-10-10,Bcm Com Serv Eletr L - Parcela 2/3,"512,39"
+`;
+
+describe('lerNubank com vírgula decimal', () => {
+  const r = lerNubank(NUBANK_VIRGULA, 'nu');
+  const por = (d: string) => r.linhas.find(l => l.descricao.startsWith(d));
+
+  it('lê "121,30" como R$ 121,30, e não milhares de reais', () => {
+    expect(por('Assai')?.valor).toBe(12130);
+    expect(por('Google One')?.valor).toBe(450);
+    expect(r.linhas.reduce((s, l) => s + l.valor, 0)).toBe(12130 + 93339 + 613 + 3094 + 450 + 16763 + 51239);
+  });
+  it('ignora o pagamento ("- 1.600,00") e o valor pendente do mês anterior', () => {
+    expect(r.ignoradas.map(l => [l.descricao, l.valor])).toEqual([['Pagamento recebido', -160000], ['Valor pendente do mês anterior', 154131]]);
+  });
+  it('IOF e multa da fatura atrasada são encargos, não IOF de compra', () => {
+    expect(por('IOF por fatura')).toMatchObject({ tipo: 'juros' });
+    expect(por('Multa por fatura')).toMatchObject({ tipo: 'juros' });
+  });
+  it('acha a parcela do Pix no Crédito ("- 3/4" no fim)', () => {
+    expect(por('Pix no Crédito')).toMatchObject({ loja: 'Pix no Crédito - Pedro Henrique Moreira Mota', parcela: { atual: 3, total: 4 }, tipo: 'parcela' });
+  });
+});
+
 const BB = `Extrato de cartão
 Data;Lançamento;Valor (R$);Detalhe
 12/10/2026;PADARIA PAO QUENTE;18,00;Compra

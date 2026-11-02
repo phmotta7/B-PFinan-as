@@ -173,12 +173,52 @@ export function excluirParcelaPrevista(r: Retrato, parcelaId: string): Mudanca {
   if (!p.todos('parcela_cartao').some(y => y.compra === x.compra)) p.apagar('compra', x.compra);
   return p.m;
 }
-/** RN-CA-14: excluir compra parcelada apaga as parcelas não confirmadas. */
+/** Tira a compra e as parcelas dela; quem apontava para ela (IOF, estorno, pendência da conferência) fica solto. */
+function tirarCompras(p: Pacote, ids: Set<string>) {
+  for (const x of p.todos('parcela_cartao').filter(x => ids.has(x.compra))) p.apagar('parcela_cartao', x.id);
+  for (const c of p.todos('compra')) {
+    if (ids.has(c.id)) continue;
+    const solta = c.compraOrigem && ids.has(c.compraOrigem);
+    const pend = c.pendencia?.tipo === 'duplicidade' ? (ids.has(c.pendencia.manual) ? null : c.pendencia)
+      : c.pendencia?.tipo === 'ambigua' ? { ...c.pendencia, candidatos: c.pendencia.candidatos.filter(id => !ids.has(id)) } : c.pendencia ?? null;
+    const pendencia = pend?.tipo === 'ambigua' && !pend.candidatos.length ? null : pend;
+    if (solta || JSON.stringify(pendencia) !== JSON.stringify(c.pendencia ?? null))
+      p.atualizar('compra', { ...c, compraOrigem: solta ? null : c.compraOrigem, pendencia });
+  }
+  for (const id of ids) p.apagar('compra', id);
+}
+/** Excluir um lançamento (RN-CA-14, revisto em 02/11/2026): a compra sai com todas as parcelas, inclusive as que vieram da fatura.
+ *  A linha do arquivo continua registrada, então reimportar o mesmo arquivo não traz a compra de volta. */
 export function excluirCompra(r: Retrato, compraId: string): Mudanca {
   const p = new Pacote(r);
-  const ps = p.todos('parcela_cartao').filter(x => x.compra === compraId);
-  ps.filter(x => x.status === 'prevista').forEach(x => p.apagar('parcela_cartao', x.id));
-  if (ps.every(x => x.status === 'prevista')) p.apagar('compra', compraId);
+  tirarCompras(p, new Set([compraId]));
+  return p.m;
+}
+
+/** Remover uma importação (arquivo errado): as linhas que vieram dele saem da fatura e o arquivo pode ser importado de novo.
+ *  Compra que nasceu do arquivo sai inteira; parcela de compra lançada à mão (ou de outra fatura) que o arquivo confirmou volta a ser prevista. */
+export function excluirImportacao(r: Retrato, importacaoId: string): Mudanca {
+  const p = new Pacote(r);
+  const imp = p.ver('importacao', importacaoId);
+  if (!imp) return p.m;
+  const linhas = new Set(p.todos('linha_importada').filter(l => l.importacao === importacaoId).map(l => l.id));
+  const tocadas = p.todos('parcela_cartao').filter(x => x.linhaImportada && linhas.has(x.linhaImportada));
+  const compras = new Set(tocadas.map(x => x.compra));
+  // Nasceu deste arquivo: veio da importação e as outras parcelas dela ainda são só previstas (nenhuma foi confirmada antes)
+  const nascidas = new Set([...compras].filter(id => p.ver('compra', id)?.origem === 'importacao'
+    && p.todos('parcela_cartao').every(x => x.compra !== id || (x.linhaImportada ? linhas.has(x.linhaImportada) : x.status === 'prevista'))));
+  for (const x of tocadas.filter(x => !nascidas.has(x.compra))) p.atualizar('parcela_cartao', { ...x, status: 'prevista', linhaImportada: null });
+  for (const id of compras) {
+    if (nascidas.has(id)) continue;
+    const c = p.ver('compra', id)!;
+    if (c.origem === 'manual' && !p.todos('parcela_cartao').some(x => x.compra === id && x.status === 'confirmada')) p.atualizar('compra', { ...c, conciliada: false });
+  }
+  tirarCompras(p, nascidas);
+  for (const id of linhas) p.apagar('linha_importada', id);
+  p.apagar('importacao', importacaoId);
+  // Sem outro arquivo nela, a fatura deixa de ser "importada" e volta a ser parcial
+  const f = p.ver('fatura', imp.fatura);
+  if (f?.status === 'importada' && !p.todos('importacao').some(i => i.fatura === f.id)) p.atualizar('fatura', { ...f, status: 'aberta' });
   return p.m;
 }
 

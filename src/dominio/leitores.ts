@@ -54,6 +54,14 @@ function paraCentavos(texto: string, decimal: ',' | '.'): Centavos {
   return Math.round(n * 100);
 }
 
+/** O Nubank já mandou o valor dos dois jeitos: "18.00" e, mais recente, "1.541,31" (e "- 1.600,00" no crédito).
+ *  O separador seguido de 1 ou 2 dígitos no fim é o decimal; o outro é de milhar. */
+function decimalDoValor(texto: string): ',' | '.' {
+  const t = texto.replace(/[^\d,.]/g, '');
+  const m = t.match(/([.,])\d{1,2}$/);
+  return m ? (m[1] as ',' | '.') : t.includes(',') && !t.includes('.') ? '.' : ',';
+}
+
 export type FormatoData = 'dd/mm/aaaa' | 'mm/dd/aaaa' | 'aaaa-mm-dd';
 function paraData(texto: string, formato: FormatoData): string {
   const p = texto.trim().split(/[/.-]/).map(Number);
@@ -76,6 +84,8 @@ function acharParcela(descricao: string): { parcela?: Parcela; loja: string } {
   return { loja: descricao };
 }
 function classificar(data: string, descricao: string, valor: Centavos): Omit<LinhaLida, 'digital'> {
+  // "IOF por fatura atrasada" é encargo do atraso, não IOF de uma compra
+  if (/^IOF\b/i.test(descricao) && /atras|rotativ|financiamento/i.test(descricao)) return { data, descricao, loja: descricao, valor, tipo: 'juros' };
   const iof = descricao.match(/^IOF\s+(?:de\s+)?["“]?(.+?)["”]?$/i);
   if (iof) return { data, descricao, loja: descricao, valor, tipo: 'iof', iofDe: iof[1].trim() };
   if (/anuidade/i.test(descricao)) return { data, descricao, loja: descricao, valor, tipo: 'anuidade' };
@@ -112,8 +122,10 @@ export function lerNubank(texto: string, cartao: string): Leitura {
   const lidas: Omit<LinhaLida, 'digital'>[] = [], ignoradas: LinhaIgnorada[] = [];
   for (const l of linhas) {
     const data = paraData(l[iData], /^\d{4}-/.test(l[iData]) ? 'aaaa-mm-dd' : 'dd/mm/aaaa');
-    const descricao = l[iTitulo], valor = paraCentavos(l[iValor], '.');
+    const descricao = l[iTitulo], valor = paraCentavos(l[iValor], decimalDoValor(l[iValor]));
     if (/^pagamento recebido/i.test(descricao)) { ignoradas.push({ data, descricao, valor, motivo: 'É o pagamento da fatura, não uma compra.' }); continue; }
+    // Fatura paga com atraso: o Nubank repete o que ficou da fatura anterior, já dividido nela
+    if (/^(valor pendente|saldo (restante|anterior|em atraso))/i.test(descricao)) { ignoradas.push({ data, descricao, valor, motivo: 'É o que ficou da fatura anterior, não uma compra nova.' }); continue; }
     lidas.push(classificar(data, descricao, valor));
   }
   return { linhas: comDigitais(cartao, lidas), ignoradas };

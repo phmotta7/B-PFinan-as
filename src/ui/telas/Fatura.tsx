@@ -1,11 +1,11 @@
 'use client';
 // Fatura (T4): linhas por dia, filtros, totais por pessoa, marcação individual e em massa (§4.6).
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { FileUp, X, Check, Copy, Pencil, Users } from 'lucide-react';
+import { FileUp, X, Check, Copy, Pencil, Users, Trash2 } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Divisao, Folha, Logo, LogoBanco, SeletorMes, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
 import { faturaDe, linhasDaFatura, situacaoDaFatura, totaisDaFatura, type LinhaFatura } from '@/dados/consultas';
-import { dividir, marcar, salvar } from '@/dados/operacoes';
+import { dividir, excluirCompra, excluirImportacao, marcar, salvar } from '@/dados/operacoes';
 import { datasDaFatura, somarMeses } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
 import type { Compra, Escopo, Pessoa, Retrato } from '@/dados/tipos';
@@ -86,6 +86,7 @@ export function Fatura() {
             <div key={dia}><h2 className="dia">{diaLongo(dia)}</h2>{ls.map(l => <Linha key={l.parcela.id} l={l} pessoas={donos(l)} marcada={!!selecao?.has(l.compra.id)} emSelecao={!!selecao} />)}</div>))}
           </div>
         ) : <div className="vazio"><IconeVazio icone={Check} /><h2>Nada neste filtro</h2><p>{filtro === 'sem' ? 'Todas as linhas já têm dono.' : 'Nenhuma linha combina com este filtro.'}</p><button className="bt secundario medio" onClick={() => setFiltro('todas')}>Ver todas</button></div>}
+        {fatura ? <Arquivos fatura={fatura.id} /> : null}
         </div></div>
       </>)}
     </main>
@@ -96,6 +97,24 @@ export function Fatura() {
     </div>
     <FolhaPessoa compras={folha} aoFechar={() => setFolha(null)} aoSalvar={() => { setFolha(null); setSelecao(null); }} />
   </>);
+}
+
+// Arquivos importados nesta fatura: o que veio errado (valores lidos errado, arquivo de outro mês) pode sair inteiro
+function Arquivos({ fatura }: { fatura: string }) {
+  const { r, executar, confirmar } = useApp();
+  const imps = r.importacao.filter(i => i.fatura === fatura);
+  if (!imps.length) return null;
+  return (
+    <div className="arquivos"><p className="secao">{imps.length > 1 ? 'Arquivos importados' : 'Arquivo importado'}</p>
+      {imps.map(i => (
+        <div key={i.id} className="arquivo"><FileUp size={18} strokeWidth={1.75} aria-hidden="true" />
+          <span className="d"><b>{i.arquivoNome}</b><small>{ddmm(i.criadoEm.slice(0, 10))} · {i.linhasNovas} {i.linhasNovas === 1 ? 'linha' : 'linhas'}</small></span>
+          <button className="bt discreto" aria-label={`Remover a importação ${i.arquivoNome}`} onClick={() => confirmar({ titulo: `Remover ${i.arquivoNome}?`,
+            texto: 'As linhas que vieram deste arquivo saem da fatura, inclusive as que já têm dono. Parcelas lançadas à mão voltam a ser previstas. Depois você pode importar o arquivo certo.',
+            rotulo: 'Remover importação', aoConfirmar: () => executar(excluirImportacao(r, i.id), `Importação de ${i.arquivoNome} removida.`) })}>Remover</button>
+        </div>))}
+    </div>
+  );
 }
 
 const Linha = memo(function Linha({ l, pessoas, marcada, emSelecao }: { l: LinhaFatura; pessoas: Pessoa[]; marcada: boolean; emSelecao: boolean }) {
@@ -134,7 +153,7 @@ const escopoPadrao = (pessoa: string): Escopo => { try { return (localStorage.ge
 export const lembrarEscopo = (pessoa: string, e: Escopo) => { try { localStorage.setItem('bp-esc-' + pessoa, e); } catch { /* sem armazenamento */ } };
 
 export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[] | null; aoFechar: () => void; aoSalvar: () => void }) {
-  const { r, executar } = useApp();
+  const { r, executar, confirmar } = useApp();
   const [escolha, setEscolha] = useState<string | null>(null);
   const [escopo, setEscopo] = useState<Escopo | null>(null);
   const [todas, setTodas] = useState(false);
@@ -164,6 +183,13 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
     if (!um || !novo || novo === um.descricao) return setNome(null);
     setNome(null);
     await executar(salvar(r, 'compra', { ...um, descricao: novo }), um.parcelas > 1 ? `Nome trocado para ${novo} nas ${um.parcelas} parcelas.` : `Nome trocado para ${novo}.`);
+  };
+  const excluir = () => {
+    if (!um) return;
+    aoSalvar(); // a folha desce antes, para o pedido de confirmação ficar por cima
+    confirmar({ titulo: `Excluir ${um.descricao}?`, rotulo: 'Excluir',
+      texto: um.parcelas > 1 ? `A compra sai do app com as ${um.parcelas} parcelas, inclusive as que já vieram na fatura.` : 'A compra sai do app e deixa de entrar nos totais e fechamentos.',
+      aoConfirmar: () => executar(excluirCompra(r, um.id), `${um.descricao} excluída.`) });
   };
   const salvarPessoa = async (pagador: string, esc: Escopo | null, categoria: string | null) => {
     const p = r.pessoa.find(x => x.id === pagador)!;
@@ -196,6 +222,7 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
           <div className="cats" ref={cats}>{categoriasVisiveis(r, escolha, um?.categoria ?? null, todas).map(c => <button key={c.id} className="chip" aria-pressed={um?.categoria === c.id} onClick={() => salvarPessoa(escolha!, e, c.id)}>{c.nome}</button>)}
             {todas ? null : <button className="chip" onClick={() => { fotoCats.current = fotografar(cats.current); setTodas(true); }}>Outras…</button>}</div></div>
       </>) : null}
+      {um && nome === null ? <button className="bt destrutivo medio" onClick={excluir}><Trash2 size={20} strokeWidth={1.75} aria-hidden="true" />Excluir lançamento</button> : null}
       </>)}
     </Folha>
   );

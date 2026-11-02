@@ -121,7 +121,7 @@ Campos: cartão, data, descrição, valor total, nº de parcelas (padrão 1), pa
 - **RN-CA-11**: valor da parcela = valor total ÷ n, arredondado para baixo no centavo; a diferença vai para a **1ª parcela** (ex.: R$ 100 em 3x → 33,34 + 33,33 + 33,33). Alternativa no formulário: informar o valor da parcela em vez do total.
 - **RN-CA-12**: parcelas geradas manualmente nascem com status **Prevista**; viram **Confirmada** ao serem conciliadas com a fatura importada.
 - **RN-CA-13**: editar pagador, escopo ou categoria de uma compra parcelada pergunta: "aplicar a todas as parcelas futuras?" (padrão: sim).
-- **RN-CA-14**: excluir uma compra parcelada exclui todas as parcelas ainda não confirmadas e pede confirmação.
+- **RN-CA-14**: excluir um lançamento (na folha "De quem é?") tira a compra com todas as parcelas, inclusive as que já vieram na fatura, e pede confirmação. A linha do arquivo continua registrada, então reimportar não traz a compra de volta. Revisto em 02/11/2026.
 
 ### 4.4 Importação de fatura
 Fluxo geral (igual para qualquer formato):
@@ -135,6 +135,8 @@ Fluxo geral (igual para qualquer formato):
 #### 4.4.1 Leitor Nubank (CSV)
 - Formato esperado: colunas `date`, `title`, `amount` (podendo ter `category` em versões antigas). Valores positivos = débitos; negativos = créditos.
 - Linhas "Pagamento recebido" são **ignoradas** (é o pagamento da fatura, não compra).
+- O valor pode vir com ponto decimal (`18.00`) ou, como o Nubank manda desde 11/2026, com vírgula decimal e ponto de milhar entre aspas (`"1.541,31"`, `"- 1.600,00"`). O app reconhece o formato linha a linha.
+- "Valor pendente do mês anterior" (fatura paga com atraso) é **ignorado**: já foi dividido na fatura anterior. "IOF por fatura atrasada" e "Multa por fatura atrasada" são encargos do titular.
 - Parcelas detectadas por padrão na descrição: `Parcela X/Y` (e variações a mapear com arquivos reais).
 - IOF identificado pela descrição ("IOF de …") e ligado à compra internacional correspondente, quando possível.
 - Valores negativos que não são pagamento → **estorno/crédito**.
@@ -157,6 +159,7 @@ Fluxo geral (igual para qualquer formato):
 #### 4.4.3 Idempotência
 - **RN-IM-01**: cada linha importada recebe uma impressão digital (cartão + data + descrição + valor + parcela + ordem de ocorrência no arquivo). Reimportar o mesmo arquivo não duplica linhas; a pré-visualização mostra "já importada".
 - **RN-IM-02**: o arquivo original é guardado (para auditoria e reprocessamento).
+- **RN-IM-03**: uma importação errada pode ser removida inteira (fim da lista da fatura, "Arquivo importado" → Remover): as compras que nasceram do arquivo saem, parcelas lançadas à mão voltam a previstas e o arquivo pode ser importado de novo.
 
 ### 4.5 Conciliação (manual × importado)
 Ordem de tentativa para cada linha importada:
