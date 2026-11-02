@@ -172,6 +172,25 @@ export function categoriasVisiveis(r: Retrato, pessoa: string | null, atual: str
   for (const id of [atual, daLoja]) { const a = ativas.find(c => c.id === id); if (a) lista = [a, ...lista.filter(x => x !== a)].slice(0, 5); }
   return lista;
 }
+/** Escolher a categoria: até 5 atalhos em botões (um toque, os mais usados e o da loja primeiro) e, em "Outras…",
+ *  a lista completa com uma categoria por linha (antes era uma parede de botões pequenos; decidido com o Pedro em 02/11/2026).
+ *  Sem pessoa (seleção em massa, participante), só a lista. */
+export function EscolherCategoria({ r, pessoa, atual, daLoja = null, rotulo, aoEscolher }: { r: Retrato; pessoa: string | null; atual: string | null; daLoja?: string | null; rotulo: string; aoEscolher: (id: string) => void }) {
+  const [todas, setTodas] = useState(false);
+  // "Outras…": a caixa cresce de onde estava, como no resto do app
+  const caixa = useRef<HTMLDivElement>(null), foto = useRef<ReturnType<typeof fotografar> | null>(null);
+  useLayoutEffect(() => { if (todas && foto.current) { crescer(caixa.current, foto.current); foto.current = null; } }, [todas]);
+  const ativas = r.categoria.filter(c => c.ativa && c.tipo === 'despesa').sort((a, b) => a.ordem - b.ordem);
+  const atalhos = pessoa ? categoriasVisiveis(r, pessoa, atual, false, daLoja) : [];
+  const resto = ativas.filter(c => !atalhos.includes(c));
+  const lista = todas || !atalhos.length;
+  return (<div className="escolher-cat" ref={caixa}>
+    {atalhos.length ? <div className="cats" role="group" aria-labelledby={rotulo}>{atalhos.map(c => <button key={c.id} className="chip" aria-pressed={atual === c.id} onClick={() => aoEscolher(c.id)}>{c.nome}</button>)}
+      {resto.length ? <button className="chip" aria-expanded={todas} onClick={() => { if (!todas) foto.current = fotografar(caixa.current); setTodas(!todas); }}>Outras…</button> : null}</div> : null}
+    {lista && resto.length ? <div className={`lista-cat${atalhos.length ? ' outras' : ''}`} role="group" aria-label={atalhos.length ? 'Outras categorias' : undefined} aria-labelledby={atalhos.length ? undefined : rotulo}>
+      {resto.map(c => <button key={c.id} aria-pressed={atual === c.id} onClick={() => aoEscolher(c.id)}><span>{c.nome}</span>{atual === c.id ? <Check size={20} strokeWidth={2} aria-hidden="true" /> : null}</button>)}</div> : null}
+  </div>);
+}
 const nomeSugerido = (r: Retrato, s: Sugestao) => juntar((s.divisao?.map(p => p.pessoa) ?? [s.pagador]).map(id => r.pessoa.find(p => p.id === id)?.nome ?? ''));
 
 // Assinaturas e contas que vieram igual nas duas faturas anteriores: aparecem antes de a fatura do banco chegar (só aviso)
@@ -199,7 +218,6 @@ function FolhaCategoria({ compras, aoFechar, aoSalvar }: { compras: string[] | n
   const [aberta, setAberta] = useState<string[] | null>(null);
   if (compras !== aberta) { setAberta(compras); if (compras) { setEscopo(null); setCat(null); } }
   const n = (compras ?? aberta)?.length ?? 0;
-  const ativas = r.categoria.filter(c => c.ativa && c.tipo === 'despesa').sort((a, b) => a.ordem - b.ordem);
   const gravar = async () => {
     const ids = compras ?? []; aoSalvar();
     const nomeCat = r.categoria.find(c => c.id === cat)?.nome;
@@ -212,7 +230,7 @@ function FolhaCategoria({ compras, aoFechar, aoSalvar }: { compras: string[] | n
         <div className="chips" role="group" aria-labelledby="r-fc-esc">{([[null, 'Manter'], ['pessoal', 'Pessoal'], ['casal', 'Casal']] as [Escopo | null, string][]).map(([v, rot]) =>
           <button key={rot} className="chip" aria-pressed={escopo === v} onClick={() => setEscopo(v)}>{rot}</button>)}</div></div>
       <div className="campo"><span className="rot" id="r-fc-cat">Categoria</span>
-        <div className="cats" role="group" aria-labelledby="r-fc-cat">{ativas.map(c => <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(cat === c.id ? null : c.id)}>{c.nome}</button>)}</div></div>
+        <EscolherCategoria r={r} pessoa={null} atual={cat} rotulo="r-fc-cat" aoEscolher={id => setCat(cat === id ? null : id)} /></div>
       <div className="acoes"><button className="bt secundario medio" onClick={aoFechar}>Cancelar</button>
         <button className="bt principal medio" disabled={!escopo && !cat} onClick={gravar}>Salvar</button></div>
     </Folha>
@@ -223,14 +241,10 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
   const { r, executar, confirmar } = useApp();
   const [escolha, setEscolha] = useState<string | null>(null);
   const [escopo, setEscopo] = useState<Escopo | null>(null);
-  const [todas, setTodas] = useState(false);
   const [aberta, setAberta] = useState<string[] | null>(null);
   const [nome, setNome] = useState<string | null>(null); // null = não está editando o nome
   const [dividindo, setDividindo] = useState(false);
-  // "Outras…": a caixa de categorias cresce de onde estava e as novas acendem
-  const cats = useRef<HTMLDivElement>(null), fotoCats = useRef<ReturnType<typeof fotografar> | null>(null);
-  useLayoutEffect(() => { if (todas && fotoCats.current) { crescer(cats.current, fotoCats.current); fotoCats.current = null; } }, [todas]);
-  if (compras !== aberta) { setAberta(compras); const c = compras?.length === 1 ? r.compra.find(x => x.id === compras[0]) : null; setEscolha(c?.pagador ?? null); setEscopo(c?.escopo ?? null); setTodas(false); setNome(null); setDividindo((c?.divisao?.length ?? 0) > 1); }
+  if (compras !== aberta) { setAberta(compras); const c = compras?.length === 1 ? r.compra.find(x => x.id === compras[0]) : null; setEscolha(c?.pagador ?? null); setEscopo(c?.escopo ?? null); setNome(null); setDividindo((c?.divisao?.length ?? 0) > 1); }
   const ultimas = useRef<string[]>([]); if (compras?.length) ultimas.current = compras;
   const cs = (compras ?? ultimas.current).map(id => r.compra.find(c => c.id === id)).filter(Boolean) as Retrato['compra'];
   const um = cs.length === 1 ? cs[0] : null;
@@ -296,9 +310,8 @@ export function FolhaPessoa({ compras, aoFechar, aoSalvar }: { compras: string[]
         <div className="campo"><span className="rot">Para quê</span>
           <div className="seg" data-v={e === 'casal' ? 1 : 0} role="group" aria-label="Para quê"><span className="pino" aria-hidden="true" />
             <button aria-pressed={e !== 'casal'} onClick={() => setEscopo('pessoal')}>Pessoal</button><button aria-pressed={e === 'casal'} onClick={() => setEscopo('casal')}>Casal</button></div></div>
-        <div className="campo"><span className="rot">Categoria · toque para salvar</span>
-          <div className="cats" ref={cats}>{categoriasVisiveis(r, escolha, um?.categoria ?? null, todas, daLoja).map(c => <button key={c.id} className="chip" aria-pressed={um?.categoria === c.id} onClick={() => salvarPessoa(escolha!, e, c.id)}>{c.nome}</button>)}
-            {todas ? null : <button className="chip" onClick={() => { fotoCats.current = fotografar(cats.current); setTodas(true); }}>Outras…</button>}</div></div>
+        <div className="campo"><span className="rot" id="r-fp-cat">Categoria · toque para salvar</span>
+          <EscolherCategoria key={`${(compras ?? []).join()}|${escolha}`} r={r} pessoa={escolha} atual={um?.categoria ?? null} daLoja={daLoja} rotulo="r-fp-cat" aoEscolher={id => salvarPessoa(escolha!, e, id)} /></div>
       </>) : null}
       {um && nome === null ? <button className="bt destrutivo medio" onClick={excluir}><Trash2 size={20} strokeWidth={1.75} aria-hidden="true" />Excluir lançamento</button> : null}
       </>)}
@@ -317,10 +330,6 @@ function Dividir({ cs, aoCancelar, aoSalvar }: { cs: Compra[]; aoCancelar: () =>
   const [valores, setValores] = useState<Record<string, string>>(() => Object.fromEntries((um?.divisao ?? []).map(p => [p.pessoa, emTexto(p.valor)])));
   const [escopo, setEscopo] = useState<Escopo>('pessoal');
   const [cat, setCat] = useState<string | null>(um?.categoria ?? null);
-  // "Outras…": todas as categorias, inclusive as criadas em Mais; a caixa cresce de onde estava, como no resto do app
-  const [todas, setTodas] = useState(false);
-  const cats = useRef<HTMLDivElement>(null), fotoCats = useRef<ReturnType<typeof fotografar> | null>(null);
-  useLayoutEffect(() => { if (todas && fotoCats.current) { crescer(cats.current, fotoCats.current); fotoCats.current = null; } }, [todas]);
   const alternar = (id: string) => { const nova = quem.includes(id) ? quem.filter(x => x !== id) : [...quem, id]; setQuem(nova); setValores(iguais(nova)); };
   const nomeDe = (id: string) => r.pessoa.find(p => p.id === id)?.nome ?? '';
   const partes = lerPartes(quem, valores);
@@ -346,9 +355,8 @@ function Dividir({ cs, aoCancelar, aoSalvar }: { cs: Compra[]; aoCancelar: () =>
           <button aria-pressed={escopo !== 'casal'} onClick={() => setEscopo('pessoal')}>Pessoal</button><button aria-pressed={escopo === 'casal'} onClick={() => setEscopo('casal')}>Casal</button></div></div>
     ) : usuarios.length >= 2 ? <p className="ajuda">{juntar(usuarios.map(nomeDe))} dividindo: a compra conta como Casal.</p> : null}
     {usuarios.length ? (
-      <div className="campo"><span className="rot">Categoria (opcional)</span>
-        <div className="cats" ref={cats}>{categoriasVisiveis(r, usuarios[0], cat, todas).map(c => <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(cat === c.id ? null : c.id)}>{c.nome}</button>)}
-          {todas ? null : <button className="chip" onClick={() => { fotoCats.current = fotografar(cats.current); setTodas(true); }}>Outras…</button>}</div></div>
+      <div className="campo"><span className="rot" id="r-dv-cat">Categoria (opcional)</span>
+        <EscolherCategoria r={r} pessoa={usuarios[0]} atual={cat} rotulo="r-dv-cat" aoEscolher={id => setCat(cat === id ? null : id)} /></div>
     ) : null}
     <div className="acoes"><button className="bt secundario medio" onClick={aoCancelar}>Voltar</button>
       <button className="bt principal medio" disabled={!pode} onClick={confirmar}>{quem.length >= 2 ? `Dividir entre ${quem.length}` : 'Escolha 2 ou mais'}</button></div>

@@ -980,3 +980,12 @@ h2.dia{margin:0}
 .massa .bt{flex:none;white-space:nowrap}
 .massa p{min-width:0}
 .massa .bt.discreto{color:inherit;padding:0 8px}
+
+/* Categorias (02/11/2026): até 5 atalhos em botões; "Outras…" abre a lista completa, uma categoria por linha */
+.escolher-cat{display:flex;flex-direction:column;gap:10px}
+.cats .chip[aria-expanded="true"]{background:var(--acao-leve);color:var(--acao-texto);box-shadow:none}
+.lista-cat{display:flex;flex-direction:column;background:var(--elevado);border-radius:var(--r-bloco);padding:0 4px}
+.lista-cat button{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:0 12px;border:0;border-top:1px solid var(--linha);background:none;font:500 16px/1.3 var(--fonte);color:var(--tinta);text-align:left;cursor:pointer;border-radius:0}
+.lista-cat button:first-child{border-top:0}
+.lista-cat button[aria-pressed="true"]{color:var(--acao-texto);font-weight:600}
+.lista-cat button:active{background:var(--acao-leve)}
