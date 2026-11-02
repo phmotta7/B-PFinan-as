@@ -13,7 +13,9 @@ export type LinhaLida = {
   iofDe?: string;
   digital: string; // impressão digital (RN-IM-01)
 };
-export type LinhaIgnorada = { data: string; descricao: string; valor: Centavos; motivo: string };
+// "conta" marca o que fica fora da divisão mas muda quanto se paga ao banco: pagamentos (negativos) e o que ficou da fatura anterior
+export type AcertoDaFatura = 'pagamento' | 'saldo_anterior';
+export type LinhaIgnorada = { data: string; descricao: string; valor: Centavos; motivo: string; conta?: AcertoDaFatura };
 export type Leitura = {
   linhas: LinhaLida[]; ignoradas: LinhaIgnorada[];
   vencimento?: string; // AAAA-MM-DD, quando o arquivo diz (fatura fechada do BB)
@@ -123,9 +125,9 @@ export function lerNubank(texto: string, cartao: string): Leitura {
   for (const l of linhas) {
     const data = paraData(l[iData], /^\d{4}-/.test(l[iData]) ? 'aaaa-mm-dd' : 'dd/mm/aaaa');
     const descricao = l[iTitulo], valor = paraCentavos(l[iValor], decimalDoValor(l[iValor]));
-    if (/^pagamento recebido/i.test(descricao)) { ignoradas.push({ data, descricao, valor, motivo: 'É o pagamento da fatura, não uma compra.' }); continue; }
+    if (/^pagamento recebido/i.test(descricao)) { ignoradas.push({ data, descricao, valor, motivo: 'É o pagamento da fatura, não uma compra.', conta: 'pagamento' }); continue; }
     // Fatura paga com atraso: o Nubank repete o que ficou da fatura anterior, já dividido nela
-    if (/^(valor pendente|saldo (restante|anterior|em atraso))/i.test(descricao)) { ignoradas.push({ data, descricao, valor, motivo: 'É o que ficou da fatura anterior, não uma compra nova.' }); continue; }
+    if (/^(valor pendente|saldo (restante|anterior|em atraso))/i.test(descricao)) { ignoradas.push({ data, descricao, valor, motivo: 'É o que ficou da fatura anterior, não uma compra nova.', conta: 'saldo_anterior' }); continue; }
     lidas.push(classificar(data, descricao, valor));
   }
   return { linhas: comDigitais(cartao, lidas), ignoradas };
@@ -153,7 +155,7 @@ export function lerCsvGenerico(texto: string, cartao: string, mapa: MapaDeColuna
     const bruto = paraCentavos(l[iValor], mapa.decimal);
     const valor = mapa.compraPositiva ? bruto : -bruto;
     const descricao = iParc >= 0 && l[iParc] ? `${l[iDesc]} ${l[iParc]}` : l[iDesc];
-    if (/^pagamento/i.test(l[iDesc])) { ignoradas.push({ data, descricao, valor, motivo: 'É o pagamento da fatura, não uma compra.' }); continue; }
+    if (/^pagamento/i.test(l[iDesc])) { ignoradas.push({ data, descricao, valor, motivo: 'É o pagamento da fatura, não uma compra.', conta: 'pagamento' }); continue; }
     lidas.push(classificar(data, descricao, valor));
   }
   return { linhas: comDigitais(cartao, lidas), ignoradas };
@@ -264,9 +266,9 @@ export function lerBbPdf(itens: ItemPdf[], cartao: string, hoje: string): Leitur
         const loja = partes.filter((i, k) => k === 0 || i.x - partes[0].x < 45).map(i => i.texto).join(' ');
         const valor = paraCentavos(valorTexto[2], ',');
         const quando = comAno(data[1], data[2], hoje);
-        const ignorar = (motivo: string) => { ignoradas.push({ data: quando, descricao, valor, motivo }); anterior = { y: l.y, idx: ignoradas.length - 1, alvo: 'ignorada' }; };
+        const ignorar = (motivo: string, conta?: AcertoDaFatura) => { ignoradas.push({ data: quando, descricao, valor, motivo, ...(conta ? { conta } : {}) }); anterior = { y: l.y, idx: ignoradas.length - 1, alvo: 'ignorada' }; };
         if (processamentoNaColuna) { ignorar('Ainda em processamento no banco. Entra quando o BB lançar na fatura.'); continue; }
-        if (/^(pgto|pagamento)\b/i.test(descricao)) { ignorar('É o pagamento da fatura, não uma compra.'); continue; }
+        if (/^(pgto|pagamento)\b/i.test(descricao)) { ignorar('É o pagamento da fatura, não uma compra.', 'pagamento'); continue; }
         if (!/^R\$$/i.test(moeda)) { ignorar(`Valor em ${moeda}. Confira o valor em reais na fatura fechada e lance à mão.`); continue; }
         const lida = classificar(quando, loja, valor);
         // Na parcelada, o BB põe a cidade logo depois do "PARC 02/04": a loja é só o que vem antes
@@ -286,7 +288,8 @@ export function lerBbPdf(itens: ItemPdf[], cartao: string, hoje: string): Leitur
     if (saque) l.iofDe = saque.loja;
   }
   // Conferência: saldo anterior + pagamentos + o que foi lido tem de dar o total impresso
-  const pagamentos = ignoradas.filter(l => /pagamento/i.test(l.motivo)).reduce((s, l) => s + l.valor, 0);
+  const pagamentos = ignoradas.filter(l => l.conta === 'pagamento').reduce((s, l) => s + l.valor, 0);
+  if (saldoAnterior) ignoradas.push({ data: fechamento ?? hoje, descricao: 'Saldo fatura anterior', valor: saldoAnterior, motivo: 'É o que ficou da fatura anterior, não uma compra nova.', conta: 'saldo_anterior' });
   const conferencia = totalImpresso === undefined ? undefined
     : { impresso: totalImpresso, lido: saldoAnterior + pagamentos + lidas.reduce((s, l) => s + l.valor, 0) };
   return { linhas: comDigitais(cartao, lidas), ignoradas, ...(vencimento ? { vencimento } : {}), ...(conferencia ? { conferencia } : {}) };

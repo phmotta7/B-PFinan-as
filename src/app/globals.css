@@ -956,3 +956,10 @@ h2.dia{margin:0}
 .arquivo .d{flex:1;min-width:0;display:flex;flex-direction:column;color:var(--tinta)}
 .arquivo .d b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .arquivo .d small{font:var(--t-apoio);color:var(--suave)}
+
+/* "A pagar ao banco" na fatura: gastos + saldo da fatura anterior − pagamentos, o número que o app do banco mostra */
+.a-pagar{background:var(--elevado);border-radius:var(--r-pequeno);padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.a-pagar p{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px;margin:0;font-weight:600}
+.a-pagar span{white-space:nowrap}
+.a-pagar b{font-size:18px;font-weight:700;white-space:nowrap}
+.a-pagar small{font:var(--t-apoio);font-size:13px;color:var(--suave)}

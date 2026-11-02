@@ -160,6 +160,7 @@ Fluxo geral (igual para qualquer formato):
 - **RN-IM-01**: cada linha importada recebe uma impressão digital (cartão + data + descrição + valor + parcela + ordem de ocorrência no arquivo). Reimportar o mesmo arquivo não duplica linhas; a pré-visualização mostra "já importada".
 - **RN-IM-02**: o arquivo original é guardado (para auditoria e reprocessamento).
 - **RN-IM-03**: uma importação errada pode ser removida inteira (fim da lista da fatura, "Arquivo importado" → Remover): as compras que nasceram do arquivo saem, parcelas lançadas à mão voltam a previstas e o arquivo pode ser importado de novo.
+- **RN-IM-04**: pagamentos e o saldo da fatura anterior que vêm no arquivo ficam fora da divisão, mas são guardados para mostrar **quanto pagar ao banco** (compras + saldo anterior − pagamentos), o mesmo número do app do banco. Aparece na fatura, em Início e em Cartões. Reimportar o arquivo não soma o pagamento de novo.
 
 ### 4.5 Conciliação (manual × importado)
 Ordem de tentativa para cada linha importada:

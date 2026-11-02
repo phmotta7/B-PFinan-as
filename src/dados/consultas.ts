@@ -35,6 +35,20 @@ export function totaisDaFatura(linhas: LinhaFatura[]) {
   return { total, porPessoa, semDono, valorSemDono, pendentes, valorPendente, quantidade: linhas.length };
 }
 
+/** Quanto pagar ao banco (RN-IM-04): os gastos da fatura + o que ficou da anterior − o que já foi pago, como o app do banco mostra.
+ *  Pagamentos e saldo vêm das linhas ignoradas do arquivo; sem eles, o "a pagar" é o próprio total. */
+export function aPagarDaFatura(r: Retrato, faturaId: string, total: number) {
+  const imps = new Set(r.importacao.filter(i => i.fatura === faturaId).map(i => i.id));
+  let pago = 0, saldoAnterior = 0;
+  for (const l of r.linha_importada) {
+    if (l.situacao !== 'ignorada' || !imps.has(l.importacao)) continue;
+    const { conta, valor } = l.dados as { conta?: string; valor?: number };
+    if (conta === 'pagamento') pago -= Number(valor) || 0;
+    else if (conta === 'saldo_anterior') saldoAnterior += Number(valor) || 0;
+  }
+  return { gastos: total, saldoAnterior, pago, aPagar: total + saldoAnterior - pago, temAcertos: pago !== 0 || saldoAnterior !== 0 };
+}
+
 /** "Fechada" quando a data de fechamento já passou (RN-CA-04; o status é informativo). */
 export function situacaoDaFatura(f: Fatura, hoje: string) {
   if (f.status === 'importada' || f.status === 'encerrada') return f.status;

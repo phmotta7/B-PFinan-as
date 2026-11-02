@@ -4,7 +4,7 @@ import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'rea
 import { FileUp, X, Check, Copy, Pencil, Users, Trash2 } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Divisao, Folha, Logo, LogoBanco, SeletorMes, Selo, Topo, ddmm, diaLongo, reais } from '../comum';
-import { faturaDe, linhasDaFatura, situacaoDaFatura, totaisDaFatura, type LinhaFatura } from '@/dados/consultas';
+import { aPagarDaFatura, faturaDe, linhasDaFatura, situacaoDaFatura, totaisDaFatura, type LinhaFatura } from '@/dados/consultas';
 import { dividir, excluirCompra, excluirImportacao, marcar, salvar } from '@/dados/operacoes';
 import { datasDaFatura, somarMeses } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
@@ -29,6 +29,8 @@ export function Fatura() {
   const d = datasDaFatura(cartao, mes);
   const sit = fatura ? situacaoDaFatura(fatura, hoje) : hoje >= d.fechamento ? 'fechada' : 'aberta';
   const t = totaisDaFatura(linhas);
+  const conta = fatura ? aPagarDaFatura(r, fatura.id, t.total) : null;
+  const banco = cartao.banco === 'nubank' ? 'Nubank' : cartao.banco === 'bb' ? 'BB' : cartao.apelido;
   const nome = (id?: string | null) => r.pessoa.find(p => p.id === id);
   // Compra dividida aparece no filtro de cada pessoa que tem parte nela
   const temParte = (l: LinhaFatura, pessoa: string) => !l.pendente && partesDaLinha(l.compra, l.valor).some(p => p.pessoa === pessoa);
@@ -66,6 +68,8 @@ export function Fatura() {
         <div className="duas">
         <div className="col-a">
         <Divisao total={t.total}
+          destaque={conta?.temAcertos ? <div className="a-pagar"><p><span>A pagar ao {banco}</span><b className="num">{reais(conta.aPagar)}</b></p>
+            <small className="num">{reais(conta.gastos)} em compras{conta.saldoAnterior ? ` + ${reais(conta.saldoAnterior)} da fatura anterior` : ''}{conta.pago ? ` − ${reais(conta.pago)} já pagos` : ''}. A divisão entre as pessoas usa só as compras.</small></div> : null}
           sub={<><LogoBanco banco={cartao.banco} /><span>{cartao.apelido} · {sit === 'aberta' ? `parcial, fecha ${ddmm(d.fechamento)}` : sit === 'importada' ? `importada, vence ${ddmm(d.vencimento)}` : `fechou ${ddmm(d.fechamento)}`}</span></>}
           fatias={[...r.pessoa.map(p => ({ pessoa: p, valor: t.porPessoa.get(p.id) ?? 0, acao: () => setFiltro(filtro === p.id ? 'todas' : p.id) })),
             ...(t.semDono ? [{ pessoa: null, valor: t.valorSemDono, rotulo: `${t.semDono} sem dono`, acao: () => setFiltro('sem') }] : []),

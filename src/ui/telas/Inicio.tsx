@@ -3,7 +3,7 @@
 import { Check, FileUp, Copy, User, MessageCircle, Plus, CreditCard } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Divisao, Esqueleto, LogoBanco, Selo, Topo, Valor, ddmm, mesLongo, reais } from '../comum';
-import { aReceberAntesDe, faturaDe, fechamentosDoMes, linhasDaFatura, parcelasNaoEncontradas, situacaoDaFatura, totaisDaFatura } from '@/dados/consultas';
+import { aPagarDaFatura, aReceberAntesDe, faturaDe, fechamentosDoMes, linhasDaFatura, parcelasNaoEncontradas, situacaoDaFatura, totaisDaFatura } from '@/dados/consultas';
 import { mesCurto } from '@/dominio/mensagem';
 import { datasDaFatura, somarMeses, type Mes } from '@/dominio/ciclo';
 import type { Retrato } from '@/dados/tipos';
@@ -67,7 +67,7 @@ export function Inicio() {
         </section>) : null}
       <section className="cartao" aria-labelledby="h-fat"><h2 id="h-fat">Faturas que vencem em {mesLongo(m).toLowerCase()}</h2>
         <div className="quem num">{r.cartao.filter(c => c.ativo).map(c => {
-          const f = faturaDe(r, c.id, m), d = datasDaFatura(c, m), v = f ? totaisDaFatura(linhasDaFatura(r, f.id)).total : 0;
+          const f = faturaDe(r, c.id, m), d = datasDaFatura(c, m), v = f ? aPagarDaFatura(r, f.id, totaisDaFatura(linhasDaFatura(r, f.id)).total).aPagar : 0;
           const s = f ? situacaoDaFatura(f, hoje) : hoje >= d.fechamento ? 'fechada' : 'aberta';
           return <button key={c.id} onClick={() => ir({ tela: 'fatura', cartao: c.id, mes: m })}><span className="banco"><LogoBanco banco={c.banco} /><span>{c.apelido}<small>{s === 'aberta' ? `Parcial · fecha ${ddmm(d.fechamento)}` : `${s[0].toUpperCase() + s.slice(1)} · vence ${ddmm(d.vencimento)}`}</small></span></span><span className="v">{reais(v)}</span></button>;
         })}</div>
@@ -98,7 +98,7 @@ export function Cartoes() {
   return (<>
     <Topo titulo="Cartões" sub={`Faturas que vencem em ${mesLongo(m).toLowerCase()}`} />
     <main className="conteudo"><div className="grade-cartoes">{r.cartao.filter(c => c.ativo).map(c => {
-      const f = faturaDe(r, c.id, m), d = datasDaFatura(c, m), v = f ? totaisDaFatura(linhasDaFatura(r, f.id)).total : 0;
+      const f = faturaDe(r, c.id, m), d = datasDaFatura(c, m), v = f ? aPagarDaFatura(r, f.id, totaisDaFatura(linhasDaFatura(r, f.id)).total).aPagar : 0;
       const prox = faturaDe(r, c.id, somarMeses(m, 1)); const vp = prox ? totaisDaFatura(linhasDaFatura(r, prox.id)).total : 0;
       const s = f ? situacaoDaFatura(f, hoje) : hoje >= d.fechamento ? 'fechada' : 'aberta';
       return (

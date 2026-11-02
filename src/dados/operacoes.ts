@@ -57,6 +57,20 @@ export function lancarCompra(r: Retrato, n: NovaCompra): Mudanca {
 }
 
 // ---------- Importar fatura (§4.4, §4.5) ----------
+/** Pagamentos e saldo anterior do arquivo, com impressão digital própria: ficam fora da divisão, mas entram no "a pagar" (RN-IM-04). */
+export function acertosDoArquivo(cartao: string, leitura: Leitura) {
+  const vistos = new Map<string, number>();
+  return leitura.ignoradas.filter(l => l.conta).map(l => {
+    const base = ['acerto', cartao, l.data, l.descricao.toLowerCase(), l.valor].join('|');
+    const n = (vistos.get(base) ?? 0) + 1; vistos.set(base, n);
+    return { ...l, digital: `${base}|${n}` };
+  });
+}
+export const acertosNovos = (r: Retrato, cartao: string, leitura: Leitura) => {
+  const ja = new Set(r.linha_importada.filter(l => l.cartao === cartao && l.situacao === 'ignorada').map(l => l.digital));
+  return acertosDoArquivo(cartao, leitura).filter(a => !ja.has(a.digital));
+};
+
 export type PedidoImportacao = { cartao: string; mes: Mes; leitura: Leitura; formato: 'nubank_csv' | 'csv_generico' | 'bb_pdf'; arquivoNome: string; hoje: string };
 export function importarFatura(r: Retrato, q: PedidoImportacao) {
   const p = new Pacote(r);
@@ -120,6 +134,8 @@ export function importarFatura(r: Retrato, q: PedidoImportacao) {
       for (const f of parcelasFuturas(l.parcela, l.valor, q.mes))
         p.inserir('parcela_cartao', { id: novoId(), compra: compra.id, fatura: p.fatura(q.cartao, f.fatura).id, numero: f.parcela.atual, valor: f.valor, status: 'prevista' });
   }
+  const acertos = acertosNovos(r, q.cartao, q.leitura);
+  for (const a of acertos) p.inserir('linha_importada', { id: novoId(), importacao: importacao.id, cartao: q.cartao, dados: { ...a }, digital: a.digital, situacao: 'ignorada' });
   // IOF e estorno: ligar à compra de origem e herdar o pagador (§4.7)
   for (const c of criadas.filter(c => c.tipo === 'iof' || c.tipo === 'estorno')) {
     const dados = novas.find(l => l.loja === c.descricao && l.data === c.data && l.tipo === c.tipo);
@@ -129,7 +145,7 @@ export function importarFatura(r: Retrato, q: PedidoImportacao) {
     if (origem) p.atualizar('compra', { ...p.ver('compra', c.id)!, compraOrigem: origem.id, pagador: origem.pagador ?? null, escopo: origem.escopo ?? null, divisao: origem.divisao ?? null });
   }
   p.atualizar('importacao', { ...importacao, total, linhasNovas: novas.length, linhasRepetidas: q.leitura.linhas.length - novas.length });
-  return { mudanca: p.m, resumo: { novas: novas.length, repetidas: q.leitura.linhas.length - novas.length, ignoradas: q.leitura.ignoradas.length, fatura: fatura.id } };
+  return { mudanca: p.m, resumo: { novas: novas.length, acertos: acertos.length, repetidas: q.leitura.linhas.length - novas.length, ignoradas: q.leitura.ignoradas.length, fatura: fatura.id } };
 }
 
 // ---------- Conferência da importação (§4.5) ----------

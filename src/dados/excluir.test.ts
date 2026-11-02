@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { lerNubank } from '@/dominio/leitores';
 import { aplicar, inverter } from './mudanca';
 import { excluirCompra, excluirImportacao, importarFatura, marcar } from './operacoes';
-import { faturaDe, linhasDaFatura } from './consultas';
+import { aPagarDaFatura, faturaDe, linhasDaFatura } from './consultas';
 import { retratoCenario, ARQUIVO_NUBANK_NOV, IDS } from './cenario';
 
 const HOJE = '2026-11-03';
@@ -51,5 +51,25 @@ describe('excluir um lançamento', () => {
     expect(r.parcela_cartao.some(x => x.compra === c.id)).toBe(false);
     r = importar(r);
     expect(r.compra.some(x => x.descricao === c.descricao && x.parcelas === c.parcelas)).toBe(false);
+  });
+});
+
+describe('a pagar ao banco (RN-IM-04)', () => {
+  const ARQ = `date,title,amount
+2026-10-31,Assai Atacadista Lj97,"121,30"
+2026-10-28,Pagamento recebido,"- 1.600,00"
+2026-10-21,Pagamento recebido,"- 1.541,32"
+2026-10-19,Valor pendente do mês anterior,"1.541,31"
+2026-10-19,Google One,"4,50"
+`;
+  it('gastos + saldo da fatura anterior − pagamentos; reimportar não soma de novo', () => {
+    let r = importar(retratoCenario(), ARQ);
+    const f = faturaDe(r, IDS.nubank, '2026-11')!;
+    const conta = (x = r) => aPagarDaFatura(x, f.id, 12580);
+    expect(conta()).toMatchObject({ saldoAnterior: 154131, pago: 314132, aPagar: 12580 + 154131 - 314132 });
+    r = importar(r, ARQ);
+    expect(conta().pago).toBe(314132);
+    r = aplicar(r, excluirImportacao(r, r.importacao[0].id));
+    expect(conta().temAcertos).toBe(false);
   });
 });

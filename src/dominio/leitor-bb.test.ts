@@ -114,7 +114,7 @@ describe('lerBbPdf, fatura fechada', () => {
     expect(r.linhas[2].descricao).toBe('ASSAI ATACADISTA LJ24 CAMPO GRANDE');
   });
   it('não lê o saldo anterior como compra e separa o pagamento', () => {
-    expect(r.ignoradas.map(l => l.descricao)).toEqual(['PGTO DEBITO CONTA 1234 000000001 100']);
+    expect(r.ignoradas.map(l => [l.descricao, l.conta])).toEqual([['PGTO DEBITO CONTA 1234 000000001 100', 'pagamento'], ['Saldo fatura anterior', 'saldo_anterior']]);
   });
   it('acha o vencimento e usa o fechamento, não o dia de hoje, para dar o ano às compras', () => {
     expect(r.vencimento).toBe('2026-11-10');

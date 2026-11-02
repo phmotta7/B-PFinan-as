@@ -9,7 +9,7 @@ import { ehPdf, lerItensDoPdf, PdfComSenha } from '@/dados/pdf';
 import type { Importacao } from '@/dados/tipos';
 import { datasDaFatura, somarMeses, sugerirFatura, type Mes } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
-import { importarFatura, salvar } from '@/dados/operacoes';
+import { acertosNovos, importarFatura, salvar } from '@/dados/operacoes';
 import { aplicar } from '@/dados/mudanca';
 
 // Mês da fatura: o vencimento escrito no arquivo, quando ele diz (fatura fechada do BB); senão, pela data das compras
@@ -89,7 +89,7 @@ export function Importar() {
         <Previa passo={passo} cartaoId={cartao.id} mudarMes={mes => setPasso({ ...passo, mes })} cancelar={() => setPasso({ n: 'escolher' })}
           gravar={async () => {
             const res = importarFatura(r, { cartao: cartao.id, mes: passo.mes, leitura: passo.leitura, formato: passo.formato, arquivoNome: passo.nome, hoje });
-            const ok = await executar(res.mudanca, `${res.resumo.novas} linhas gravadas na fatura ${mesCurto(passo.mes)}.`, { semDesfazer: true });
+            const ok = await executar(res.mudanca, res.resumo.novas ? `${res.resumo.novas} linhas gravadas na fatura ${mesCurto(passo.mes)}.` : `Pagamentos gravados na fatura ${mesCurto(passo.mes)}.`, { semDesfazer: true });
             if (!ok) return;
             const imp = aplicar(r, res.mudanca).importacao.find(i => i.fatura === res.resumo.fatura && i.arquivoNome === passo.nome);
             if (imp) repo.guardarArquivo(imp.id, passo.nome, passo.arquivo).catch(() => undefined);
@@ -114,11 +114,15 @@ function Previa({ passo, cartaoId, mudarMes, cancelar, gravar }: { passo: Extrac
   const d = datasDaFatura(cartao, mes);
   const rotulo = (t: string) => ({ compra: 'Compra', parcela: 'Parcela', iof: 'IOF', estorno: 'Estorno', anuidade: 'Anuidade', juros: 'Juros', ajuste: 'Ajuste' }[t] ?? t);
   const novas = leitura.linhas.length - repetidas;
+  const acertos = acertosNovos(r, cartaoId, leitura).length;
+  const aPagar = total + leitura.ignoradas.reduce((s, l) => s + (l.conta ? l.valor : 0), 0);
+  const nomeBanco = cartao.banco === 'nubank' ? 'Nubank' : cartao.banco === 'bb' ? 'BB' : cartao.apelido;
   return (<>
     <div className="cartao">
       <div className="banco"><LogoBanco banco={cartao.banco} /><span>{passo.nome}<small>{leitura.linhas.length + leitura.ignoradas.length} linhas lidas</small></span></div>
       <Valor c={total} tamanho="g" />
       <p className="mini">{conta('compra')} compras · {conta('parcela')} parcelas · {conta('iof')} IOF · {conta('estorno')} estornos · {conta('anuidade') + conta('juros')} encargos{leitura.ignoradas.length ? ` · ${leitura.ignoradas.length} ignorada${leitura.ignoradas.length > 1 ? 's' : ''}` : ''}</p>
+      {leitura.ignoradas.some(l => l.conta) ? <p className="mini num">A pagar ao {nomeBanco}, com o que ficou da fatura anterior e os pagamentos: <b>{reais(aPagar)}</b></p> : null}
       {/* Conferência com o total impresso no arquivo (fatura fechada do BB): pílula com palavra e ícone, nunca só cor */}
       {conf ? (conf.lido === conf.impresso
         ? <span className="pil ok" style={{ alignSelf: 'flex-start' }}><Check size={14} strokeWidth={2.25} aria-hidden="true" />Bate com o total da fatura, {reais(conf.impresso)}</span>
@@ -127,7 +131,7 @@ function Previa({ passo, cartaoId, mudarMes, cancelar, gravar }: { passo: Extrac
     <div className="campo"><span className="rot" id="r-fat">Este arquivo é de qual fatura?</span>
       <div className="chips" role="group" aria-labelledby="r-fat">{[-1, 0, 1].map(k => somarMeses(sugerida, k)).map(m => <button key={m} className="chip" aria-pressed={mes === m} onClick={() => mudarMes(m)}>{mesCurto(m)}{m === sugerida ? <span className="n"> sugerida</span> : null}</button>)}</div>
       <p className="ajuda">{leitura.vencimento ? `O arquivo diz que esta fatura vence em ${ddmm(leitura.vencimento)}.` : `Sugeri pela data das compras: fecha ${ddmm(d.fechamento)}, vence ${ddmm(d.vencimento)}.`} Todas as linhas entram nela.</p></div>
-    {repetidas ? <Aviso tipo="info"><p>{repetidas === leitura.linhas.length ? `Este arquivo já foi importado. As ${repetidas} linhas são iguais às que já estão no app, então nada novo será gravado.` : `${repetidas} linhas já estavam no app e não entram de novo.`}</p></Aviso> : null}
+    {repetidas ? <Aviso tipo="info"><p>{repetidas === leitura.linhas.length ? `Este arquivo já foi importado. As ${repetidas} linhas são iguais às que já estão no app, ${acertos ? 'então só os pagamentos e o saldo da fatura anterior serão gravados' : 'então nada novo será gravado'}.` : `${repetidas} linhas já estavam no app e não entram de novo.`}</p></Aviso> : null}
     <div className="lista">
       {leitura.ignoradas.map(l => <div key={l.descricao + l.data} className="lin" style={{ cursor: 'default' }}><span className="logo" aria-hidden="true"><Check size={16} /></span><span className="d"><b>{l.descricao}</b><small>{ddmm(l.data)} <span className="pil neutra" style={{ padding: '2px 8px' }}>Ignorada: {l.motivo.replace(/\.$/, '').toLowerCase()}</span></small></span><span className="r"><span className="v num" style={{ color: 'var(--suave)' }}>{reais(l.valor)}</span></span></div>)}
       {[...leitura.linhas].sort((a, b) => a.data.localeCompare(b.data)).map(l => (
@@ -136,7 +140,7 @@ function Previa({ passo, cartaoId, mudarMes, cancelar, gravar }: { passo: Extrac
           <span className="r"><span className="v num">{reais(l.valor)}</span></span></div>))}
     </div>
     <div className="rodape acoes"><button className="bt secundario" onClick={cancelar}>Cancelar</button>
-      <button className="bt principal" disabled={!novas || gravando} aria-busy={gravando} onClick={async () => { setGravando(true); await gravar(); setGravando(false); }}>{gravando ? <><span className="giro" aria-hidden="true" />Gravando</> : novas ? `Gravar ${novas} linhas` : 'Nada novo'}</button></div>
+      <button className="bt principal" disabled={(!novas && !acertos) || gravando} aria-busy={gravando} onClick={async () => { setGravando(true); await gravar(); setGravando(false); }}>{gravando ? <><span className="giro" aria-hidden="true" />Gravando</> : novas ? `Gravar ${novas} linhas` : acertos ? 'Gravar pagamentos' : 'Nada novo'}</button></div>
   </>);
 }
 

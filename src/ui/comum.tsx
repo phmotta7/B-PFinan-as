@@ -230,13 +230,14 @@ export function Valor({ c, tamanho = 'g', className = '' }: { c: number; tamanho
 
 // ---------- Divisão do total por pessoa: o único gráfico, com a pergunta "de quem é esse dinheiro?" ----------
 export type FatiaDivisao = { pessoa: Pessoa | null; valor: number; rotulo?: string; conferir?: boolean; acao?: () => void };
-export function Divisao({ total, fatias, sub, children }: { total: number; fatias: FatiaDivisao[]; sub?: ReactNode; children?: ReactNode }) {
+export function Divisao({ total, fatias, sub, destaque, children }: { total: number; fatias: FatiaDivisao[]; sub?: ReactNode; destaque?: ReactNode; children?: ReactNode }) {
   const visiveis = fatias.filter(f => f.valor > 0);
   const descricao = fatias.map(f => `${f.rotulo ?? f.pessoa?.nome ?? 'Sem dono'} ${reais(f.valor)}`).join(', ');
   return (
     <section className="heroi" aria-label="Total do mês e quem paga quanto">
       <Valor c={total} tamanho="gg" />
       {sub ? <p className="heroi-sub">{sub}</p> : null}
+      {destaque}
       <div className="regua" role="img" aria-label={`Divisão: ${descricao}`}>
         {visiveis.map((f, i) => {
           const cl = f.pessoa ? classePessoa(f.pessoa) : f.conferir ? 'c' : 'x';
