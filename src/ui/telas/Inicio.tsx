@@ -1,12 +1,14 @@
 'use client';
 // Início (T2, Etapa 1: cartões e pendências) e Cartões (T3).
-import { Check, FileUp, Copy, User, MessageCircle, Plus, CreditCard } from 'lucide-react';
+import { Check, FileUp, Copy, User, MessageCircle, Plus, CreditCard, ChevronRight } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Divisao, Esqueleto, LogoBanco, Selo, Topo, Valor, ddmm, mesLongo, reais } from '../comum';
 import { aPagarDaFatura, aReceberAntesDe, faturaDe, fechamentosDoMes, linhasDaFatura, parcelasNaoEncontradas, situacaoDaFatura, totaisDaFatura } from '@/dados/consultas';
 import { mesCurto } from '@/dominio/mensagem';
 import { datasDaFatura, somarMeses, type Mes } from '@/dominio/ciclo';
 import type { Retrato } from '@/dados/tipos';
+import { painelDoMes } from '@/dados/painel';
+import { Categorias, Sugestoes } from './Gastos';
 
 /** Os 4 passos do fechamento do mês (só mostram onde a família está; não mudam regra). */
 export function passosDoMes(r: Retrato, mes: Mes, titular: string, hoje: string) {
@@ -50,6 +52,7 @@ export function Inicio() {
   const t = totaisDaFatura(todas);
   const rec = aReceberAntesDe(r, m, titular);
   const pessoas = r.pessoa;
+  const painel = painelDoMes(r, m, 'todos', hoje);
   const datas = r.cartao.filter(c => c.ativo).map(c => datasDaFatura(c, m).vencimento).sort();
   const vencimentos = `${datas.length > 1 ? `Em ${datas.length} faturas, que vencem em` : 'Na fatura que vence em'} ${datas.map(ddmm).join(' e ')}`;
   return (<>
@@ -86,6 +89,14 @@ export function Inicio() {
         {atual ? <button className="bt principal cheio" onClick={() => ir(atual.rota)}><atual.icone size={20} strokeWidth={1.75} aria-hidden="true" />{atual.botao}</button>
           : <div className="aviso ok" role="status"><Check size={20} aria-hidden="true" /><p>Tudo marcado e todos avisados. Agora é registrar os Pix quando chegarem.</p></div>}
       </section>
+      {painel.categorias.some(c => c.valor > 0) ? (
+        <section className="cartao" aria-labelledby="h-onde">
+          <div className="linha-topo"><h2 id="h-onde">Para onde foi o dinheiro</h2><span className="mini num">{reais(painel.total)}</span></div>
+          <p className="mini">Gastos do Pedro, da Bruna e do Casal no cartão, nas faturas de {mesLongo(m).toLowerCase()}.</p>
+          <Categorias p={painel} limite={4} />
+          {painel.sugestoes.length ? <Sugestoes lista={painel.sugestoes.slice(0, 2)} /> : null}
+          <button className="bt secundario cheio" onClick={() => ir({ tela: 'gastos', mes: m })}>Ver por categoria e mês a mês<ChevronRight size={18} strokeWidth={1.75} aria-hidden="true" /></button>
+        </section>) : null}
       </div></div>
     </main>
   </>);

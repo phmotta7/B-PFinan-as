@@ -312,7 +312,7 @@ Há duas cores de interface, ambas azuis: o azul-marinho do botão principal e o
 **Key Characteristics:**
 - Chão de porcelana fria (`chao`), cartões brancos de raio 18 com sombra fria em duas camadas.
 - Um cofre por tela: o total do mês em 56px (64 no computador) num painel escuro de raio 24, com luz no alto.
-- A régua: o único gráfico do app, respondendo "de quem é esse dinheiro?".
+- A régua: o gráfico do cofre, respondendo "de quem é esse dinheiro?". Desde a 2A (07/11/2026) há mais dois, fora do cofre e cada um com uma pergunta: barras deitadas por categoria ("onde foi?", com um risco fino na média) e colunas mês a mês ("estamos gastando mais ou menos?", com a média tracejada). Uma série, numa cor só (a da ação); subir nunca é vermelho.
 - Uma fonte só (Geist, 400 a 700), números de largura igual, "R$" e centavos menores e mais claros.
 - Escuro profundo, sem preto puro, com camadas separadas por claridade.
 - Movimento curto e interrompível; números nunca animam.
@@ -588,7 +588,7 @@ Ao abrir, o foco vai para o primeiro controle e o fundo fica fora do alcance (`i
 - **Do** usar só os tokens de material (`vidro-fino`, `vidro-normal`, `vidro-espesso`) para vidro; nada de desfoque ou transparência soltos.
 
 ### Don't:
-- **Don't** usar vermelho de alerta para dinheiro, gráfico que não responde a uma pergunta, cara de "dashboard de IA" ou gamificação; a régua é o único gráfico.
+- **Don't** usar vermelho de alerta para dinheiro, gráfico que não responde a uma pergunta, cara de "dashboard de IA" ou gamificação; fora a régua, só as barras por categoria e as colunas mês a mês da tela "Para onde vai o dinheiro".
 - **Don't** usar as cores do cofre fora do painel do total, nem azul como enfeite ou fundo de seção.
 - **Don't** usar cor de pessoa fora do selo e da régua, nem dar cor de pessoa ao "sem dono".
 - **Don't** pintar dívida, "falta pagar" ou "sem dono" de vermelho; isso é âmbar.

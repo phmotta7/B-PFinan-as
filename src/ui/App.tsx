@@ -13,11 +13,12 @@ import { Importar } from './telas/Importar';
 import { Conciliacao } from './telas/Conciliacao';
 import { Lancar } from './telas/Lancar';
 import { Fechamentos } from './telas/Fechamentos';
+import { Gastos } from './telas/Gastos';
 import { Mais, Dividas, Pessoas, CfgCartoes, Categorias, Emails, Exportar } from './telas/Mais';
 
 const TELAS: Record<NomeTela, () => React.ReactElement | null> = {
   inicio: Inicio, cartoes: Cartoes, fatura: Fatura, importar: Importar, conciliacao: Conciliacao, lancar: Lancar, fechamentos: Fechamentos,
-  mais: Mais, dividas: Dividas, pessoas: Pessoas, 'cfg-cartoes': CfgCartoes, categorias: Categorias, emails: Emails, exportar: Exportar,
+  mais: Mais, dividas: Dividas, pessoas: Pessoas, 'cfg-cartoes': CfgCartoes, categorias: Categorias, emails: Emails, exportar: Exportar, gastos: Gastos,
 };
 const ABAS = [['inicio', 'Início', House], ['cartoes', 'Cartões', CreditCard], ['lancar', 'Lançar', Plus], ['fechamentos', 'Fechamentos', ReceiptText], ['mais', 'Mais', Ellipsis]] as const;
 const SEM_BARRA: NomeTela[] = ['importar', 'lancar'];
@@ -45,7 +46,7 @@ function Casca() {
   // Logo depois de entrar, o painel do login encolhe até o cofre desta primeira tela (antes de desenhar, para não piscar)
   const tela = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => { if (tela.current) fazerPassagem(tela.current); }, []);
-  const aba = rota.tela === 'lancar' ? 'lancar' : RAIZ.includes(rota.tela) ? rota.tela : rota.tela === 'fatura' ? 'cartoes' : DE_MAIS.includes(rota.tela) ? 'mais' : 'inicio';
+  const aba = rota.tela === 'lancar' ? 'lancar' : RAIZ.includes(rota.tela) ? rota.tela : rota.tela === 'fatura' ? 'cartoes' : rota.tela === 'gastos' ? 'inicio' : DE_MAIS.includes(rota.tela) ? 'mais' : 'inicio';
   return (
     <div className="tela" ref={tela}>
       <nav className="lateral" aria-label="Navegação principal">

@@ -16,3 +16,5 @@ Baixados em 28/10/2026 do Wikimedia Commons, com autorização do Pedro (decisã
 | shopee.svg | https://commons.wikimedia.org/wiki/File:Shopee.svg |
 
 Pão de Açúcar não tem logo em SVG no Commons; aparece com a inicial até alguém escolher um logo no app.
+
+Recortes de Drogasil, Renner, Shopee e Centauro refeitos em 07/11/2026 com as medidas reais do símbolo (estavam cortados ou fora do centro). Depois de rodar `node gerar-selos.js`, copie os .svg para `public/logos/`.

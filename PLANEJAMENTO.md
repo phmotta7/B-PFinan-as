@@ -348,8 +348,10 @@ Lista de fechamentos em aberto de Pedro, Eliete e Lucimar, com valor e dias em a
 ### 7.1 Contas cadastradas (apenas como origem de importação)
 | Pessoa | Bancos |
 |---|---|
-| Pedro | Santander, Inter, Nubank |
+| Pedro | Nubank, Inter |
 | Bruna | Nubank, Banco do Brasil |
+
+*Atualizado em 06/11/2026: o Pedro não usa mais Santander. Formato preferido: OFX (RN-OF-01); CSV e PDF só se o banco não oferecer OFX.*
 
 Sem controle de saldo (Q19). A conta serve para: identificar origem, guardar mapeamento e evitar reimportação.
 
@@ -542,6 +544,7 @@ Decisões técnicas:
 
 - Login exclusivamente via Google; lista de e-mails autorizados (Pedro e Bruna).
 - **RLS** em todas as tabelas: cada registro só é visível/alterável por usuários membros da mesma casa.
+- **Extrato é de quem importou (D15, 06/11/2026)**: as contas, os extratos e os lançamentos que vêm deles são vistos só pelo dono da conta; o outro vê apenas o que foi marcado como **Casal**. A regra vale no banco (RLS por pessoa), não só escondida na tela.
 - Arquivos de fatura/extrato no Storage em bucket privado, com a mesma regra de acesso.
 - A mensagem do WhatsApp é montada no aparelho e aberta pelo link `wa.me`; nenhum dado é enviado a serviços de terceiros além do próprio WhatsApp, por ação do usuário.
 - Nenhum dado pessoal em parâmetros de URL do app (exceto o texto da mensagem no link do WhatsApp, inevitável e iniciado pelo usuário).
@@ -570,6 +573,7 @@ Critérios de aceite:
 - Pagamento parcial deixa saldo em aberto visível.
 
 ### Etapa 2 — Carteiras
+*Decidido em 06/11/2026 (D14): a gestão financeira entra inteira, mas em entregas separadas, cada uma publicada antes de começar a próxima: **2A** painel de gastos com o cartão, **2B** contas e extratos, **2C** receitas, contas fixas e sobra do mês; depois a Etapa 3. Ver §19.2.*
 - Carteiras Pedro, Bruna, Casal (gastos e fluxo de caixa).
 - Despesas, receitas, transferências; Pix entre os dois com classificação.
 - Recorrentes e projeção do mês.
@@ -634,7 +638,7 @@ Os arquivos reais de fatura/extrato (com valores e nomes alterados) virarão **c
 | V5 | ~~Crédito Shopee~~ | — | **Resolvido (28/10/2026)**: cadastrado como empréstimo; o responsável é escolhido no cadastro inicial. |
 | V6 | **Quantidade e dados dos empréstimos** (2 ou 3) | Dívidas e fechamento | Cadastro na configuração inicial. |
 | V7 | Chave Pix da Bruna e telefones de Eliete e Lucimar | Mensagem | Cadastro na configuração inicial. |
-| V8 | Extratos OFX dos 4 bancos (Santander, Inter, Nubank, BB) | Etapa 2 | Enviar exemplos antes da etapa 2. |
+| V8 | Extratos OFX dos 4 bancos (Nubank do Pedro, Inter, Nubank da Bruna, BB) | Entrega 2B | Enviar um extrato real de cada (valores podem ser alterados) antes da entrega 2B. |
 | R1 | Pausa do Supabase gratuito após 7 dias sem uso | App indisponível até reativar | Uso semanal natural; reativação em um clique. |
 | R2 | Mudança de layout de arquivo pelo banco | Importação quebra | Pré-visualização impede gravação errada; testes com arquivos reais; CSV genérico como fallback. |
 | R3 | Esforço de marcação manual todo mês (sem regra automática) | Adoção | Seleção em massa, lançamento manual prévio e parcelas já atribuídas reduzem a marcação a poucas linhas. |
@@ -655,3 +659,27 @@ Os arquivos reais de fatura/extrato (com valores e nomes alterados) virarão **c
 | D11 | **Cadastro de dívidas na Etapa 1** (28/10/2026): fica em Mais → Dívidas, ao lado de Configurações; na Etapa 3 a mesma tela ganha as visões completas. | T12, T15 |
 | D12 | **Ordem na mensagem do WhatsApp** (28/10/2026): dentro de cada cartão, por data da compra original (parcelas antigas primeiro, pela data em que a compra foi feita). O exemplo do §5.3 foi corrigido para seguir RN-WA-04. | RN-WA-04, §5.3 |
 | D13 | **Parcelas no Lançar** (29/10/2026): o formulário pergunta "À vista" ou "Parcelado", no mesmo formato da escolha Pessoal/Casal; em Parcelado, escolhe-se de 2x a 12x (padrão 2x). O limite vale só para o lançamento manual; parcelas lidas da fatura importada continuam com o número que vier no arquivo. | §4.3, T7 |
+
+### 19.2 Gestão financeira completa (entrevista de 06/11/2026)
+O Pedro pediu para trazer para o app toda a gestão financeira: ver onde estão gastando mais, onde estão economizando, gráficos e sugestões. Isso já estava previsto nas Etapas 2 e 3; a entrevista decidiu a ordem e o jeito.
+
+| # | Decisão | Afeta |
+|---|---|---|
+| D14 | **Tudo, em entregas separadas**, uma de cada vez, cada uma publicada antes de começar a próxima: **2A** "Para onde vai o dinheiro" só com o que o app já tem do cartão (gráficos por categoria e por mês, comparação com a média, sugestões); **2B** contas e importação de extrato (classificar cada linha: gasto, receita, Pix entre os dois, pagamento de fatura, transferência; categoria); **2C** receitas, contas fixas (recorrentes) e sobra do mês; **Etapa 3** orçamento, metas/reserva e visões de dívidas. | §16, §6, §7, §9, §10 |
+| D15 | **Visão por carteira, com privacidade de extrato**: os gráficos mostram Pedro, Bruna e Casal (Eliete e Lucimar só no fechamento). Cada um importa o próprio extrato; **um não vê o extrato do outro**, os dois veem o que é Casal. | §6.1, §15 |
+| D16 | **"Economizando" nos dois sentidos**: gastar menos que a média (já na 2A) e sobrar dinheiro no mês (2C, com receitas). | §6.7, §9 |
+| D17 | **Sem histórico anterior a nov/26** (mantido): os gráficos começam em novembro e as comparações aparecem a partir do 2º mês. | §1.3 |
+| D18 | **Sugestões por regras simples e claras**, feitas no próprio app (ex.: "Alimentação fora subiu R$ 180 em relação à média", "3 assinaturas somam R$ 90 por mês", "Dezembro já tem R$ 980 em parcelas"). Sem inteligência artificial nem envio de dados para serviços de fora. | §15 |
+| D19 | **Sem saldo de conta** (mantido, Q19): o app mostra entradas, saídas e sobra do mês, não "quanto tem na conta hoje". | §7.1 |
+| D20 | **Início vira o painel**: sobra do mês, para onde foi o dinheiro e avisos; os passos da fatura (importar, marcar, fechar) continuam lá como avisos. | T2, §12.1 |
+| D21 | **Classificação do extrato igual à do cartão**: nada é classificado sozinho; o app sugere pelo histórico e a pessoa aceita, uma a uma ou todas de uma vez (RN-OF-05, RN-MA-01 a 03). | §7.3 |
+
+| D22 | **Barra de baixo mantida** (07/11/2026): Início · Cartões · Lançar · Fechamentos · Mais. Sem aba Carteiras por enquanto; o painel fica no Início e na tela "Para onde vai o dinheiro" (também em Mais). Rever na 2B/2C. Substitui a troca prevista na D10. | §12.1, D10 |
+| D23 | **Gastos do cartão visíveis para os dois** (07/11/2026): no painel, Pedro e Bruna veem Pedro, Bruna e Casal do cartão. Só o **extrato pessoal** (2B) fica para quem importou (D15). | §15 |
+| D24 | **Regras do painel 2A** (07/11/2026): conta as faturas que **vencem** no mês; só as partes de Pedro, Bruna e Casal (compra dividida com Eliete ou Lucimar entra só a parte do Pedro/Bruna); compra Casal vai para o Casal; linha sem dono fica fora, com aviso; encargos sem categoria contam em "Dívidas e encargos". Média = até 3 meses anteriores com gasto, a partir de nov/26. Sugestão de "subiu"/"caiu" só com diferença de pelo menos R$ 50 e 20% da média, e só depois que todas as faturas do mês fecharam (antes disso o total é parcial). Outras sugestões: assinaturas (2 ou mais), encargos do mês, parcelas já no mês seguinte. | §16 |
+
+**A decidir antes de cada entrega** (perguntas que ficaram abertas em 06/11/2026):
+- ~~Antes da 2A: a barra de baixo~~ — decidido em 07/11/2026 (D22).
+- ~~Antes da 2A: quem vê os gastos pessoais do cartão no painel~~ — decidido em 07/11/2026 (D23).
+- **Antes da 2B**: extratos reais de exemplo das 4 contas (V8); como o Pix do Pedro para a Bruna aparece para os dois sem um ver o extrato do outro (o fechamento fica "Pago", mas a linha do extrato continua privada).
+- **Antes da 2B**: tabelas novas no Supabase (contas, lançamentos, regras de acesso por pessoa); mostrar ao Pedro e pedir confirmação antes de criar.

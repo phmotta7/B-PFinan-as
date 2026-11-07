@@ -667,7 +667,7 @@ input[type="file"].escondido{position:absolute;width:1px;height:1px;opacity:0;po
 .entrada.valor input::placeholder{color:var(--apagado)}
 
 /* Lojas sem logo: placa quadrada com duas letras (nunca um círculo, que lembra o selo de pessoa) */
-.logo.mono{border-radius:10px;font:600 12px/1 var(--fonte);letter-spacing:.02em;background:var(--chao);color:var(--suave)}
+.logo.mono{border-radius:50%;font:600 12px/1 var(--fonte);letter-spacing:.02em;background:var(--chao);color:var(--suave)}
 /* "Para conferir" tem selo próprio e uma fatia visível na régua */
 .selo.c{color:var(--acao-texto)}
 .selo.c b{background:var(--acao-leve);color:var(--acao-texto);border:0;box-shadow:none}
@@ -989,3 +989,47 @@ h2.dia{margin:0}
 .lista-cat button:first-child{border-top:0}
 .lista-cat button[aria-pressed="true"]{color:var(--acao-texto);font-weight:600}
 .lista-cat button:active{background:var(--acao-leve)}
+
+/* ---------- Para onde vai o dinheiro (2A): barras por categoria e mês a mês ----------
+   Uma série só, numa cor só (a da ação); o risco fino é a média. Sem vermelho: subir não é bronca. */
+.cats{list-style:none;display:flex;flex-direction:column;gap:12px;margin:0;padding:0}
+.cats li{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;row-gap:6px;align-items:baseline}
+.cats-nome{font:var(--t-forte);font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cats-nome small{display:block;font:var(--t-mini);color:var(--suave);margin-top:2px}
+.cats-v{font:600 15px/1.2 var(--fonte);white-space:nowrap}
+.cats-barra{grid-column:1/-1;position:relative;height:8px;border-radius:4px;background:var(--chao);box-shadow:inset 0 0 0 1px var(--linha)}
+.cats-barra i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:var(--acao)}
+.cats .sem .cats-barra i{background:var(--sem-dono)}
+.cats .sem .cats-nome{color:var(--suave)}
+.cats-barra b,.cats-leg b{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;border-radius:1px;background:var(--tinta)}
+.cats-leg{display:inline-flex;align-items:center;gap:6px}
+.cats-leg b{position:relative;display:inline-block;top:0;bottom:0;height:14px;margin:0}
+
+.meses{margin:0;display:flex;flex-direction:column;gap:8px}
+.meses-area{position:relative;display:flex;align-items:flex-end;gap:8px;height:160px;padding-top:22px;border-bottom:1px solid var(--linha-forte)}
+.meses-col{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}
+.meses-col i{display:block;width:min(36px,100%);min-height:2px;border-radius:4px 4px 0 0;background:var(--linha-forte)}
+.meses-col.atual i{background:var(--acao)}
+.meses-col small{font:var(--t-mini);color:var(--tinta);white-space:nowrap}
+.meses-media{position:absolute;left:0;right:0;height:0;border-top:1.5px dashed var(--suave);pointer-events:none}
+.meses-media small{position:absolute;right:0;bottom:2px;font:var(--t-mini);color:var(--suave);background:var(--cartao);padding:0 0 0 4px}
+.meses-rotulos{display:flex;gap:8px}
+.meses-rotulos span{flex:1;min-width:0;text-align:center;font:var(--t-mini);color:var(--suave);text-transform:capitalize}
+.meses-rotulos .atual{color:var(--tinta);font-weight:600}
+
+.sugestoes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.sugestoes li{display:flex;gap:10px;align-items:flex-start;font:var(--t-apoio);color:var(--tinta)}
+.sugestoes .ic{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--chao);color:var(--suave)}
+.sugestoes .menos .ic{background:var(--ok-leve);color:var(--ok)}
+.sugestoes .mais .ic{background:var(--acao-leve);color:var(--acao-texto)}
+.sugestoes li > span:last-child{padding-top:4px}
+/* Categoria tocável: abre a folha com as compras */
+.cats-item{display:contents}
+button.cats-item{all:unset;box-sizing:border-box;grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;row-gap:6px;align-items:baseline;cursor:pointer;margin:-6px -8px;padding:6px 8px;border-radius:var(--r-bloco);transition:background var(--d-cor) var(--ease-saida)}
+button.cats-item:hover{background:var(--chao)}
+button.cats-item:active{background:var(--chao);transform:scale(.99)}
+button.cats-item:focus-visible{outline:2.5px solid var(--foco);outline-offset:2px}
+.compras-cat{display:flex;flex-direction:column;margin:0 -20px}
+.compras-cat .lin{padding-left:20px;padding-right:20px}
+.compras-cat .lin + .lin::before{left:72px}
+.compras-cat-dica{display:flex;align-items:center;gap:4px}

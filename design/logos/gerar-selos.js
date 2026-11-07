@@ -3,14 +3,14 @@ const fs=require('fs'),path=require('path');
 const cfg={
   nubank:{bg:'#ffffff',box:[0,0,263.84,145.57],pad:.2},
   bb:{bg:'#fde100',box:[11.56,5.25,31.52,31.52],pad:.23}, // só o símbolo, centrado (o recorte antigo pegava o começo do nome e deixava o símbolo à direita)
-  drogasil:{bg:'#ffffff',box:[0,5,70,76],pad:.2},
+  drogasil:{bg:'#ffffff',box:[0,0.4,80.5,80.2],pad:.2}, // símbolo inteiro, medido (07/11/2026): o recorte antigo cortava em cima e à esquerda
   magalu:{bg:'#ffffff',box:[0,0,490.35,139.88],pad:.12},
   uber:{bg:'#000000',box:[0,0,926.9,321.78],pad:.18,fill:'#ffffff'},
-  centauro:{bg:'#ffffff',box:[0,2,56,41],pad:.18},
+  centauro:{bg:'#ffffff',box:[0.4,0,55.7,42.8],pad:.18},
   ifood:{bg:'#ea1d2c',box:[0,0,1004,530.58],pad:.16,fill:'#ffffff'},
   amazon:{bg:'#ffffff',box:[0,0,603,182],pad:.12},
-  renner:{bg:'#ffffff',box:[0,4,78,88],pad:.18},
-  shopee:{bg:'#ffffff',box:[0,0,300,320],pad:.18},
+  renner:{bg:'#ffffff',box:[0,0.2,91.5,91.6],pad:.14}, // o disco vermelho inteiro (antes cortava em cima e dos lados)
+  shopee:{bg:'#ffffff',box:[5.2,11,265.5,300],pad:.2}, // só a sacola, centrada
 };
 const out={};
 for(const [n,c] of Object.entries(cfg)){
