@@ -360,6 +360,11 @@ Sem controle de saldo (Q19). A conta serve para: identificar origem, guardar map
 - **RN-OF-02**: idempotência por identificador da transação do OFX (FITID) + conta; reimportar não duplica.
 - **RN-OF-03**: mesma pré-visualização e mesma regra de duplicidade dos cartões: lançamento manual idêntico → aviso → o extrato é o veredito, copiando categoria, escopo e observação do manual.
 
+#### 7.2.1 Formatos reais (07/11/2026, extratos do Pedro: Nubank out e nov, Inter 30 dias)
+- Os dois são OFX 1.02 "SGML". Nubank: data com hora e fuso, FITID único por transação, tudo no MEMO (a contraparte do Pix vem no texto: "Transferência recebida pelo Pix - NOME - ..."). Inter: data sem hora, saídas com tipo PAYMENT, contraparte no NAME (na compra no débito, a cidade vem colada no nome da loja); declara CHARSET 1252 mas manda UTF-8.
+- O leitor (`src/dominio/ofx.ts`) tenta UTF-8 e cai para Windows-1252; aceita ponto ou vírgula decimal e tags fechadas ou não. OFX de cartão de crédito é recusado com aviso (fatura vai por Cartões).
+- Cópias fictícias para teste em `design/exemplos/*_ficticio.ofx`, geradas por `scripts/anonimizar-ofx.mjs` (nomes, CPF, contas e valores trocados; o mesmo fator nos três arquivos, para a transferência entre contas do Pedro continuar com o mesmo valor). Os arquivos reais não entram no projeto.
+
 ### 7.3 Classificação automática de linhas do extrato
 | Padrão detectado | Classificação sugerida |
 |---|---|
@@ -677,6 +682,9 @@ O Pedro pediu para trazer para o app toda a gestão financeira: ver onde estão 
 | D22 | **Barra de baixo mantida** (07/11/2026): Início · Cartões · Lançar · Fechamentos · Mais. Sem aba Carteiras por enquanto; o painel fica no Início e na tela "Para onde vai o dinheiro" (também em Mais). Rever na 2B/2C. Substitui a troca prevista na D10. | §12.1, D10 |
 | D23 | **Gastos do cartão visíveis para os dois** (07/11/2026): no painel, Pedro e Bruna veem Pedro, Bruna e Casal do cartão. Só o **extrato pessoal** (2B) fica para quem importou (D15). | §15 |
 | D24 | **Regras do painel 2A** (07/11/2026): conta as faturas que **vencem** no mês; só as partes de Pedro, Bruna e Casal (compra dividida com Eliete ou Lucimar entra só a parte do Pedro/Bruna); compra Casal vai para o Casal; linha sem dono fica fora, com aviso; encargos sem categoria contam em "Dívidas e encargos". Média = até 3 meses anteriores com gasto, a partir de nov/26. Sugestão de "subiu"/"caiu" só com diferença de pelo menos R$ 50 e 20% da média, e só depois que todas as faturas do mês fecharam (antes disso o total é parcial). Outras sugestões: assinaturas (2 ou mais), encargos do mês, parcelas já no mês seguinte. | §16 |
+| D25 | **Tabelas da 2B aprovadas** (07/11/2026): `conta` (dono, banco, apelido, número) e `lancamento` (data, valor com sinal, texto do banco, contraparte, tipo, Pessoal/Casal, categoria, FITID, par da transferência, pagamento de fechamento). RLS por pessoa: cada um vê e mexe só no que é seu; o que é Casal o outro só vê. O arquivo do extrato não é guardado. | §13, §15 |
+| D26 | **Regras do extrato do Pedro** (07/11/2026): Santander encerrado (não entra); Pix de empresas no Inter é renda extra → receita em "Outras receitas"; Pix da Eliete para o Pedro é presente (receita), porque o fechamento ela paga direto à Bruna; Pix para o Mercado Pago é parcela de dívida (gasto em "Dívidas e encargos", até as dívidas serem cadastradas); pagamento da fatura do cartão Inter não é gasto e o cartão não será cadastrado. | §7.3 |
+| D27 | **Tipos de lançamento do extrato**: Gasto, Receita, Entre minhas contas, Transferência entre os dois, Pagamento do fechamento, Pagamento de cartão, Investimento. Só Gasto e Receita entram nas contas do mês; o gasto do extrato entra no painel pelo mês da data. Transferência entre contas próprias liga as duas pontas (mesmo valor, até 1 dia); Pix que paga o fechamento cria o pagamento e, se o outro importar o mesmo Pix, só liga ao que já existe (RN-CT-03). | §6.2, §6.5 |
 
 **A decidir antes de cada entrega** (perguntas que ficaram abertas em 06/11/2026):
 - ~~Antes da 2A: a barra de baixo~~ — decidido em 07/11/2026 (D22).

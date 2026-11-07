@@ -1,6 +1,7 @@
 // Painel "Para onde vai o dinheiro" (entrega 2A, D14–D18): só com o que o app já sabe do cartão.
 // Conta os gastos do Pedro, da Bruna e do Casal nas faturas que vencem no mês (Eliete e Lucimar ficam só no fechamento, D15).
-// Os dois veem tudo o que é do cartão (decidido com o Pedro em 07/11/2026); o extrato pessoal, na 2B, será só de quem importou.
+// Os dois veem tudo o que é do cartão (decidido com o Pedro em 07/11/2026). Desde a 2B entram também os gastos do extrato
+// (lançamentos do tipo "Gasto", pelo mês da data); cada um só recebe do banco os próprios e os de Casal (D15), então o painel mostra só esses.
 import { datasDaFatura, somarMeses, type Mes } from '@/dominio/ciclo';
 import { partesDaLinha } from '@/dominio/divisao';
 import { faturaDe, linhasDaFatura, type LinhaFatura } from './consultas';
@@ -17,7 +18,13 @@ export type Carteira = 'todos' | 'casal' | string;
 export const SEM_CATEGORIA = 'sem-categoria';
 const ENCARGOS = new Set(['iof', 'anuidade', 'juros', 'multa']);
 
-export type Pedaco = { linha: LinhaFatura; carteira: string; categoria: string; valor: number };
+/** Um pedaço de gasto: de uma linha da fatura (por pessoa, se dividida) ou de um gasto do extrato. */
+export type Pedaco = {
+  chave: string; data: string; descricao: string; carteira: string; categoria: string; valor: number;
+  origem: 'cartao' | 'conta'; onde: string; // id do cartão ou da conta
+  valorInteiro: number; parcela?: { numero: number; total: number }; prevista: boolean; tipoCompra?: string;
+  linha?: LinhaFatura;
+};
 
 /** Cada linha das faturas do mês vira um pedaço por pessoa (compra dividida reparte), só das carteiras do Pedro, da Bruna e do Casal. */
 export function pedacosDoMes(r: Retrato, mes: Mes) {
@@ -33,10 +40,17 @@ export function pedacosDoMes(r: Retrato, mes: Mes) {
       const categoria = l.compra.categoria || (ENCARGOS.has(l.compra.tipo) && encargos) || SEM_CATEGORIA;
       for (const p of partesDaLinha(l.compra, l.valor)) {
         if (!usuarios.has(p.pessoa)) continue;
-        pedacos.push({ linha: l, carteira: l.compra.escopo === 'casal' ? 'casal' : p.pessoa, categoria, valor: p.valor });
+        pedacos.push({ chave: l.parcela.id, data: l.data, descricao: l.compra.descricao, carteira: l.compra.escopo === 'casal' ? 'casal' : p.pessoa, categoria, valor: p.valor,
+          origem: 'cartao', onde: l.compra.cartao, valorInteiro: l.valor, parcela: l.total > 1 ? { numero: l.numero, total: l.total } : undefined, prevista: l.prevista, tipoCompra: l.compra.tipo, linha: l });
         if (l.prevista) previstas += p.valor;
       }
     }
+  }
+  // Gastos do extrato (2B): pelo mês da data em que o dinheiro saiu
+  for (const x of r.lancamento ?? []) {
+    if (x.tipo !== 'despesa' || x.data.slice(0, 7) !== mes || !usuarios.has(x.pessoa)) continue;
+    pedacos.push({ chave: x.id, data: x.data, descricao: x.contraparte && !/compra no d[ée]bito/i.test(x.descricao) ? x.contraparte : x.descricao.replace(/^Compra no d[ée]bito(?::| -)\s*"?(No estabelecimento\s+)?/i, '').replace(/"$/, ''),
+      carteira: x.escopo === 'casal' ? 'casal' : x.pessoa, categoria: x.categoria || SEM_CATEGORIA, valor: -x.valor, origem: 'conta', onde: x.conta ?? '', valorInteiro: -x.valor, prevista: false });
   }
   return { pedacos, semDono, valorSemDono, previstas };
 }
@@ -78,7 +92,7 @@ export function painelDoMes(r: Retrato, mes: Mes, carteira: Carteira = 'todos', 
   const categorias: CategoriaNoMes[] = [...ids].map(id => ({
     id, nome: nome(id), valor: agora.get(id) ?? 0,
     media: anteriores.length ? Math.round(historico.reduce((s, h) => s + (h.get(id) ?? 0), 0) / anteriores.length) : null,
-    compras: new Set(meus.filter(p => p.categoria === id).map(p => p.linha.parcela.id)).size,
+    compras: new Set(meus.filter(p => p.categoria === id).map(p => p.chave)).size,
   })).filter(c => c.valor > 0 || (c.media ?? 0) > 0)
     // "Sem categoria" vai para o fim: não diz para onde foi o dinheiro
     .sort((a, b) => Number(a.id === SEM_CATEGORIA) - Number(b.id === SEM_CATEGORIA) || b.valor - a.valor || a.nome.localeCompare(b.nome));
@@ -90,11 +104,11 @@ export function painelDoMes(r: Retrato, mes: Mes, carteira: Carteira = 'todos', 
 
   // O que já está guardado para o mês seguinte em parcelas (compras parceladas que continuam)
   const seguinte = somarMeses(mes, 1);
-  const parcelasSeguinte = somar(pedacosDoMes(r, seguinte).pedacos.filter(daCarteira(carteira)).filter(p => p.linha.total > 1));
+  const parcelasSeguinte = somar(pedacosDoMes(r, seguinte).pedacos.filter(daCarteira(carteira)).filter(p => (p.parcela?.total ?? 1) > 1));
 
   return {
     mes, carteira, aberto, total, media, pedacos: meus, mesesNaMedia: anteriores.length, categorias, meses,
-    semDono: mesAtual.semDono, valorSemDono: mesAtual.valorSemDono, previstas: somar(meus.filter(p => p.linha.prevista)),
+    semDono: mesAtual.semDono, valorSemDono: mesAtual.valorSemDono, previstas: somar(meus.filter(p => p.prevista)),
     seguinte, parcelasSeguinte,
     sugestoes: sugestoes(r, { total, media: aberto ? null : media, categorias: aberto ? categorias.map(c => ({ ...c, media: null })) : categorias, meus, seguinte, parcelasSeguinte, mesesNaMedia: anteriores.length }),
   };
@@ -103,7 +117,7 @@ export type Painel = ReturnType<typeof painelDoMes>;
 
 /** As compras de uma categoria no mês (o pedaço de cada pessoa da carteira), na ordem da fatura. */
 export const comprasDaCategoria = (p: Painel, categoria: string) =>
-  p.pedacos.filter(x => x.categoria === categoria).sort((a, b) => a.linha.data.localeCompare(b.linha.data) || a.linha.compra.descricao.localeCompare(b.linha.compra.descricao));
+  p.pedacos.filter(x => x.categoria === categoria).sort((a, b) => a.data.localeCompare(b.data) || a.descricao.localeCompare(b.descricao));
 
 /** Uma diferença só vira sugestão quando é de pelo menos R$ 50 e 20% da média (para não falar de trocados). */
 const relevante = (agora: number, media: number) => Math.abs(agora - media) >= 5000 && Math.abs(agora - media) >= media * 0.2;
@@ -129,12 +143,12 @@ function sugestoes(r: Retrato, x: { total: number; media: number | null; categor
 
   const assinaturas = r.categoria.find(c => c.nome === 'Assinaturas')?.id;
   const ass = x.meus.filter(p => p.categoria === assinaturas);
-  const lojas = new Set(ass.map(p => p.linha.compra.descricao.trim().toLowerCase()));
+  const lojas = new Set(ass.map(p => p.descricao.trim().toLowerCase()));
   if (lojas.size >= 2) s.push({ id: 'assinaturas', tom: 'nota', categoria: assinaturas, texto: `${lojas.size} assinaturas somam ${formatarReais(somar(ass))} por mês.` });
 
-  const enc = x.meus.filter(p => ENCARGOS.has(p.linha.compra.tipo));
+  const enc = x.meus.filter(p => ENCARGOS.has(p.tipoCompra ?? ''));
   if (somar(enc) > 0) {
-    const tipos = [...new Set(enc.map(p => ({ iof: 'IOF', anuidade: 'anuidade', juros: 'juros', multa: 'multa' } as Record<string, string>)[p.linha.compra.tipo]))];
+    const tipos = [...new Set(enc.map(p => ({ iof: 'IOF', anuidade: 'anuidade', juros: 'juros', multa: 'multa' } as Record<string, string>)[p.tipoCompra ?? '']))];
     s.push({ id: 'encargos', tom: 'nota', texto: `${formatarReais(somar(enc))} foram de encargos (${tipos.join(', ')}).` });
   }
   if (x.parcelasSeguinte > 0) {

@@ -57,19 +57,21 @@ function ComprasDaCategoria({ p, categoria, aoFechar }: { p: Painel; categoria: 
     <Folha aberta={!!categoria} aoFechar={aoFechar} titulo={cat?.nome ?? 'Compras'}
       sub={cat ? `${lista.length} ${lista.length === 1 ? 'linha' : 'linhas'} · ${reais(cat.valor)}${cat.media !== null ? ` · média ${reais(cat.media)}` : ''}` : undefined}>
       <div className="compras-cat">{lista.map(x => {
-        const l = x.linha, dono = x.carteira === 'casal' ? null : pessoa(x.carteira);
-        const dividida = (l.compra.divisao?.length ?? 0) > 1;
+        const dono = x.carteira === 'casal' ? null : pessoa(x.carteira);
+        const dividida = x.valorInteiro !== x.valor;
+        const onde = x.origem === 'cartao' ? banco(x.onde) : r.conta.find(c => c.id === x.onde)?.apelido.split(' · ')[0] ?? 'Conta';
+        const abrir = () => { aoFechar(); if (x.origem === 'cartao') ir({ tela: 'fatura', cartao: x.onde, mes: p.mes, filtro: id === SEM_CATEGORIA ? 'semcat' : 'cat:' + id }); else ir({ tela: 'extratos', mes: x.data.slice(0, 7) }); };
         return (
-          <button key={l.parcela.id + x.carteira} className="lin" onClick={() => { aoFechar(); ir({ tela: 'fatura', cartao: l.compra.cartao, mes: p.mes, filtro: id === SEM_CATEGORIA ? 'semcat' : 'cat:' + id }); }}
-            aria-label={`${l.compra.descricao}, ${reais(x.valor)}, ${ddmm(l.data)}, ${banco(l.compra.cartao)}, ${dono ? dono.nome : 'Casal'}${dividida ? `, parte de ${reais(l.valor)}` : ''}. Abrir na fatura`}>
-            <Logo loja={l.compra.descricao} vazio={false} />
-            <span className="d"><b>{l.compra.descricao}</b>
-              <small>{l.total > 1 ? <span className="parc num">{l.numero}/{l.total}</span> : null}<span className="num">{ddmm(l.data)} · {banco(l.compra.cartao)}</span>
-                {dono ? <Selo pessoa={dono} /> : <span className="mini">Casal</span>}{l.prevista ? <span className="mini">prevista</span> : null}</small></span>
-            <span className="r"><span className="v num">{reais(x.valor)}</span>{dividida ? <span className="mini num">de {reais(l.valor)}</span> : null}</span>
+          <button key={x.chave + x.carteira} className="lin" onClick={abrir}
+            aria-label={`${x.descricao}, ${reais(x.valor)}, ${ddmm(x.data)}, ${onde}, ${dono ? dono.nome : 'Casal'}${dividida ? `, parte de ${reais(x.valorInteiro)}` : ''}. Abrir ${x.origem === 'cartao' ? 'na fatura' : 'no extrato'}`}>
+            <Logo loja={x.descricao} vazio={false} />
+            <span className="d"><b>{x.descricao}</b>
+              <small>{x.parcela ? <span className="parc num">{x.parcela.numero}/{x.parcela.total}</span> : null}<span className="num">{ddmm(x.data)} · {onde}{x.origem === 'conta' ? ' (débito/Pix)' : ''}</span>
+                {dono ? <Selo pessoa={dono} /> : <span className="mini">Casal</span>}{x.prevista ? <span className="mini">prevista</span> : null}</small></span>
+            <span className="r"><span className="v num">{reais(x.valor)}</span>{dividida ? <span className="mini num">de {reais(x.valorInteiro)}</span> : null}</span>
           </button>);
       })}</div>
-      {lista.length ? <p className="mini compras-cat-dica"><ChevronRight size={14} strokeWidth={1.75} aria-hidden="true" />Toque numa compra para abrir a fatura.</p> : null}
+      {lista.length ? <p className="mini compras-cat-dica"><ChevronRight size={14} strokeWidth={1.75} aria-hidden="true" />Toque numa compra para abrir a fatura ou o extrato.</p> : null}
     </Folha>
   );
 }

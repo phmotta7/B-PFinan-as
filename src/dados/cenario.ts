@@ -56,6 +56,7 @@ export function retratoCenario(): Retrato {
   );
   r.usuario_autorizado.push({ id: 'u1', email: 'pedro@exemplo.com', pessoa: IDS.pedro }, { id: 'u2', email: 'bruna@exemplo.com', pessoa: IDS.bruna });
   CATS.forEach((nome, i) => r.categoria.push({ id: cat(nome), nome, tipo: 'despesa', ordem: i + 1, ativa: true }));
+  ['Salário', 'Renda extra', 'Outras receitas'].forEach((nome, i) => r.categoria.push({ id: 'rec-' + i, nome, tipo: 'receita', ordem: i + 1, ativa: true }));
   r.cartao.push(
     { id: IDS.nubank, apelido: 'Nubank da Bruna', banco: 'nubank', titular: IDS.bruna, diaFechamento: 3, diaVencimento: 10, ativo: true },
     { id: IDS.bb, apelido: 'BB da Bruna', banco: 'bb', titular: IDS.bruna, diaFechamento: 7, diaVencimento: 17, ativo: true },

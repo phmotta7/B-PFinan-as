@@ -1033,3 +1033,6 @@ button.cats-item:focus-visible{outline:2.5px solid var(--foco);outline-offset:2p
 .compras-cat .lin{padding-left:20px;padding-right:20px}
 .compras-cat .lin + .lin::before{left:72px}
 .compras-cat-dica{display:flex;align-items:center;gap:4px}
+/* Extratos (2B): entrada de dinheiro em verde, com o sinal; saída na tinta normal */
+.lin .v.v-entra{color:var(--ok)}
+.chip:disabled{opacity:.45;cursor:not-allowed}

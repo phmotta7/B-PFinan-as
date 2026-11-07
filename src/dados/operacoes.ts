@@ -10,7 +10,7 @@ import { mudancaVazia, type Compra, type Escopo, type Fatura, type Mudanca, type
 export const novoId = () => (globalThis.crypto?.randomUUID?.() ?? `id-${Math.random().toString(36).slice(2)}-${Date.now()}`);
 
 /** Ajuda a montar um pacote olhando também o que já foi incluído nele. */
-class Pacote {
+export class Pacote {
   m: Mudanca = mudancaVazia();
   constructor(private r: Retrato) {}
   inserir<T extends Tabela>(t: T, x: Tabelas[T]) { ((this.m.inserir[t] ??= []) as Tabelas[T][]).push(x); return x; }
@@ -307,7 +307,7 @@ export function dividir(r: Retrato, compras: string[], d: { pessoas: string[]; v
 }
 
 // ---------- Fechamento (§5.2, RN-WA-10) ----------
-function fechamentoDe(p: Pacote, devedor: string, credor: string, mes: Mes) {
+export function fechamentoDe(p: Pacote, devedor: string, credor: string, mes: Mes) {
   return p.todos('fechamento').find(f => f.devedor === devedor && f.credor === credor && f.mes === mes)
     ?? p.inserir('fechamento', { id: novoId(), devedor, credor, mes, enviadoEm: null });
 }

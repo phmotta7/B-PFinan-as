@@ -93,6 +93,17 @@ describe('painel do mês', () => {
   it('as compras de uma categoria somam o valor da categoria', () => {
     const p = painelDoMes(retratoCenario(), '2026-11', IDS.pedro);
     for (const c of p.categorias) expect(comprasDaCategoria(p, c.id).reduce((s, x) => s + x.valor, 0)).toBe(c.valor);
-    expect(comprasDaCategoria(p, cat('Transporte')).map(x => x.linha.compra.descricao)).toEqual(['Posto Ipiranga', 'Uber']);
+    expect(comprasDaCategoria(p, cat('Transporte')).map(x => x.descricao)).toEqual(['Posto Ipiranga', 'Uber']);
+  });
+
+  it('gasto do extrato entra pelo mês da data; receita e Pix entre contas não entram (2B)', () => {
+    let r = retratoCenario();
+    const antes = painelDoMes(r, '2026-11', IDS.pedro).total;
+    const lanc = (id: string, valor: number, tipo: 'despesa' | 'receita' | 'transferencia_propria', data = '2026-11-05') =>
+      ({ id, pessoa: IDS.pedro, conta: 'k', data, descricao: 'Compra no débito - FORT ATACADISTA', valor, tipo, escopo: 'pessoal' as const, categoria: cat('Mercado'), origem: 'importacao' as const });
+    r = { ...r, lancamento: [lanc('a', -9758, 'despesa'), lanc('b', 50000, 'receita'), lanc('c', -130451, 'transferencia_propria'), lanc('d', -1000, 'despesa', '2026-12-01')] };
+    const p = painelDoMes(r, '2026-11', IDS.pedro);
+    expect(p.total - antes).toBe(9758);
+    expect(comprasDaCategoria(p, cat('Mercado'))).toEqual([expect.objectContaining({ origem: 'conta', descricao: 'FORT ATACADISTA', valor: 9758 })]);
   });
 });

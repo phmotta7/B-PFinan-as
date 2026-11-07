@@ -14,15 +14,16 @@ import { Conciliacao } from './telas/Conciliacao';
 import { Lancar } from './telas/Lancar';
 import { Fechamentos } from './telas/Fechamentos';
 import { Gastos } from './telas/Gastos';
+import { Extratos } from './telas/Extratos';
 import { Mais, Dividas, Pessoas, CfgCartoes, Categorias, Emails, Exportar } from './telas/Mais';
 
 const TELAS: Record<NomeTela, () => React.ReactElement | null> = {
   inicio: Inicio, cartoes: Cartoes, fatura: Fatura, importar: Importar, conciliacao: Conciliacao, lancar: Lancar, fechamentos: Fechamentos,
-  mais: Mais, dividas: Dividas, pessoas: Pessoas, 'cfg-cartoes': CfgCartoes, categorias: Categorias, emails: Emails, exportar: Exportar, gastos: Gastos,
+  mais: Mais, dividas: Dividas, pessoas: Pessoas, 'cfg-cartoes': CfgCartoes, categorias: Categorias, emails: Emails, exportar: Exportar, gastos: Gastos, extratos: Extratos,
 };
 const ABAS = [['inicio', 'Início', House], ['cartoes', 'Cartões', CreditCard], ['lancar', 'Lançar', Plus], ['fechamentos', 'Fechamentos', ReceiptText], ['mais', 'Mais', Ellipsis]] as const;
-const SEM_BARRA: NomeTela[] = ['importar', 'lancar'];
-const DE_MAIS: NomeTela[] = ['dividas', 'pessoas', 'cfg-cartoes', 'categorias', 'emails', 'exportar', 'conciliacao'];
+const SEM_BARRA: NomeTela[] = ['importar', 'lancar', 'extratos'];
+const DE_MAIS: NomeTela[] = ['extratos', 'dividas', 'pessoas', 'cfg-cartoes', 'categorias', 'emails', 'exportar', 'conciliacao'];
 
 function Casca() {
   const { rota, ir, modo, hoje, confirmacao, fecharConfirmacao, recomecarDemo, confirmar } = useApp();

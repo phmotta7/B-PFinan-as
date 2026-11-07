@@ -1,5 +1,5 @@
 // Onde os dados moram: neste aparelho (modo demonstração) ou no Supabase. As duas formas recebem o mesmo pacote de mudança.
-import { ORDEM_TABELAS, type Mudanca, type Retrato, type Tabela } from './tipos';
+import { ORDEM_TABELAS, retratoVazio, type Mudanca, type Retrato, type Tabela } from './tipos';
 import { aplicar } from './mudanca';
 import { retratoCenario, IDS, ARQUIVO_NUBANK_NOV } from './cenario';
 import { importarFatura, confirmarDuplicidade, escolherCandidata, marcar } from './operacoes';
@@ -19,7 +19,7 @@ export class RepoDemo implements Repositorio {
   modo = 'demo' as const;
   private r: Retrato | null = null;
   async carregar() {
-    try { const s = localStorage.getItem(CHAVE); if (s) return (this.r = JSON.parse(s) as Retrato); } catch { /* sem armazenamento: segue com o cenário */ }
+    try { const s = localStorage.getItem(CHAVE); if (s) return (this.r = { ...retratoVazio(), ...JSON.parse(s) } as Retrato); } catch { /* sem armazenamento: segue com o cenário */ }
     return (this.r = RepoDemo.inicio());
   }
   /** Começo da demonstração; ?cenario=importado ou ?cenario=marcado pula para depois da importação (capturas e testes visuais). */

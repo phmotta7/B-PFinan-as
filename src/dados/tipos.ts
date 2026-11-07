@@ -24,16 +24,24 @@ export type LinhaImportada = { id: string; importacao: string; cartao: string; d
 export type Divida = { id: string; nome: string; tipo: 'emprestimo' | 'parcelamento_externo' | 'outro'; titular: string; responsavel: string; escopo?: Escopo | null; valorParcela: Centavos; parcelaAtual: number; mesParcelaAtual: Mes; totalParcelas: number; diaVencimento: number; situacao: 'ativa' | 'quitada' };
 export type Fechamento = { id: string; devedor: string; credor: string; mes: Mes; enviadoEm?: string | null };
 export type PagamentoFechamento = { id: string; fechamento: string; valor: Centavos; data: string; observacao?: string | null };
+// Extratos (2B, D15): conta e lançamento são de uma pessoa; o outro só vê o lançamento marcado como Casal (RLS no banco)
+export type Conta = { id: string; pessoa: string; banco: string; apelido: string; numero?: string | null; ativa: boolean };
+export type TipoLancamento = 'despesa' | 'receita' | 'transferencia_propria' | 'transferencia' | 'pagamento_fechamento' | 'pagamento_cartao' | 'investimento';
+export type Lancamento = {
+  id: string; pessoa: string; conta?: string | null; data: string; descricao: string; contraparte?: string | null; valor: Centavos;
+  tipo: TipoLancamento; escopo?: Escopo | null; categoria?: string | null; observacao?: string | null;
+  fitid?: string | null; par?: string | null; pagamento?: string | null; origem: 'manual' | 'importacao';
+};
 export type UsuarioAutorizado = { id: string; email: string; pessoa?: string | null };
 
 export type Tabelas = {
   pessoa: Pessoa; categoria: Categoria; cartao: Cartao; fatura: Fatura; compra: Compra; parcela_cartao: ParcelaCartao;
   importacao: Importacao; linha_importada: LinhaImportada; divida: Divida; fechamento: Fechamento; pagamento_fechamento: PagamentoFechamento;
-  usuario_autorizado: UsuarioAutorizado;
+  usuario_autorizado: UsuarioAutorizado; conta: Conta; lancamento: Lancamento;
 };
 export type Tabela = keyof Tabelas;
 /** Ordem segura para inserir (quem é referenciado vem antes). Apagar usa a ordem inversa. */
-export const ORDEM_TABELAS: Tabela[] = ['pessoa', 'usuario_autorizado', 'categoria', 'cartao', 'fatura', 'importacao', 'linha_importada', 'compra', 'parcela_cartao', 'divida', 'fechamento', 'pagamento_fechamento'];
+export const ORDEM_TABELAS: Tabela[] = ['pessoa', 'usuario_autorizado', 'categoria', 'cartao', 'fatura', 'importacao', 'linha_importada', 'compra', 'parcela_cartao', 'divida', 'fechamento', 'pagamento_fechamento', 'conta', 'lancamento'];
 
 export type Retrato = { [T in Tabela]: Tabelas[T][] };
 export const retratoVazio = (): Retrato => Object.fromEntries(ORDEM_TABELAS.map(t => [t, []])) as unknown as Retrato;
