@@ -35,6 +35,7 @@ export function Mais() {
       <div className="cartao"><div>
         <Linha icone={i(ChartColumn)} titulo="Para onde vai o dinheiro" sub="Gastos do cartão por categoria e mês a mês" onClick={() => ir({ tela: 'gastos' })} />
         <Linha icone={i(Landmark)} titulo="Extratos" sub="Importar o OFX da sua conta e ver gastos e receitas" onClick={() => ir({ tela: 'extratos' })} />
+        <Linha icone={i(CalendarClock)} titulo="Contas fixas" sub="O que se repete todo mês, inclusive o salário" onClick={() => ir({ tela: 'fixas' })} />
         <Linha icone={i(Layers)} titulo="Dívidas" sub="Empréstimos e parcelamentos que entram no fechamento" onClick={() => ir({ tela: 'dividas' })} />
         <Linha icone={i(Copy)} titulo="Conferir importação" sub="Duplicidades e parcelas da última fatura" onClick={() => ir({ tela: 'conciliacao' })} />
         <Linha icone={i(FileUp)} titulo="Importar fatura" sub="Nubank ou CSV de outro banco" onClick={() => ir({ tela: 'importar' })} />

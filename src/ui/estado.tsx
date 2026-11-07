@@ -11,7 +11,7 @@ import { datasDaFatura, faturaDaCompra, somarMeses, type Mes } from '@/dominio/c
 import type { Confirmacao } from './comum';
 import { marcarVolta } from './movimento';
 
-export type NomeTela = 'inicio' | 'cartoes' | 'fatura' | 'importar' | 'conciliacao' | 'lancar' | 'fechamentos' | 'mais' | 'dividas' | 'pessoas' | 'cfg-cartoes' | 'categorias' | 'emails' | 'exportar' | 'gastos' | 'extratos';
+export type NomeTela = 'inicio' | 'cartoes' | 'fatura' | 'importar' | 'conciliacao' | 'lancar' | 'fechamentos' | 'mais' | 'dividas' | 'pessoas' | 'cfg-cartoes' | 'categorias' | 'emails' | 'exportar' | 'gastos' | 'extratos' | 'mes' | 'fixas';
 export type Rota = { tela: NomeTela; cartao?: string; mes?: Mes; filtro?: string };
 export const RAIZ: NomeTela[] = ['inicio', 'cartoes', 'fechamentos', 'mais'];
 

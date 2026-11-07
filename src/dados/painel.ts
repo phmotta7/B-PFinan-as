@@ -21,6 +21,7 @@ const ENCARGOS = new Set(['iof', 'anuidade', 'juros', 'multa']);
 /** Um pedaço de gasto: de uma linha da fatura (por pessoa, se dividida) ou de um gasto do extrato. */
 export type Pedaco = {
   chave: string; data: string; descricao: string; carteira: string; categoria: string; valor: number;
+  pessoa: string; // quem pagou este pedaço (no Casal, quem contribuiu)
   origem: 'cartao' | 'conta'; onde: string; // id do cartão ou da conta
   valorInteiro: number; parcela?: { numero: number; total: number }; prevista: boolean; tipoCompra?: string;
   linha?: LinhaFatura;
@@ -40,7 +41,7 @@ export function pedacosDoMes(r: Retrato, mes: Mes) {
       const categoria = l.compra.categoria || (ENCARGOS.has(l.compra.tipo) && encargos) || SEM_CATEGORIA;
       for (const p of partesDaLinha(l.compra, l.valor)) {
         if (!usuarios.has(p.pessoa)) continue;
-        pedacos.push({ chave: l.parcela.id, data: l.data, descricao: l.compra.descricao, carteira: l.compra.escopo === 'casal' ? 'casal' : p.pessoa, categoria, valor: p.valor,
+        pedacos.push({ chave: l.parcela.id, data: l.data, descricao: l.compra.descricao, carteira: l.compra.escopo === 'casal' ? 'casal' : p.pessoa, categoria, valor: p.valor, pessoa: p.pessoa,
           origem: 'cartao', onde: l.compra.cartao, valorInteiro: l.valor, parcela: l.total > 1 ? { numero: l.numero, total: l.total } : undefined, prevista: l.prevista, tipoCompra: l.compra.tipo, linha: l });
         if (l.prevista) previstas += p.valor;
       }
@@ -50,7 +51,7 @@ export function pedacosDoMes(r: Retrato, mes: Mes) {
   for (const x of r.lancamento ?? []) {
     if (x.tipo !== 'despesa' || x.data.slice(0, 7) !== mes || !usuarios.has(x.pessoa)) continue;
     pedacos.push({ chave: x.id, data: x.data, descricao: x.contraparte && !/compra no d[ée]bito/i.test(x.descricao) ? x.contraparte : x.descricao.replace(/^Compra no d[ée]bito(?::| -)\s*"?(No estabelecimento\s+)?/i, '').replace(/"$/, ''),
-      carteira: x.escopo === 'casal' ? 'casal' : x.pessoa, categoria: x.categoria || SEM_CATEGORIA, valor: -x.valor, origem: 'conta', onde: x.conta ?? '', valorInteiro: -x.valor, prevista: false });
+      carteira: x.escopo === 'casal' ? 'casal' : x.pessoa, categoria: x.categoria || SEM_CATEGORIA, valor: -x.valor, pessoa: x.pessoa, origem: 'conta', onde: x.conta ?? '', valorInteiro: -x.valor, prevista: false });
   }
   return { pedacos, semDono, valorSemDono, previstas };
 }

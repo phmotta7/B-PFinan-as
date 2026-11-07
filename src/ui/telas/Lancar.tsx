@@ -1,5 +1,6 @@
 'use client';
-// Lançar compra no cartão (T7, §4.3). Começa em quem está usando e no cartão da última compra lançada por essa pessoa; escopo padrão D6 (pelo histórico); categoria obrigatória só para Pedro e Bruna (D4).
+// Lançar (T7): compra no cartão (§4.3) ou, desde a 2C, gasto e receita fora do cartão (§6.4), que ficam só para quem lançou.
+// Compra no cartão (T7, §4.3). Começa em quem está usando e no cartão da última compra lançada por essa pessoa; escopo padrão D6 (pelo histórico); categoria obrigatória só para Pedro e Bruna (D4).
 import { useState } from 'react';
 import { Calendar, CircleAlert, CreditCard, Users } from 'lucide-react';
 import { useApp } from '../estado';
@@ -13,13 +14,79 @@ import { datasDaFatura, faturaDaCompra, somarMeses } from '@/dominio/ciclo';
 import { mesCurto } from '@/dominio/mensagem';
 import type { Escopo } from '@/dados/tipos';
 import { QuantoCadaUm, juntar, lerPartes, valoresIguais } from '../divisao';
+import { lancarManual } from '@/dados/mes';
 import { faltaDividir } from '@/dominio/divisao';
 
 // Parcelado no lançamento manual: de 2x a 12x (decisão D13)
 const PARCELAS = Array.from({ length: 11 }, (_, i) => i + 2);
 const menosDias = (d: string, n: number) => { const x = new Date(d + 'T12:00:00'); x.setDate(x.getDate() - n); return x.toISOString().slice(0, 10); };
 
+type Modo = 'cartao' | 'despesa' | 'receita';
+/** No cartão · Gasto · Receita, no alto do Lançar. */
+function EscolherModo({ modo, mudar }: { modo: Modo; mudar: (m: Modo) => void }) {
+  const ordem: Modo[] = ['cartao', 'despesa', 'receita'];
+  return (
+    <div className="seg tres" data-v={ordem.indexOf(modo)} role="group" aria-label="O que lançar"><span className="pino" aria-hidden="true" />
+      {ordem.map(m => <button key={m} aria-pressed={modo === m} onClick={() => mudar(m)}>{m === 'cartao' ? 'No cartão' : m === 'despesa' ? 'Gasto' : 'Receita'}</button>)}</div>
+  );
+}
+
+/** Gasto ou receita fora do cartão: dinheiro, Pix, débito que não veio por extrato. É de quem lança (privado, D15). */
+function LancarFora({ modo, mudar }: { modo: 'despesa' | 'receita'; mudar: (m: Modo) => void }) {
+  const { r, hoje, voltar, podeVoltar, executar, usuario } = useApp();
+  const [texto, setTexto] = useState('');
+  const [desc, setDesc] = useState('');
+  const [escopo, setEscopo] = useState<Escopo>('pessoal');
+  const [cat, setCat] = useState<string | null>(null);
+  const [data, setData] = useState(hoje);
+  const [tentou, setTentou] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const valor = lerValorDigitado(texto);
+  const receita = modo === 'receita';
+  const erros = { valor: !valor ? `Digite o valor ${receita ? 'recebido' : 'gasto'}.` : '', desc: !desc.trim() ? (receita ? 'Diga de onde veio, ex.: Salário.' : 'Diga o que foi, ex.: Feira.') : '', cat: !cat ? 'Escolha a categoria.' : '' };
+  const mostra = (k: keyof typeof erros) => tentou && erros[k];
+  const datas = [[hoje, `Hoje, ${ddmm(hoje)}`], [menosDias(hoje, 1), `Ontem, ${ddmm(menosDias(hoje, 1))}`], [menosDias(hoje, 2), ddmm(menosDias(hoje, 2))]];
+  const cats = r.categoria.filter(c => c.ativa && c.tipo === 'receita').sort((a, b) => a.ordem - b.ordem);
+  if (!usuario) return null;
+  const salvar = async () => {
+    setTentou(true);
+    if (erros.valor || erros.desc || erros.cat) { document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus(); return; }
+    setSalvando(true);
+    const ok = await executar(lancarManual({ pessoa: usuario.id, tipo: modo, valor, data, descricao: desc, escopo: receita ? 'pessoal' : escopo, categoria: cat }),
+      `Lançado: ${receita ? 'receita' : 'gasto'} ${desc.trim()}, ${reais(valor)}.`);
+    setSalvando(false);
+    if (ok) { if (podeVoltar) voltar(); else { setTexto(''); setDesc(''); setCat(null); setTentou(false); } }
+  };
+  return (<>
+    <Topo titulo={receita ? 'Lançar receita' : 'Lançar gasto'} sub="Fora do cartão · só você vê, a não ser o que for Casal" voltar={podeVoltar ? voltar : undefined} abaixo={<EscolherModo modo={modo} mudar={mudar} />} />
+    <main className="conteudo sem-barra form-estreito">
+      <div className="campo"><label htmlFor="f-valor">Valor</label>
+        <div className={`entrada valor ${mostra('valor') ? 'erro' : ''}`}><span>R$</span><input id="f-valor" inputMode="decimal" placeholder="0,00" autoComplete="off" value={texto} onChange={e => setTexto(e.target.value.replace(/[^\d,.]/g, ''))} aria-invalid={!!mostra('valor')} /></div>
+        {mostra('valor') ? <p className="ajuda erro"><CircleAlert size={16} aria-hidden="true" />{erros.valor}</p> : null}</div>
+      <div className="campo"><label htmlFor="f-desc">Descrição</label>
+        <div className={`entrada ${mostra('desc') ? 'erro' : ''}`}><input id="f-desc" placeholder={receita ? 'Ex.: Salário' : 'Ex.: Feira'} autoComplete="off" enterKeyHint="done" value={desc} onChange={e => setDesc(e.target.value)} aria-invalid={!!mostra('desc')} /></div>
+        {mostra('desc') ? <p className="ajuda erro"><CircleAlert size={16} aria-hidden="true" />{erros.desc}</p> : null}</div>
+      {receita ? null : <div className="campo"><span className="rot" id="r-esc">Para quê</span>
+        <div className="seg" data-v={escopo === 'casal' ? 1 : 0} role="group" aria-labelledby="r-esc"><span className="pino" aria-hidden="true" />
+          <button aria-pressed={escopo !== 'casal'} onClick={() => setEscopo('pessoal')}>Pessoal</button><button aria-pressed={escopo === 'casal'} onClick={() => setEscopo('casal')}>Casal</button></div></div>}
+      <div className="campo"><span className="rot" id="r-cat">Categoria</span>
+        {receita ? <div className="cats" role="group" aria-labelledby="r-cat">{cats.map(c => <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(cat === c.id ? null : c.id)}>{c.nome}</button>)}</div>
+          : <EscolherCategoria r={r} pessoa={usuario.id} atual={cat} rotulo="r-cat" aoEscolher={id => setCat(cat === id ? null : id)} />}
+        {mostra('cat') ? <p className="ajuda erro"><CircleAlert size={16} aria-hidden="true" />{erros.cat}</p> : null}</div>
+      <div className="campo"><span className="rot" id="r-data">Data</span>
+        <div className="chips" role="group" aria-labelledby="r-data">{datas.map(([d, rot]) => <button key={d} className="chip" aria-pressed={data === d} onClick={() => setData(d)}>{rot}</button>)}</div>
+        <div className="entrada"><input aria-label="Outra data" type="date" value={data} max={hoje} onChange={e => e.target.value && setData(e.target.value)} /></div></div>
+      <div className="rodape vidro-normal"><button className="bt principal cheio" disabled={salvando} aria-busy={salvando} onClick={salvar}>{salvando ? <><span className="giro" aria-hidden="true" />Lançando</> : `Lançar ${valor ? reais(valor) : ''}`}</button></div>
+    </main>
+  </>);
+}
+
 export function Lancar() {
+  const [modo, setModo] = useState<Modo>('cartao');
+  return modo === 'cartao' ? <LancarCartao mudar={setModo} /> : <LancarFora key={modo} modo={modo} mudar={setModo} />;
+}
+
+function LancarCartao({ mudar }: { mudar: (m: Modo) => void }) {
   const { r, hoje, voltar, podeVoltar, executar, usuario } = useApp();
   const [texto, setTexto] = useState('');
   const [desc, setDesc] = useState('');
@@ -70,7 +137,7 @@ export function Lancar() {
   };
 
   return (<>
-    <Topo titulo="Lançar compra" sub="No cartão" voltar={podeVoltar ? voltar : undefined} />
+    <Topo titulo="Lançar compra" sub="No cartão" voltar={podeVoltar ? voltar : undefined} abaixo={<EscolherModo modo="cartao" mudar={mudar} />} />
     <main className="conteudo sem-barra form-estreito">
       <div className="campo"><label htmlFor="f-valor">Valor</label>
         <div className={`entrada valor ${mostra('valor') ? 'erro' : ''}`}><span>R$</span><input id="f-valor" inputMode="decimal" placeholder="0,00" autoComplete="off" value={texto} onChange={e => setTexto(e.target.value.replace(/[^\d,.]/g, ''))} aria-invalid={!!mostra('valor')} aria-describedby="f-parts" /></div>

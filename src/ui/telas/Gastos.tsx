@@ -29,7 +29,7 @@ export function Categorias({ p, limite, abrir }: { p: Painel; limite?: number; a
   const maior = Math.max(1, ...lista.map(c => Math.max(c.valor, c.media ?? 0)));
   const pct = (v: number) => `${Math.max(0, Math.min(100, (v / maior) * 100))}%`;
   return (
-    <ul className="cats num">{lista.map(c => (
+    <ul className="barras-cat num">{lista.map(c => (
       <li key={c.id} className={c.id === 'sem-categoria' ? 'sem' : undefined}>{(() => { const conteudo = <>
         <span className="cats-nome">{c.nome}{!limite && c.compras ? <small>{c.compras} {c.compras === 1 ? 'linha' : 'linhas'}{p.total > 0 ? ` · ${Math.round((c.valor / p.total) * 100)}%` : ''}</small> : null}</span>
         <span className="cats-v">{reais(c.valor)}</span>

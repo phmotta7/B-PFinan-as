@@ -992,15 +992,15 @@ h2.dia{margin:0}
 
 /* ---------- Para onde vai o dinheiro (2A): barras por categoria e mês a mês ----------
    Uma série só, numa cor só (a da ação); o risco fino é a média. Sem vermelho: subir não é bronca. */
-.cats{list-style:none;display:flex;flex-direction:column;gap:12px;margin:0;padding:0}
-.cats li{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;row-gap:6px;align-items:baseline}
+.barras-cat{list-style:none;display:flex;flex-direction:column;gap:12px;margin:0;padding:0}
+.barras-cat li{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;row-gap:6px;align-items:baseline}
 .cats-nome{font:var(--t-forte);font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .cats-nome small{display:block;font:var(--t-mini);color:var(--suave);margin-top:2px}
 .cats-v{font:600 15px/1.2 var(--fonte);white-space:nowrap}
 .cats-barra{grid-column:1/-1;position:relative;height:8px;border-radius:4px;background:var(--chao);box-shadow:inset 0 0 0 1px var(--linha)}
 .cats-barra i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:var(--acao)}
-.cats .sem .cats-barra i{background:var(--sem-dono)}
-.cats .sem .cats-nome{color:var(--suave)}
+.barras-cat .sem .cats-barra i{background:var(--sem-dono)}
+.barras-cat .sem .cats-nome{color:var(--suave)}
 .cats-barra b,.cats-leg b{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;border-radius:1px;background:var(--tinta)}
 .cats-leg{display:inline-flex;align-items:center;gap:6px}
 .cats-leg b{position:relative;display:inline-block;top:0;bottom:0;height:14px;margin:0}
@@ -1036,3 +1036,13 @@ button.cats-item:focus-visible{outline:2.5px solid var(--foco);outline-offset:2p
 /* Extratos (2B): entrada de dinheiro em verde, com o sinal; saída na tinta normal */
 .lin .v.v-entra{color:var(--ok)}
 .chip:disabled{opacity:.45;cursor:not-allowed}
+/* Lançar (2C): No cartão · Gasto · Receita */
+.seg.tres{grid-template-columns:1fr 1fr 1fr}
+.seg.tres .pino{width:calc((100% - 6px) / 3)}
+.seg.tres[data-v="2"] .pino{transform:translateX(200%)}
+.topo .seg.tres{margin-top:10px}
+/* Meu mês e contas fixas (2C) */
+.fixa-dir{display:flex;align-items:center;gap:10px;flex:none}
+.quem button[aria-disabled="true"]{cursor:default}
+.duas-campos{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:12px}
+.quem small.mini{font-size:13px}

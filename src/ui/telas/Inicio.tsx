@@ -9,6 +9,7 @@ import { datasDaFatura, somarMeses, type Mes } from '@/dominio/ciclo';
 import type { Retrato } from '@/dados/tipos';
 import { painelDoMes } from '@/dados/painel';
 import { Categorias, Sugestoes } from './Gastos';
+import { CartaoSobra } from './Mes';
 
 /** Os 4 passos do fechamento do mês (só mostram onde a família está; não mudam regra). */
 export function passosDoMes(r: Retrato, mes: Mes, titular: string, hoje: string) {
@@ -64,6 +65,7 @@ export function Inicio() {
         sub={<><span>{vencimentos}</span>{abertas.length ? <span className="heroi-nota">{abertas.map(x => `${x.c.apelido} fecha em ${ddmm(x.d.fechamento)}`).join(' · ')}; até lá os totais são parciais.</span> : null}</>}
         fatias={[...pessoas.map(p => ({ pessoa: p, valor: t.porPessoa.get(p.id) ?? 0 })),
           ...(t.semDono + t.pendentes ? [{ pessoa: null, valor: t.valorSemDono + t.valorPendente, rotulo: `${t.semDono + t.pendentes} sem dono` }] : [])]} />
+      <CartaoSobra mes={m} compacto />
       {rec.length ? (
         <section className="cartao" aria-labelledby="h-rec"><h2 id="h-rec">A receber de meses anteriores</h2>
           <div className="quem num">{rec.map(x => <button key={x.pessoa.id + x.mes} onClick={() => ir({ tela: 'fechamentos', mes: x.mes })}><Selo pessoa={x.pessoa} extra={<span className="mini"> · {mesCurto(x.mes)}</span>} /><span className="v">{reais(x.emAberto)}</span></button>)}</div>
