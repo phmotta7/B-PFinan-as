@@ -1,16 +1,13 @@
 'use client';
 // Mais (D10/D11): Dívidas, conferência, importação e Configurações (T15): pessoas, cartões, categorias, e-mails, exportar.
 import { useState, type ReactNode } from 'react';
-import { ChevronRight, Layers, Copy, FileUp, User, CreditCard, SlidersHorizontal, Mail, Download, Plus, Trash2, Landmark, CalendarClock, ChartColumn } from 'lucide-react';
+import { ChevronRight, Layers, Copy, FileUp, User, CreditCard, SlidersHorizontal, Mail, Download, Plus, Landmark, CalendarClock, ChartColumn, Gauge, PiggyBank } from 'lucide-react';
 import { toast } from 'sonner';
 import { calendarioDeFechamentos } from '@/dominio/lembrete';
 import { useApp } from '../estado';
-import { IconeVazio, Folha, LogoBanco, Selo, Topo, reais } from '../comum';
+import { IconeVazio, Folha, LogoBanco, Selo, Topo } from '../comum';
 import { novoId, remover, salvar } from '@/dados/operacoes';
-import { lerValorDigitado } from '@/dominio/dinheiro';
-import { mesCurto } from '@/dominio/mensagem';
-import { parcelasDeDividaNoMes } from '@/dados/consultas';
-import type { Cartao, Divida, Pessoa } from '@/dados/tipos';
+import type { Cartao, Pessoa } from '@/dados/tipos';
 
 const Linha = ({ icone, titulo, sub, onClick }: { icone: ReactNode; titulo: string; sub: string; onClick: () => void }) => (
   <button className="pend" onClick={onClick}><span className="ico n">{icone}</span><span className="t"><b>{titulo}</b><small>{sub}</small></span><ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" /></button>);
@@ -36,7 +33,9 @@ export function Mais() {
         <Linha icone={i(ChartColumn)} titulo="Para onde vai o dinheiro" sub="Gastos do cartão por categoria e mês a mês" onClick={() => ir({ tela: 'gastos' })} />
         <Linha icone={i(Landmark)} titulo="Extratos" sub="Importar o OFX da sua conta e ver gastos e receitas" onClick={() => ir({ tela: 'extratos' })} />
         <Linha icone={i(CalendarClock)} titulo="Contas fixas" sub="O que se repete todo mês, inclusive o salário" onClick={() => ir({ tela: 'fixas' })} />
-        <Linha icone={i(Layers)} titulo="Dívidas" sub="Empréstimos e parcelamentos que entram no fechamento" onClick={() => ir({ tela: 'dividas' })} />
+        <Linha icone={i(Gauge)} titulo="Orçamento" sub="Limite por categoria, com aviso perto do fim" onClick={() => ir({ tela: 'orcamento' })} />
+        <Linha icone={i(PiggyBank)} titulo="Metas" sub="Reserva de emergência e objetivos" onClick={() => ir({ tela: 'metas' })} />
+        <Linha icone={i(Layers)} titulo="Dívidas" sub="Empréstimos, parcelamentos e quando ficamos livres" onClick={() => ir({ tela: 'dividas' })} />
         <Linha icone={i(Copy)} titulo="Conferir importação" sub="Duplicidades e parcelas da última fatura" onClick={() => ir({ tela: 'conciliacao' })} />
         <Linha icone={i(FileUp)} titulo="Importar fatura" sub="Nubank ou CSV de outro banco" onClick={() => ir({ tela: 'importar' })} />
         <Linha icone={i(CalendarClock)} titulo="Lembrete no calendário" sub="Avisa no dia de importar cada fatura, pelos próximos 12 meses" onClick={baixarLembretes} />
@@ -55,58 +54,6 @@ export function Mais() {
         : <button className="bt secundario cheio" style={{ marginTop: 12 }} onClick={() => confirmar({ titulo: 'Sair do B&P?', texto: 'Você volta para a tela de entrada. Nada do que foi marcado se perde.', rotulo: 'Sair', aoConfirmar: sair })}>Sair</button>}
     </main>
   </>);
-}
-
-// ---------- Dívidas (T12, só cadastro na Etapa 1) ----------
-export function Dividas() {
-  const { r, voltar, executar, mesDeTrabalho, confirmar } = useApp();
-  const [editar, setEditar] = useState<Divida | null>(null);
-  const pessoa = (id: string) => r.pessoa.find(p => p.id === id);
-  const noMes = parcelasDeDividaNoMes(r, mesDeTrabalho);
-  const titular = r.cartao[0]?.titular ?? r.pessoa[0]?.id;
-  return (<>
-    <Topo titulo="Dívidas" sub="Pagas pela titular e repassadas no fechamento" voltar={voltar} />
-    <main className="conteudo">
-      {!r.divida.length ? <div className="vazio"><IconeVazio icone={Landmark} /><h2>Nenhuma dívida cadastrada</h2><p>Cadastre o empréstimo ou parcelamento que alguém paga por meio da Bruna. A parcela do mês entra no fechamento dessa pessoa, no bloco &ldquo;Outros&rdquo;.</p></div> : null}
-      {r.divida.map(d => { const n = noMes.find(x => x.id === d.id); return (
-        <button key={d.id} className="cartao toque" onClick={() => setEditar(d)} aria-label={`Editar ${d.nome}`}>
-          <div className="linha-topo"><b style={{ font: 'var(--t-forte)' }}>{d.nome}</b>{n ? <span className="parc num">{n.atual}/{n.total} em {mesCurto(mesDeTrabalho)}</span> : <span className="pil neutra">{d.situacao === 'quitada' ? 'Quitada' : 'Fora do mês'}</span>}</div>
-          <div className="quem num">
-            <div><span className="mini">Parcela</span><span className="v">{reais(d.valorParcela)}</span></div>
-            {n ? <div><span className="mini">Falta pagar depois desta</span><span className="v">{reais(d.valorParcela * (n.total - n.atual))}</span></div> : null}
-            <div><span className="mini">Quem paga</span><Selo pessoa={pessoa(d.responsavel)} /></div>
-          </div></button>); })}
-      <button className="bt secundario cheio" onClick={() => setEditar({ id: novoId(), nome: '', tipo: 'emprestimo', titular, responsavel: r.pessoa.find(p => p.id !== titular)?.id ?? titular, escopo: 'pessoal', valorParcela: 0, parcelaAtual: 1, mesParcelaAtual: mesDeTrabalho, totalParcelas: 12, diaVencimento: 10, situacao: 'ativa' })}><Plus size={20} aria-hidden="true" />Nova dívida</button>
-    </main>
-    <FormDivida d={editar} aoFechar={() => setEditar(null)} aoSalvar={async d => { setEditar(null); await executar(salvar(r, 'divida', d), `${d.nome} salva.`); }}
-      aoExcluir={d => confirmar({ titulo: `Excluir ${d.nome}?`, texto: 'A dívida sai do app e deixa de entrar nos fechamentos. Os fechamentos já pagos não mudam de valor registrado.', rotulo: 'Excluir', aoConfirmar: () => { setEditar(null); executar(remover(r, 'divida', d.id), `${d.nome} excluída.`); } })} />
-  </>);
-}
-function FormDivida({ d, aoFechar, aoSalvar, aoExcluir }: { d: Divida | null; aoFechar: () => void; aoSalvar: (d: Divida) => void; aoExcluir: (d: Divida) => void }) {
-  const { r } = useApp();
-  const [f, setF] = useState<Divida | null>(d); const [valor, setValor] = useState(''); const [erro, setErro] = useState('');
-  const [ultimo, setUltimo] = useState(d);
-  if (d !== ultimo) { setUltimo(d); setF(d); setValor(d && d.valorParcela ? reais(d.valorParcela).slice(3) : ''); setErro(''); }
-  if (!f) return <Folha aberta={false} aoFechar={aoFechar} titulo=""><span /></Folha>;
-  const existe = r.divida.some(x => x.id === f.id);
-  const num = (k: keyof Divida, rot: string) => <div className="campo"><label htmlFor={'dv-' + k}>{rot}</label><div className="entrada"><input id={'dv-' + k} inputMode="numeric" value={String(f[k] ?? '')} onChange={e => setF({ ...f, [k]: Number(e.target.value.replace(/\D/g, '')) || 0 })} /></div></div>;
-  return (
-    <Folha aberta={!!d} aoFechar={aoFechar} titulo={existe ? 'Editar dívida' : 'Nova dívida'}>
-      <div className="campo"><label htmlFor="dv-nome">Nome ou credor</label><div className="entrada"><input id="dv-nome" value={f.nome} placeholder="Ex.: Empréstimo Banco X" onChange={e => setF({ ...f, nome: e.target.value })} /></div></div>
-      <div className="campo"><label htmlFor="dv-v">Valor da parcela</label><div className="entrada valor"><span>R$</span><input id="dv-v" inputMode="decimal" value={valor} onChange={e => setValor(e.target.value)} /></div></div>
-      {num('parcelaAtual', `Parcela que vence em ${mesCurto(f.mesParcelaAtual)}`)}{num('totalParcelas', 'Total de parcelas')}{num('diaVencimento', 'Dia de vencimento')}
-      <div className="campo"><span className="rot">Quem paga</span><div className="pessoas">{r.pessoa.filter(p => p.id !== f.titular).map(p => <button key={p.id} aria-pressed={f.responsavel === p.id} onClick={() => setF({ ...f, responsavel: p.id })}><Selo pessoa={p} grande /></button>)}</div></div>
-      {erro ? <p className="ajuda erro">{erro}</p> : null}
-      <button className="bt principal cheio" onClick={() => {
-        const v = lerValorDigitado(valor);
-        if (!f.nome.trim()) return setErro('Dê um nome para a dívida.');
-        if (!v) return setErro('Digite o valor da parcela.');
-        if (f.parcelaAtual < 1 || f.totalParcelas < f.parcelaAtual) return setErro('A parcela atual precisa estar entre 1 e o total de parcelas.');
-        aoSalvar({ ...f, nome: f.nome.trim(), valorParcela: v });
-      }}>Salvar</button>
-      {existe ? <button className="bt destrutivo cheio" onClick={() => aoExcluir(f)}><Trash2 size={20} aria-hidden="true" />Excluir dívida</button> : null}
-    </Folha>
-  );
 }
 
 // ---------- Pessoas ----------

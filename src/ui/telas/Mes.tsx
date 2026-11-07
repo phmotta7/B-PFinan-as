@@ -112,9 +112,9 @@ function FormFixa({ rec, aoFechar }: { rec: Recorrente | null; aoFechar: () => v
   const { r, executar, usuario, mesDeTrabalho, confirmar } = useApp();
   const [x, setX] = useState<Recorrente | null>(null);
   const [texto, setTexto] = useState('');
-  const [de, setDe] = useState<string | null>(null);
+  const [de, setDe] = useState<Recorrente | null>(null);
   const [tentou, setTentou] = useState(false);
-  if (rec && de !== rec.id) { setDe(rec.id); setX(rec); setTexto(rec.valor ? centavosParaTexto(rec.valor) : ''); setTentou(false); }
+  if (rec && de !== rec) { setDe(rec); setX(rec); setTexto(rec.valor ? centavosParaTexto(rec.valor) : ''); setTentou(false); }
   if (!x || !usuario) return <Folha aberta={false} aoFechar={aoFechar} titulo="">{null}</Folha>;
   const novo = !r.recorrente.some(y => y.id === x.id);
   const valor = lerValorDigitado(texto);

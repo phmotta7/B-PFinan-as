@@ -1,6 +1,6 @@
 'use client';
 // Início (T2, Etapa 1: cartões e pendências) e Cartões (T3).
-import { Check, FileUp, Copy, User, MessageCircle, Plus, CreditCard, ChevronRight } from 'lucide-react';
+import { Check, FileUp, Copy, User, MessageCircle, Plus, CreditCard, ChevronRight, CircleAlert } from 'lucide-react';
 import { useApp } from '../estado';
 import { IconeVazio, Divisao, Esqueleto, LogoBanco, Selo, Topo, Valor, ddmm, mesLongo, reais } from '../comum';
 import { aPagarDaFatura, aReceberAntesDe, faturaDe, fechamentosDoMes, linhasDaFatura, parcelasNaoEncontradas, situacaoDaFatura, totaisDaFatura } from '@/dados/consultas';
@@ -10,6 +10,7 @@ import type { Retrato } from '@/dados/tipos';
 import { painelDoMes } from '@/dados/painel';
 import { Categorias, Sugestoes } from './Gastos';
 import { CartaoSobra } from './Mes';
+import { avisosDeOrcamento } from './Planos';
 
 /** Os 4 passos do fechamento do mês (só mostram onde a família está; não mudam regra). */
 export function passosDoMes(r: Retrato, mes: Mes, titular: string, hoje: string) {
@@ -66,6 +67,9 @@ export function Inicio() {
         fatias={[...pessoas.map(p => ({ pessoa: p, valor: t.porPessoa.get(p.id) ?? 0 })),
           ...(t.semDono + t.pendentes ? [{ pessoa: null, valor: t.valorSemDono + t.valorPendente, rotulo: `${t.semDono + t.pendentes} sem dono` }] : [])]} />
       <CartaoSobra mes={m} compacto />
+      {(() => { const av = avisosDeOrcamento(r, m, usuario?.id); return av.length ? (
+        <button className="aviso toque-aviso" onClick={() => ir({ tela: 'orcamento', mes: m, filtro: av[0].carteira === 'casal' ? undefined : av[0].carteira })}>
+          <CircleAlert size={20} strokeWidth={1.75} aria-hidden="true" /><div><p><b>Orçamento:</b> {av.slice(0, 3).map(a => `${a.nome}${a.carteira === 'casal' ? ' (Casal)' : ''} ${a.estado === 'passou' ? 'passou do limite' : `em ${Math.round((a.pct ?? 0) * 100)}%`}`).join(' · ')}{av.length > 3 ? ` e mais ${av.length - 3}` : ''}.</p></div></button>) : null; })()}
       {rec.length ? (
         <section className="cartao" aria-labelledby="h-rec"><h2 id="h-rec">A receber de meses anteriores</h2>
           <div className="quem num">{rec.map(x => <button key={x.pessoa.id + x.mes} onClick={() => ir({ tela: 'fechamentos', mes: x.mes })}><Selo pessoa={x.pessoa} extra={<span className="mini"> · {mesCurto(x.mes)}</span>} /><span className="v">{reais(x.emAberto)}</span></button>)}</div>

@@ -1046,3 +1046,15 @@ button.cats-item:focus-visible{outline:2.5px solid var(--foco);outline-offset:2p
 .quem button[aria-disabled="true"]{cursor:default}
 .duas-campos{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:12px}
 .quem small.mini{font-size:13px}
+/* Dívidas (Etapa 3): ordem para quitar */
+.ordem{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.ordem li{display:flex;justify-content:space-between;gap:12px;font:var(--t-forte);font-size:15px}
+.ordem li::marker{color:var(--suave);font-weight:600}
+/* Orçamento (Etapa 3): a barra escura é o já gasto; a clara, o previsto no cartão. Perto e passou em âmbar (sem vermelho para dinheiro) */
+.cats-barra.orc i.prev{background:var(--acao);opacity:.35}
+.cats-barra.orc.perto i, .cats-barra.orc.passou i{background:var(--atencao)}
+.cats-barra.orc.passou{box-shadow:inset 0 0 0 1.5px var(--atencao)}
+.grade-metas{display:grid;gap:14px}
+@media (min-width:768px){.grade-metas{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.grade-metas .valor{align-self:flex-start}
+button.aviso.toque-aviso{border:0;width:100%;text-align:left;cursor:pointer}

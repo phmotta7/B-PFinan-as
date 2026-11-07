@@ -21,7 +21,7 @@ export type Compra = {
 export type ParcelaCartao = { id: string; compra: string; fatura: string; numero: number; valor: Centavos; status: 'prevista' | 'confirmada'; linhaImportada?: string | null };
 export type Importacao = { id: string; formato: 'nubank_csv' | 'csv_generico' | 'bb_pdf'; cartao: string; fatura: string; arquivoNome: string; total: Centavos; linhasNovas: number; linhasRepetidas: number; linhasIgnoradas: number; criadoEm: string };
 export type LinhaImportada = { id: string; importacao: string; cartao: string; dados: Record<string, unknown>; digital: string; situacao: 'nova' | 'conciliada' | 'duplicada' | 'ignorada' };
-export type Divida = { id: string; nome: string; tipo: 'emprestimo' | 'parcelamento_externo' | 'outro'; titular: string; responsavel: string; escopo?: Escopo | null; valorParcela: Centavos; parcelaAtual: number; mesParcelaAtual: Mes; totalParcelas: number; diaVencimento: number; situacao: 'ativa' | 'quitada' };
+export type Divida = { id: string; nome: string; tipo: 'emprestimo' | 'parcelamento_externo' | 'outro'; titular: string; responsavel: string; escopo?: Escopo | null; valorParcela: Centavos; parcelaAtual: number; mesParcelaAtual: Mes; totalParcelas: number; diaVencimento: number; situacao: 'ativa' | 'quitada'; jurosMensal?: number | null; saldoInformado?: Centavos | null };
 export type Fechamento = { id: string; devedor: string; credor: string; mes: Mes; enviadoEm?: string | null };
 export type PagamentoFechamento = { id: string; fechamento: string; valor: Centavos; data: string; observacao?: string | null };
 // Extratos (2B, D15): conta e lançamento são de uma pessoa; o outro só vê o lançamento marcado como Casal (RLS no banco)
@@ -32,7 +32,12 @@ export type Lancamento = {
   tipo: TipoLancamento; escopo?: Escopo | null; categoria?: string | null; observacao?: string | null;
   fitid?: string | null; par?: string | null; pagamento?: string | null; origem: 'manual' | 'importacao';
   recorrente?: string | null; // conta fixa que este lançamento pagou ou recebeu (2C)
+  divida?: string | null; // parcela de dívida que este lançamento pagou (Etapa 3, RN-DV-03)
 };
+// Etapa 3 (§9, §10): carteira é 'casal' ou o id da pessoa; o banco só entrega a do dono e a do Casal
+export type Orcamento = { id: string; carteira: string; categoria: string; limite: Centavos; desde: string };
+export type Meta = { id: string; carteira: string; nome: string; alvo: Centavos; aportePlanejado?: Centavos | null; onde?: string | null; dataAlvo?: string | null; reserva: boolean; mesesReserva?: number | null; encerrada: boolean };
+export type MovimentoMeta = { id: string; meta: string; pessoa: string; tipo: 'aporte' | 'resgate'; valor: Centavos; data: string; observacao?: string | null };
 /** Conta fixa ou receita que se repete todo mês (2C, §6.6). O previsto do mês é calculado, não guardado. */
 export type Recorrente = { id: string; pessoa: string; descricao: string; tipo: 'despesa' | 'receita'; valor: Centavos; dia: number; escopo?: Escopo | null; categoria?: string | null; inicio: string; fim?: string | null; ativo: boolean };
 export type UsuarioAutorizado = { id: string; email: string; pessoa?: string | null };
@@ -41,10 +46,11 @@ export type Tabelas = {
   pessoa: Pessoa; categoria: Categoria; cartao: Cartao; fatura: Fatura; compra: Compra; parcela_cartao: ParcelaCartao;
   importacao: Importacao; linha_importada: LinhaImportada; divida: Divida; fechamento: Fechamento; pagamento_fechamento: PagamentoFechamento;
   usuario_autorizado: UsuarioAutorizado; conta: Conta; recorrente: Recorrente; lancamento: Lancamento;
+  orcamento: Orcamento; meta: Meta; movimento_meta: MovimentoMeta;
 };
 export type Tabela = keyof Tabelas;
 /** Ordem segura para inserir (quem é referenciado vem antes). Apagar usa a ordem inversa. */
-export const ORDEM_TABELAS: Tabela[] = ['pessoa', 'usuario_autorizado', 'categoria', 'cartao', 'fatura', 'importacao', 'linha_importada', 'compra', 'parcela_cartao', 'divida', 'fechamento', 'pagamento_fechamento', 'conta', 'recorrente', 'lancamento'];
+export const ORDEM_TABELAS: Tabela[] = ['pessoa', 'usuario_autorizado', 'categoria', 'cartao', 'fatura', 'importacao', 'linha_importada', 'compra', 'parcela_cartao', 'divida', 'fechamento', 'pagamento_fechamento', 'conta', 'recorrente', 'lancamento', 'orcamento', 'meta', 'movimento_meta'];
 
 export type Retrato = { [T in Tabela]: Tabelas[T][] };
 export const retratoVazio = (): Retrato => Object.fromEntries(ORDEM_TABELAS.map(t => [t, []])) as unknown as Retrato;

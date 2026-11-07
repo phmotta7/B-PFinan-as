@@ -8,6 +8,7 @@ import { fechamentosDoMes } from './consultas';
 import { Pacote, fechamentoDe, novoId } from './operacoes';
 import type { Conta, Escopo, Lancamento, Mudanca, Retrato, TipoLancamento } from './tipos';
 import { contaFixaDaLinha } from './mes';
+import { dividaDaLinha } from './etapa3';
 
 export const NOME_DO_TIPO: Record<TipoLancamento, string> = {
   despesa: 'Gasto', receita: 'Receita', transferencia_propria: 'Entre minhas contas', transferencia: 'Transferência entre os dois',
@@ -29,7 +30,7 @@ export const lojaDaLinha = (l: Omit<TemTexto, 'valor'>) =>
 export const chaveDaLinha = (l: TemTexto) => `${l.valor < 0 ? 's' : 'e'}:${normal(/compra no d[ée]bito/i.test(l.descricao) ? lojaDaLinha(l) : l.contraparte || l.descricao)}`;
 
 export type FechamentoAlvo = { devedor: string; credor: string; mes: Mes };
-export type Escolha = { tipo: TipoLancamento; categoria: string | null; escopo: Escopo | null; fechamento?: FechamentoAlvo | null; recorrente?: string | null };
+export type Escolha = { tipo: TipoLancamento; categoria: string | null; escopo: Escopo | null; fechamento?: FechamentoAlvo | null; recorrente?: string | null; divida?: string | null };
 export type Sugestao = Escolha & { motivo: string };
 
 /** Fechamento em aberto entre `devedor` e `credor` que este Pix pode pagar: o do mês da data ou o anterior (RN-CT-02). */
@@ -77,6 +78,10 @@ export function sugerir(r: Retrato, dono: string, l: LinhaDoExtrato, anteriores:
   // Conta fixa ou receita fixa esperando este valor por estes dias (RN-RE-03)
   const fixa = contaFixaDaLinha(r, dono, l);
   if (fixa) return { tipo: fixa.tipo, categoria: fixa.categoria ?? null, escopo: fixa.escopo ?? 'pessoal', recorrente: fixa.id, motivo: `${fixa.tipo === 'despesa' ? 'Conta fixa' : 'Receita fixa'}: ${fixa.descricao}` };
+
+  // Parcela de dívida cadastrada da própria pessoa (RN-DV-03)
+  const divida = dividaDaLinha(r, dono, l);
+  if (divida) return { tipo: 'despesa', categoria: catPorNome(r, 'Dívidas e encargos'), escopo: divida.escopo ?? 'pessoal', divida: divida.id, motivo: `Parcela de ${divida.nome}` };
 
   // O que a pessoa escolheu da última vez para o mesmo lado (D21)
   const chave = chaveDaLinha(l);
@@ -130,7 +135,7 @@ export function gravarExtrato(r: Retrato, previa: Previa, escolhas: Map<string, 
     const lanc: Lancamento = {
       id: novoId(), pessoa: previa.conta.pessoa, conta: previa.conta.id, data: l.data, descricao: l.descricao, contraparte: l.contraparte ?? null, valor: l.valor,
       tipo: e.tipo, escopo: CONTA_NO_MES(e.tipo) ? e.escopo ?? 'pessoal' : null, categoria: CONTA_NO_MES(e.tipo) ? e.categoria : null,
-      observacao: null, fitid: l.fitid, par: null, pagamento: null, origem: 'importacao', recorrente: CONTA_NO_MES(e.tipo) ? e.recorrente ?? null : null,
+      observacao: null, fitid: l.fitid, par: null, pagamento: null, origem: 'importacao', recorrente: CONTA_NO_MES(e.tipo) ? e.recorrente ?? null : null, divida: e.tipo === 'despesa' ? e.divida ?? null : null,
     };
     if (e.tipo === 'pagamento_fechamento' && e.fechamento) lanc.pagamento = pagarFechamento(p, e.fechamento, Math.abs(l.valor), l.data);
     novos.push(lanc);
@@ -153,7 +158,8 @@ export function alterarLancamento(r: Retrato, id: string, e: Escolha): Mudanca {
   const p = new Pacote(r);
   const x = p.ver('lancamento', id); if (!x) return p.m;
   const novo: Lancamento = { ...x, tipo: e.tipo, escopo: CONTA_NO_MES(e.tipo) ? e.escopo ?? 'pessoal' : null, categoria: CONTA_NO_MES(e.tipo) ? e.categoria : null,
-    recorrente: CONTA_NO_MES(e.tipo) ? (e.recorrente !== undefined ? e.recorrente : x.recorrente ?? null) : null };
+    recorrente: CONTA_NO_MES(e.tipo) ? (e.recorrente !== undefined ? e.recorrente : x.recorrente ?? null) : null,
+    divida: e.tipo === 'despesa' ? (e.divida !== undefined ? e.divida : x.divida ?? null) : null };
   if (x.pagamento && (e.tipo !== 'pagamento_fechamento' || e.fechamento)) {
     if (!r.lancamento.some(y => y.id !== x.id && y.pagamento === x.pagamento)) p.apagar('pagamento_fechamento', x.pagamento);
     novo.pagamento = null;
